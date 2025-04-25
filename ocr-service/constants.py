@@ -18,3 +18,11 @@ KEYWORDS = [
     'Electro DMG Bonus',
     'Areo DMG Bonus',
 ]
+
+procentage_names_for_correction = [
+    'resonance',
+    'skill',
+    'basic',
+    'DMG',
+    'regen'
+]

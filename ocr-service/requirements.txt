@@ -1,0 +1,10 @@
+fastapi
+uvicorn[standard]
+pytesseract
+opencv-python
+Pillow
+re
+numpy
+matplotlib
+typing
+difflib
