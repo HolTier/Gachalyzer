@@ -19,7 +19,7 @@ KEYWORDS = [
     'Areo DMG Bonus',
 ]
 
-procentage_names_for_correction = [
+CLEANING_KEYS = [
     'resonance',
     'skill',
     'basic',

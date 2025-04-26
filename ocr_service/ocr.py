@@ -7,24 +7,32 @@ from typing import List
 from difflib import get_close_matches
 from constants import KEYWORDS, CLEANING_KEYS
 
-def proccess_image(image_path):
+def process_image(file_content: bytes):
     # Preprocess the image to get contours
-    image, contours = preprocess_image(image_path)
+    print("Preprocessing image...")
+    image, contours = preprocess_image(file_content)
+    print("Image preprocessed.")
     
     # Extract text from the contours
     ocr_lines = extract_text_from_contours(image, contours)
+    print("Text extracted from image.")
     
     # Clean and match the extracted text with known stats
     cleaned_text = clean_text(ocr_lines, KEYWORDS)
+    print("Text cleaned and matched with known stats.")
     
     # Find keywords in the cleaned text
     found_keywords = find_keywords_in_text(cleaned_text)
+    print("Keywords found in text.")
     
     return found_keywords
 
-def preprocess_image(image_path: str) -> str:
-    # Load the image
-    image = cv2.imread(image_path)
+def preprocess_image(file_content: bytes) -> str:
+    # Convert bytes to numpy array
+    nparr = np.frombuffer(file_content, np.uint8)
+    # Decode the image from the numpy array
+    image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+
     if image is None:
         raise ValueError("Image not found or unable to load.")
 
@@ -64,6 +72,14 @@ def sort_contours(contours):
 def extract_text_from_contours(image, contours):
     # Create a list to hold the extracted text
     extracted_text = []
+
+    if image is None or len(image.shape) < 2:
+        raise ValueError("Invalid image input")
+    
+    if not contours:
+        return extracted_text  # Return empty list if no contours
+
+    print("Extracting text from contours...")
     # Loop through each contour and extract text
     for contour in contours:
         # Get the bounding box for each contour
@@ -74,6 +90,8 @@ def extract_text_from_contours(image, contours):
         text = pytesseract.image_to_string(roi, config='--oem 3 --psm 3')
         # Append the extracted text to the list
         extracted_text.append(text.strip())
+
+    print("Extracted text from contours:", extracted_text)
     return extracted_text
 
 def clean_text(ocr_lines: List[str], known_stats: List[str]) -> List[str]:
