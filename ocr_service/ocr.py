@@ -15,15 +15,15 @@ def process_image(file_content: bytes):
     
     # Extract text from the contours
     ocr_lines = extract_text_from_contours(image, contours)
-    print("Text extracted from image.")
+    print("Text extracted from image: ", ocr_lines)
     
     # Clean and match the extracted text with known stats
-    cleaned_text = clean_text(ocr_lines, KEYWORDS)
-    print("Text cleaned and matched with known stats.")
+    # cleaned_text = clean_text(ocr_lines, KEYWORDS)
+    # print("Text cleaned and matched with known stats: ", cleaned_text)
     
     # Find keywords in the cleaned text
-    found_keywords = find_keywords_in_text(cleaned_text)
-    print("Keywords found in text.")
+    found_keywords = find_keywords_in_text(ocr_lines)
+    print("Keywords found in text.: ", found_keywords)
     
     return found_keywords
 
@@ -142,11 +142,16 @@ def find_keywords_in_text(text: str) -> List[str]:
         # Clean the text
         clean_text = re.sub(r'[^\w\s.%]', ' ', line)  # Replace special chars with space
         clean_text = re.sub(r'\s+', ' ', clean_text)  # Collapse multiple spaces
+
+        print("Cleaned text for keyword search:", clean_text)
         
         # Search for all words in this text segment
         for word in KEYWORDS:
+            print("Searching for keyword:", word)
             pattern = re.escape(word) + r'\s*(\d+(?:\.\d+)?%?)'
             # Find all matches in this text segment
             found_matches = re.findall(pattern, clean_text, re.IGNORECASE)
             for match in found_matches:
                 matches.append(f"{word} {match}")  # Combine the word with its value
+
+    return matches
