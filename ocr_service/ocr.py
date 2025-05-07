@@ -147,7 +147,6 @@ def find_keywords_in_text(text: str) -> List[str]:
         
         # Search for all words in this text segment
         for word in KEYWORDS:
-            print("Searching for keyword:", word)
             pattern = re.escape(word) + r'\s*(\d+(?:\.\d+)?%?)'
             # Find all matches in this text segment
             found_matches = re.findall(pattern, clean_text, re.IGNORECASE)

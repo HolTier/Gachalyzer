@@ -1,10 +1,8 @@
 fastapi
 uvicorn[standard]
 pytesseract
-opencv-python
-Pillow
-re
+setuptools==60.2.0
+wheel==0.37.1
 numpy
 matplotlib
-typing
-difflib
+python-multipart

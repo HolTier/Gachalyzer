@@ -2,10 +2,13 @@ from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.responses import JSONResponse
 from ocr import process_image  
 
-app = FastAPI()
+app = FastAPI(
+    redirect_slashes=False
+)
 
 @app.post("/analyze-image/")
 async def analyze_image(file: UploadFile = File(...)):
+    print("Received file:", file.filename)
     try:
         content = await file.read()
         result = process_image(content)
