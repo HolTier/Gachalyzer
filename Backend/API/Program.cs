@@ -1,25 +1,73 @@
+using Microsoft.OpenApi.Models;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
+// Add Swagger/OpenAPI with better configuration
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "OCR API",
+        Version = "v1",
+        Description = "API for Optical Character Recognition"
+    });
+});
+
+// Add CORS (adjust policy as needed for your environment)
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowSpecific", policy =>
+    {
+        policy.WithOrigins("https://yourfrontend.com")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
+// Add health checks
+builder.Services.AddHealthChecks();
+
+// Add HttpClient support
+builder.Services.AddHttpClient();
+
+// For a named client
+builder.Services.AddHttpClient("ocrClient", client =>
+{
+    client.Timeout = TimeSpan.FromSeconds(30);
+});
+
+// Add logging (implicitly configured via WebApplication.CreateBuilder)
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+app.UseSwagger();
+app.UseSwaggerUI(c =>
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "OCR API V1");
+});
+
 
 app.UseHttpsRedirection();
 
+// Use CORS (place before authorization)
+app.UseCors("AllowSpecific");
+
 app.UseAuthorization();
 
+// Add global error handling
+app.UseExceptionHandler("/error");
+
+// Add health check endpoint
+app.MapHealthChecks("/health");
+
 app.MapControllers();
+
+// Fallback error handling route
+app.Map("/error", () => Results.Problem("An error occurred", statusCode: 500));
 
 app.Run();
