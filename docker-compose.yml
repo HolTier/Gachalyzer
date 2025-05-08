@@ -1,0 +1,14 @@
+services:
+  api:
+    image: ${DOCKER_REGISTRY-}api
+    build:
+      context: .
+      dockerfile: Backend/API/Dockerfile
+  
+  ocr:
+    image: ${DOCKER_REGISTRY-}ocr
+    build:
+      context: ./ocr_service
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
