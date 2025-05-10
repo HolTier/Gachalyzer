@@ -2,8 +2,8 @@ services:
   api:
     image: ${DOCKER_REGISTRY-}api
     build:
-      context: .
-      dockerfile: Backend/API/Dockerfile
+        context: .
+        dockerfile: Backend/API/Dockerfile
     ports:
         - "8080:8080"
         - "8081:8081"
@@ -11,7 +11,15 @@ services:
   ocr:
     image: ${DOCKER_REGISTRY-}ocr
     build:
-      context: ./ocr_service
-      dockerfile: Dockerfile
+        context: ./ocr_service
+        dockerfile: Dockerfile
     ports:
-      - "8000:8000"
+        - "8000:8000"
+
+  frontend:
+    image: ${DOCKER_REGISTRY-}frontend
+    build:
+        context: ./react-frontend
+        dockerfile: Dockerfile
+    ports:
+        - "3000:3000"
