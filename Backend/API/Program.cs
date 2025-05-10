@@ -40,8 +40,19 @@ builder.Services.AddHttpClient("ocrClient", client =>
     client.Timeout = TimeSpan.FromSeconds(30);
 });
 
-// Add logging (implicitly configured via WebApplication.CreateBuilder)
+// Add CORS policy
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowSpecific",
+        builder =>
+        {
+            builder.WithOrigins("http://localhost:3000")
+                   .AllowAnyHeader()
+                   .AllowAnyMethod();
+        });
+});
 
+// Add logging (implicitly configured via WebApplication.CreateBuilder)
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -51,8 +62,7 @@ app.UseSwaggerUI(c =>
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "OCR API V1");
 });
 
-
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 // Use CORS (place before authorization)
 app.UseCors("AllowSpecific");

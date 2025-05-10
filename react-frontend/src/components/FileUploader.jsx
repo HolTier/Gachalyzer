@@ -15,7 +15,7 @@ function FileUploader() {
         formData.append('file', file);
 
         try {
-            const res = await fetch('http://127.0.0.1:8080/api/ocr', {
+            const res = await fetch('http://api:8080/api/ocr', {
                 method: 'POST',
                 body: formData,
             });

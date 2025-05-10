@@ -32,44 +32,43 @@ namespace API.Controllers
             }
         }
 
-        // POST: api/Ocr
         [HttpPost]
-        public async Task<IActionResult> PostAsync(IFormFile file)
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> PostAsync([FromForm] IFormFile file)
         {
-            // Check if the file is null
-            if (file == null || file.Length == 0)
+            try
             {
-                return BadRequest("File is required.");
+                if (file == null || file.Length == 0)
+                    return BadRequest("File is required.");
+
+                string[] permittedExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff" };
+                string fileExtension = Path.GetExtension(file.FileName).ToLower();
+
+                if (!permittedExtensions.Contains(fileExtension))
+                    return BadRequest("Invalid file type. Please upload an image.");
+
+                using var formContent = new MultipartFormDataContent();
+                using var fileStream = file.OpenReadStream();
+                using var fileContent = new StreamContent(fileStream);
+                fileContent.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType);
+                formContent.Add(fileContent, "file", file.FileName);
+
+                var response = await _httpClient.PostAsync("http://ocr:8000/analyze-image/", formContent);
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var result = await response.Content.ReadAsStringAsync();
+                    return Ok(result);
+                }
+                else
+                {
+                    var error = await response.Content.ReadAsStringAsync();
+                    return StatusCode((int)response.StatusCode, $"Error processing the image: {error}");
+                }
             }
-
-            // Check if the file is an image
-            string[] permittedExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff" };
-            string fileExtension = Path.GetExtension(file.FileName).ToLower();
-
-            if (!permittedExtensions.Contains(fileExtension))
+            catch (Exception ex)
             {
-                return BadRequest("Invalid file type. Please upload an image.");
-            }
-
-            // Create multipart form content
-            using var formContent = new MultipartFormDataContent();
-            using var fileStream = file.OpenReadStream();
-            using var fileContent = new StreamContent(fileStream);
-            fileContent.Headers.ContentType = MediaTypeHeaderValue.Parse(file.ContentType);
-            formContent.Add(fileContent, "file", file.FileName);
-
-            // Send the file to the OCR service
-            var response = await _httpClient.PostAsync("http://ocr:8000/analyze-image/", formContent);
-
-            // Check if the response is successful
-            if (response.IsSuccessStatusCode)
-            {
-                var result = await response.Content.ReadAsStringAsync();
-                return Ok(result);
-            }
-            else
-            {
-                return StatusCode((int)response.StatusCode, "Error processing the image.");
+                return StatusCode(500, $"Internal Server Error: {ex.Message}");
             }
         }
     }
