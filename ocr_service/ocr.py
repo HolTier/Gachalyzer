@@ -20,11 +20,12 @@ def process_image(file_content: bytes):
     # Clean and match the extracted text with known stats
     # cleaned_text = clean_text(ocr_lines, KEYWORDS)
     # print("Text cleaned and matched with known stats: ", cleaned_text)
-    
+
     # Find keywords in the cleaned text
     found_keywords = find_keywords_in_text(ocr_lines)
     print("Keywords found in text.: ", found_keywords)
-    
+
+    # Return the found keywords
     return found_keywords
 
 def preprocess_image(file_content: bytes) -> str:

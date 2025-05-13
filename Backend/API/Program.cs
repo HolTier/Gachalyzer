@@ -17,17 +17,6 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-// Add CORS (adjust policy as needed for your environment)
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowSpecific", policy =>
-    {
-        policy.WithOrigins("https://yourfrontend.com")
-              .AllowAnyHeader()
-              .AllowAnyMethod();
-    });
-});
-
 // Add health checks
 builder.Services.AddHealthChecks();
 
@@ -46,7 +35,9 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowSpecific",
         builder =>
         {
-            builder.WithOrigins("http://localhost:3000")
+            builder.WithOrigins(
+                 "http://localhost:3000",
+                 "http://127.0.0.1:3000")
                    .AllowAnyHeader()
                    .AllowAnyMethod();
         });
