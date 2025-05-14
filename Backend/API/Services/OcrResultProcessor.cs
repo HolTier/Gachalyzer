@@ -33,9 +33,10 @@ namespace API.Services
                 if (decimal.TryParse(numericValue, out var parsedValue))
                     value = parsedValue;
 
+                decimal normalizedValue = value ?? 0;
                 string statType = gameType switch
                 {
-                    GameType.WhutheringWaves => WhutheringWavesStatTypeDeterminate(stat, value ?? 0, isPercentage),
+                    GameType.WhutheringWaves => WhutheringWavesStatTypeDeterminate(stat, value ?? 0, isPercentage, out normalizedValue),
                     _ => OcrStatType.Unknown.ToString()
                 };
 
@@ -44,7 +45,7 @@ namespace API.Services
                     Stat = stat,
                     StatType = statType,
                     RawValue = rawValue,
-                    Value = value,
+                    Value = normalizedValue,
                     IsPercentage = isPercentage,
                 });
             }
@@ -52,7 +53,7 @@ namespace API.Services
             return result;
         }
 
-        public string WhutheringWavesStatTypeDeterminate(string stat, decimal value, bool isPercentage)
+        public string WhutheringWavesStatTypeDeterminate(string stat, decimal value, bool isPercentage, out decimal normalizedValue)
         {
             // Dictionary of possible stats and their possible values
             var substatValues = new Dictionary<string, decimal[]>
@@ -88,6 +89,7 @@ namespace API.Services
                 // Check if the value is in the list of possible values
                 if (substatValues[normalizedStat].Contains(value))
                 {
+                    normalizedValue = value;
                     return OcrStatType.SubStat.ToString();
                 }
 
@@ -96,6 +98,7 @@ namespace API.Services
                 decimal dividedValue = value / 10;
                 if (substatValues[normalizedStat].Contains(dividedValue))
                 {
+                    normalizedValue = dividedValue;
                     return OcrStatType.SubStat.ToString();
                 }
 
@@ -103,6 +106,7 @@ namespace API.Services
                 decimal dividedValueBy100 = value / 100;
                 if (substatValues[normalizedStat].Contains(dividedValueBy100))
                 {
+                    normalizedValue = dividedValueBy100;
                     return OcrStatType.SubStat.ToString();
                 }
             }
@@ -110,6 +114,7 @@ namespace API.Services
             // TODO: Add checks for main stats
 
             // Return a main stat
+            normalizedValue = value;
             return OcrStatType.MainStat.ToString();
         }
     }
