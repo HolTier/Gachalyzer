@@ -1,3 +1,4 @@
+using API.Services;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -42,6 +43,9 @@ builder.Services.AddCors(options =>
                    .AllowAnyMethod();
         });
 });
+
+// Add custom services
+builder.Services.AddScoped<IOcrResultProcessor, OcrResultProcessor>();
 
 // Add logging (implicitly configured via WebApplication.CreateBuilder)
 var app = builder.Build();

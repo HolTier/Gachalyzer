@@ -1,6 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using System.Net.Http.Headers;
+using API.Services;
+using API.Dtos;
+using System.Text.Json;
 
 namespace API.Controllers
 {
@@ -9,10 +12,12 @@ namespace API.Controllers
     public class OcrController : ControllerBase
     {
         private readonly HttpClient _httpClient;
+        private readonly IOcrResultProcessor _ocrResultProcessor;
 
-        public OcrController(HttpClient httpClient)
+        public OcrController(HttpClient httpClient, IOcrResultProcessor ocrResultProcessor)
         {
             _httpClient = httpClient;
+            _ocrResultProcessor = ocrResultProcessor;
         }
 
         // GET: api/Ocr
@@ -57,8 +62,22 @@ namespace API.Controllers
 
                 if (response.IsSuccessStatusCode)
                 {
-                    var result = await response.Content.ReadAsStringAsync();
-                    return Ok(result);
+                    var rawResult = await response.Content.ReadAsStringAsync();
+
+                    // Deserialize the result from JSON
+                    var ocrResponse = JsonSerializer.Deserialize<OcrResponse>(rawResult, new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
+
+                    // Validate
+                    if (ocrResponse?.Result == null || ocrResponse.Result.Count == 0)
+                        return BadRequest("OCR returned no results.");
+
+                    // Pass lines to the processor
+                    var processedResult = _ocrResultProcessor.Process(ocrResponse.Result, GameType.WhutheringWaves);
+
+                    return Ok(processedResult);
                 }
                 else
                 {
