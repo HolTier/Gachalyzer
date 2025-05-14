@@ -63,3 +63,5 @@ const StatPreviewBox = ({ data }) => {
         </Paper>
     );
 };
+
+export default StatPreviewBox;

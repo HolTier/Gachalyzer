@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { Box, Button, Typography, Paper } from '@mui/material';
-import { StatPreviewBox } from './StatPreviewBox'; // Assuming this is the correct path
+import StatPreviewBox from './StatPreviewBox';
 
 function FileUploader() {
     const [file, setFile] = useState(null);
