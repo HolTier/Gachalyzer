@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { Box, Button, Typography, Paper } from '@mui/material';
+import { StatPreviewBox } from './StatPreviewBox'; // Assuming this is the correct path
 
 function FileUploader() {
     const [file, setFile] = useState(null);
@@ -85,12 +86,7 @@ function FileUploader() {
             </Button>
 
             {response && (
-                <Box sx={{ mt: 4 }}>
-                    <Typography variant="h6">Response:</Typography>
-                    <Paper sx={{ p: 2, mt: 1, whiteSpace: 'pre-wrap', backgroundColor: '#eee' }}>
-                        {JSON.stringify(response, null, 2)}
-                    </Paper>
-                </Box>
+                <StatPreviewBox data={response} />
             )}
         </Box>
     );
