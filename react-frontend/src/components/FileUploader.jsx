@@ -2,6 +2,7 @@ import React, { useCallback, useState } from 'react';
 import { Box, Button, Typography, Paper, Backdrop, CircularProgress } from '@mui/material';
 import { Dialog, DialogTitle, DialogContent, DialogActions} from '@mui/material';
 import StatPreviewBox from './StatPreviewBox';
+import StatBox from './StatBox';
 
 function FileUploader() {
     const [file, setFile] = useState(null);
@@ -108,7 +109,6 @@ function FileUploader() {
             <Button variant="contained" onClick={handleUpload} disabled={!file}>
                 Upload
             </Button>
-
             {error && (
                 <Typography color="error" sx={{ mt: 2 }}>
                     {error}
@@ -129,7 +129,7 @@ function FileUploader() {
 
             {responseConfirmed && (
                 <Box sx={{ mt: 2 }}>
-                    <StatPreviewBox data={response} />
+                    <StatBox data={response} />
                 </Box>
             )}
         </Box>
