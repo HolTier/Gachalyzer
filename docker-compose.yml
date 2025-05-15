@@ -7,6 +7,9 @@ services:
     ports:
         - "8080:8080"
         - "8081:8081"
+    depends_on:
+        postgres:
+            condition: service_healthy
     networks:
       - my_network
   
@@ -34,11 +37,14 @@ services:
         - CHOKIDAR_USEPOLLING=true
         - WATCHPACK_POLLING=true
         - WDS_SOCKET_PORT=3000
+    depends_on:
+        - api
     networks:
       - my_network
 
   postgres:
     image: postgres:latest
+    restart: unless-stopped
     ports:
         - "5432:5432"
     volumes:
@@ -47,6 +53,11 @@ services:
         - POSTGRES_USER=postgres
         - POSTGRES_PASSWORD=postgres
         - POSTGRES_DB=postgres
+    healthcheck:
+        test: ["CMD", "pg_isready", "-U", "postgres"]
+        interval: 10s
+        timeout: 5s
+        retries: 5
     networks:
       - my_network
 
