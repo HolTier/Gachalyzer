@@ -34,7 +34,6 @@ services:
         - CHOKIDAR_USEPOLLING=true
         - WATCHPACK_POLLING=true
         - WDS_SOCKET_PORT=3000
-        - HOST=0.0.0.0
     networks:
       - my_network
 

@@ -1,11 +1,22 @@
 import React, { useCallback, useState } from 'react';
-import { Box, Button, Typography, Paper } from '@mui/material';
+import { Box, Button, Typography, Paper, Backdrop, CircularProgress } from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, DialogActions} from '@mui/material';
 import StatPreviewBox from './StatPreviewBox';
 
 function FileUploader() {
     const [file, setFile] = useState(null);
     const [response, setResponse] = useState(null);
+    const [responseConfirmed, setResponseConfirmed] = useState(false);
+    const [error, setError] = useState(null);
     const [isDragging, setIsDragging] = useState(false);
+    const [dialogOpen, setDialogOpen] = useState(false);
+    const [loading, setLoading] = useState(false);
+
+    const handleDialogClose = () =>{
+        setDialogOpen(false);
+        setResponseConfirmed(true);
+    }
+    const handleDialogOpen = () => setDialogOpen(true);
 
     const handleFileChange = (event) => {
         setFile(event.target.files[0]);
@@ -17,6 +28,12 @@ function FileUploader() {
         const formData = new FormData();
         formData.append('file', file);
 
+        setLoading(true);
+        setError(null);
+        setResponse(null);
+        setResponseConfirmed(false);
+        setDialogOpen(false);
+   
         try {
             const res = await fetch('http://127.0.0.1:8080/api/ocr', {
                 method: 'POST',
@@ -24,8 +41,12 @@ function FileUploader() {
             });
             const data = await res.json();
             setResponse(data);
+            setDialogOpen(true);
         } catch (error) {
             console.error('Error uploading file:', error);
+            setError('Error uploading file');
+        } finally {
+            setLoading(false);
         }
     }
 
@@ -49,6 +70,9 @@ function FileUploader() {
 
     return (
         <Box sx={{ p: 4 }}>
+            <Backdrop open={loading} sx={{ zIndex: 1 }}>
+                <CircularProgress color="inherit" />
+            </Backdrop>
             <Typography variant="h5" gutterBottom>Upload File</Typography>
 
             <Paper
@@ -76,7 +100,7 @@ function FileUploader() {
                 />
                 <label htmlFor="fileInput">
                     <Button variant="outlined" component="span" sx={{ mt: 2 }}>
-                        Wybierz plik
+                        Choose File
                     </Button>
                 </label>
             </Paper>
@@ -85,8 +109,28 @@ function FileUploader() {
                 Upload
             </Button>
 
+            {error && (
+                <Typography color="error" sx={{ mt: 2 }}>
+                    {error}
+                </Typography>
+            )}
+
             {response && (
-                <StatPreviewBox data={response} />
+                <Dialog open={dialogOpen} onClose={handleDialogClose}>
+                    <DialogTitle>OCR Result</DialogTitle>
+                    <DialogContent>
+                        <StatPreviewBox data={response} />
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleDialogClose}>Close</Button>
+                    </DialogActions>
+                </Dialog>
+            )}
+
+            {responseConfirmed && (
+                <Box sx={{ mt: 2 }}>
+                    <StatPreviewBox data={response} />
+                </Box>
             )}
         </Box>
     );
