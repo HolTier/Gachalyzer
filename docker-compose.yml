@@ -37,6 +37,35 @@ services:
     networks:
       - my_network
 
+  postgres:
+    image: postgres:latest
+    ports:
+        - "5432:5432"
+    volumes:
+        - ./postgres_data:/var/lib/postgresql/data
+    environment:
+        - POSTGRES_USER=postgres
+        - POSTGRES_PASSWORD=postgres
+        - POSTGRES_DB=postgres
+    networks:
+      - my_network
+
+  pgadmin:
+    image: dpage/pgadmin4
+    ports:
+        - "5050:80"
+    volumes:
+        - ./pgadmin_data:/var/lib/pgadmin
+    environment:
+        PGADMIN_DEFAULT_EMAIL: user@email.com
+        PGADMIN_DEFAULT_PASSWORD: admin
+    networks:
+      - my_network
+
 networks:
-  my_network:
-    driver: bridge
+    my_network:
+        driver: bridge
+
+volumes:
+    postgres_data:
+    pgadmin_data:
