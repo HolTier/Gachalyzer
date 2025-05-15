@@ -1,4 +1,6 @@
+using API.Data;
 using API.Services;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -47,6 +49,10 @@ builder.Services.AddCors(options =>
 // Add custom services
 builder.Services.AddScoped<IOcrResultProcessor, OcrResultProcessor>();
 
+// Add PostgreSQL support
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 // Add logging (implicitly configured via WebApplication.CreateBuilder)
 var app = builder.Build();
 
@@ -56,6 +62,13 @@ app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "OCR API V1");
 });
+
+// Add auto migration
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    db.Database.Migrate(); // applies any pending migrations automatically
+}
 
 //app.UseHttpsRedirection();
 
