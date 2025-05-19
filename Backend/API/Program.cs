@@ -53,6 +53,13 @@ builder.Services.AddScoped<IOcrResultProcessor, OcrResultProcessor>();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+// Add Redis Cache support
+builder.Services.AddStackExchangeRedisCache(options =>
+{
+    options.Configuration = builder.Configuration.GetConnectionString("RedisConnection");
+    options.InstanceName = "RedisInstance";
+});
+
 // Add logging (implicitly configured via WebApplication.CreateBuilder)
 var app = builder.Build();
 
