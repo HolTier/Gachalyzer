@@ -4,6 +4,7 @@
     {
         MainStat,
         SubStat,
+        Cost,
         Unknown
     }
 

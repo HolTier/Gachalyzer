@@ -82,6 +82,13 @@ namespace API.Services
             {
                 normalizedStat += "%";
             }
+            
+            // Check if the stat is a cost
+            if (normalizedStat.Contains("COST"))
+            {
+                normalizedValue = value;
+                return OcrStatType.Cost.ToString();
+            }
 
             // First check - exact match
             if (substatValues.ContainsKey(normalizedStat))

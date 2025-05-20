@@ -30,7 +30,7 @@ namespace API.Controllers
             // check if data is already cached, if so, return it
             if (!string.IsNullOrEmpty(cachedData))
             {
-                var deserializedData = JsonSerializer.Deserialize<List<WuwaInitDto>>(cachedData);
+                var deserializedData = JsonSerializer.Deserialize<WuwaInitDto>(cachedData);
                 return Ok(deserializedData);
             }
 

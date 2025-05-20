@@ -1,0 +1,37 @@
+import { useEffect, useState } from "react";
+
+const INIT_WUWA_KEY = "initWuwaData";
+
+export function useInitWuwa() {
+    const [dataWuwa, setDataWuwa] = useState(null);
+    const [loadingWuwa, setLoadingWuwa] = useState(true);
+
+    useEffect(() => {
+        const cached = sessionStorage.getItem(INIT_WUWA_KEY);
+
+        if(cached && cached !== "undefined") {
+            console.log("Cached Wuwa:" + cached);
+            setDataWuwa(JSON.parse(cached));
+            setLoadingWuwa(false);
+        } else {
+            fetch("http://127.0.0.1:8080/api/InitData/initWuwa")
+                .then(res =>{
+                    if(!res.ok){
+                        console.log("throwed");
+                        throw new Error(`HTTP error! status: ${res.status}`);
+                    }
+                    return res.json();
+                })
+                .then(result => {
+                    
+                    sessionStorage.setItem(INIT_WUWA_KEY, JSON.stringify(result));
+                    console.log("InitWuwa: " + JSON.stringify(result));
+                    setDataWuwa(result);
+                })
+                .catch(console.error)
+                .finally(() => setLoadingWuwa(false));
+        }
+    },[]);
+
+    return { dataWuwa, loadingWuwa }
+ }

@@ -8,13 +8,17 @@ import {
     Grid,
     InputAdornment,
     Button,
+    Select,
+    MenuItem,
+    FormControl,
+    InputLabel
 } from "@mui/material";
 
-const StatBox = ({ data }) => {
+const StatBox = ({ data, dataWuwa }) => {
     const [stats, setStats] = useState(data);
 
     const mainStats = stats.filter(stat => stat.statType === "MainStat");
-    const subStats = stats.filter(stat => stat.statType === "SubStat");
+    const subStats = stats.filter(stat => stat.statType === "SubStat" && dataWuwa.subStats.some(s => s.name === stat.stat));
 
     // Ensure we always have 2 main stats (fill with empty if needed)
     const displayedMainStats = [...mainStats];
@@ -27,6 +31,62 @@ const StatBox = ({ data }) => {
             isPercentage: false
         });
     }
+
+    const handleStatNameChange = (statType, index, newName) => {
+        const updatedStats = [...stats];
+        let statIndex;
+
+        if (statType === "MainStat") {
+            // Find if this main stat already exists
+            statIndex = stats.findIndex(s => s.statType === "MainStat" && s.stat === displayedMainStats[index].stat);
+            
+            if (statIndex === -1) {
+                // Add new main stat
+                updatedStats.push({
+                    stat: newName,
+                    statType: "MainStat",
+                    rawValue: "",
+                    value: "",
+                    isPercentage: newName.includes('%')
+                });
+            } else {
+                // Update existing main stat name
+                updatedStats[statIndex].stat = newName;
+                updatedStats[statIndex].isPercentage = newName.includes('%');
+            }
+            
+            // Update displayedMainStats reference
+            displayedMainStats[index].stat = newName;
+            displayedMainStats[index].isPercentage = newName.includes('%');
+        } else {
+            // Find if this sub stat already exists
+            statIndex = stats.findIndex(s => s.statType === "SubStat" && s.stat === displayedSubStats[index]?.stat);
+            
+            if (statIndex === -1) {
+                // Add new sub stat
+                updatedStats.push({
+                    stat: newName,
+                    statType: "SubStat",
+                    rawValue: "",
+                    value: "",
+                    isPercentage: newName.includes('%')
+                });
+            } else {
+                // Update existing sub stat name
+                updatedStats[statIndex].stat = newName;
+                updatedStats[statIndex].isPercentage = newName.includes('%');
+            }
+            
+            // Update displayedSubStats reference if it exists
+            if (displayedSubStats[index]) {
+                displayedSubStats[index].stat = newName;
+                displayedSubStats[index].isPercentage = newName.includes('%');
+            }
+        }
+
+        setStats(updatedStats);
+    };
+
 
     // Ensure we have max 4 sub stats
     const displayedSubStats = subStats.slice(0, 4);
@@ -74,11 +134,25 @@ const StatBox = ({ data }) => {
             <Grid container spacing={2}>
                 {displayedMainStats.map((stat, index) => (
                     <Grid item xs={6} key={`main-${index}`}>
+                        <FormControl fullWidth>
+                            <InputLabel>Main Stat {index + 1}</InputLabel>
+                            <Select
+                                value={stat.stat}
+                                onChange={(e) => handleStatNameChange("MainStat", index, e.target.value)}
+                                label={`Main Stat ${index + 1}`}
+                            >
+                                {dataWuwa.mainStats.map((mainStat) => (
+                                    <MenuItem key={mainStat.id} value={mainStat.name}>
+                                        {mainStat.name}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
                         <TextField
-                            label={stat.stat}
                             value={stat.value}
                             onChange={(e) => handleStatChange("MainStat", index, e.target.value)}
                             fullWidth
+                            sx={{ mt: 1 }}
                             InputProps={{
                                 endAdornment: stat.isPercentage && (
                                     <InputAdornment position="end">%</InputAdornment>
@@ -97,11 +171,25 @@ const StatBox = ({ data }) => {
             <Grid container spacing={2}>
                 {displayedSubStats.map((stat, index) => (
                     <Grid item xs={6} key={`sub-${index}`}>
+                        <FormControl fullWidth>
+                            <InputLabel>Sub Stat {index + 1}</InputLabel>
+                            <Select
+                                value={stat.stat}
+                                onChange={(e) => handleStatNameChange("SubStat", index, e.target.value)}
+                                label={`Sub Stat ${index + 1}`}
+                            >
+                                {dataWuwa.subStats.map((subStat) => (
+                                    <MenuItem key={subStat.id} value={subStat.name}>
+                                        {subStat.name}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
                         <TextField
-                            label={stat.stat}
                             value={stat.value}
                             onChange={(e) => handleStatChange("SubStat", index, e.target.value)}
                             fullWidth
+                            sx={{ mt: 1 }}
                             InputProps={{
                                 endAdornment: stat.isPercentage && (
                                     <InputAdornment position="end">%</InputAdornment>
@@ -114,8 +202,21 @@ const StatBox = ({ data }) => {
                 {/* Fill empty slots if less than 4 sub stats */}
                 {Array.from({ length: 4 - displayedSubStats.length }).map((_, index) => (
                     <Grid item xs={6} key={`empty-${index}`}>
+                        <FormControl fullWidth>
+                            <InputLabel>Sub Stat {displayedSubStats.length + index + 1}</InputLabel>
+                            <Select
+                                value=""
+                                onChange={(e) => handleStatNameChange("SubStat", displayedSubStats.length + index, e.target.value)}
+                                label={`Sub Stat ${displayedSubStats.length + index + 1}`}
+                            >
+                                {dataWuwa.subStats.map((subStat) => (
+                                    <MenuItem key={subStat.id} value={subStat.name}>
+                                        {subStat.name}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
                         <TextField
-                            label={`Sub Stat ${displayedSubStats.length + index + 1}`}
                             value=""
                             onChange={(e) => {
                                 const newStat = {
@@ -128,6 +229,7 @@ const StatBox = ({ data }) => {
                                 setStats([...stats, newStat]);
                             }}
                             fullWidth
+                            sx={{ mt: 1 }}
                         />
                     </Grid>
                 ))}

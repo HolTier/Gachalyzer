@@ -3,6 +3,7 @@ import { Box, Button, Typography, Paper, Backdrop, CircularProgress } from '@mui
 import { Dialog, DialogTitle, DialogContent, DialogActions} from '@mui/material';
 import StatPreviewBox from './StatPreviewBox';
 import StatBox from './StatBox';
+import { useInitWuwa } from '../hooks/useInitWuwa';
 
 function FileUploader() {
     const [file, setFile] = useState(null);
@@ -12,6 +13,7 @@ function FileUploader() {
     const [isDragging, setIsDragging] = useState(false);
     const [dialogOpen, setDialogOpen] = useState(false);
     const [loading, setLoading] = useState(false);
+    const { dataWuwa, loadingWuwa } = useInitWuwa();
 
     const handleDialogClose = () =>{
         setDialogOpen(false);
@@ -48,6 +50,7 @@ function FileUploader() {
             setError('Error uploading file');
         } finally {
             setLoading(false);
+            console.log(dataWuwa)
         }
     }
 
@@ -68,6 +71,8 @@ function FileUploader() {
     const handleDragLeave = () => {
         setIsDragging(false);
     }
+
+    if (loadingWuwa) return <div>Loading...</div>
 
     return (
         <Box sx={{ p: 4 }}>
@@ -129,7 +134,7 @@ function FileUploader() {
 
             {responseConfirmed && (
                 <Box sx={{ mt: 2 }}>
-                    <StatBox data={response} />
+                    <StatBox data={response} dataWuwa={dataWuwa} />
                 </Box>
             )}
         </Box>
