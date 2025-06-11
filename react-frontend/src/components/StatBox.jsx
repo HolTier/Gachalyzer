@@ -15,10 +15,16 @@ import {
 } from "@mui/material";
 
 const StatBox = ({ data, dataWuwa }) => {
-    const [stats, setStats] = useState(data);
+    const [stats, setStats] = useState(data || []);;
 
-    const mainStats = stats.filter(stat => stat.statType === "MainStat");
-    const subStats = stats.filter(stat => stat.statType === "SubStat" && dataWuwa.subStats.some(s => s.name === stat.stat));
+    // Provide default empty arrays if dataWuwa is null/undefined
+    const safeDataWuwa = dataWuwa || {
+        mainStats: [],
+        subStats: []
+    };
+
+    const mainStats = stats.filter(stat => stat.statType === "MainStat") || [];
+    const subStats = stats.filter(stat => stat.statType === "SubStat" && safeDataWuwa.subStats.some(s => s.name === stat.stat));
 
     // Ensure we always have 2 main stats (fill with empty if needed)
     const displayedMainStats = [...mainStats];
@@ -141,7 +147,7 @@ const StatBox = ({ data, dataWuwa }) => {
                                 onChange={(e) => handleStatNameChange("MainStat", index, e.target.value)}
                                 label={`Main Stat ${index + 1}`}
                             >
-                                {dataWuwa.mainStats.map((mainStat) => (
+                                {safeDataWuwa.mainStats.map((mainStat) => (
                                     <MenuItem key={mainStat.id} value={mainStat.name}>
                                         {mainStat.name}
                                     </MenuItem>
@@ -178,7 +184,7 @@ const StatBox = ({ data, dataWuwa }) => {
                                 onChange={(e) => handleStatNameChange("SubStat", index, e.target.value)}
                                 label={`Sub Stat ${index + 1}`}
                             >
-                                {dataWuwa.subStats.map((subStat) => (
+                                {safeDataWuwa.subStats.map((subStat) => (
                                     <MenuItem key={subStat.id} value={subStat.name}>
                                         {subStat.name}
                                     </MenuItem>
@@ -209,7 +215,7 @@ const StatBox = ({ data, dataWuwa }) => {
                                 onChange={(e) => handleStatNameChange("SubStat", displayedSubStats.length + index, e.target.value)}
                                 label={`Sub Stat ${displayedSubStats.length + index + 1}`}
                             >
-                                {dataWuwa.subStats.map((subStat) => (
+                                {safeDataWuwa.subStats.map((subStat) => (
                                     <MenuItem key={subStat.id} value={subStat.name}>
                                         {subStat.name}
                                     </MenuItem>
