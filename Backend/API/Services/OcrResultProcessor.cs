@@ -30,7 +30,8 @@ namespace API.Services
                 string numericValue = isPercentage ? rawValue.TrimEnd('%') : rawValue;
 
                 decimal? value = null;
-                if (decimal.TryParse(numericValue, out var parsedValue))
+                if (decimal.TryParse(numericValue, System.Globalization.NumberStyles.Number, 
+                        System.Globalization.CultureInfo.InvariantCulture, out var parsedValue))
                     value = parsedValue;
 
                 decimal normalizedValue = value ?? 0;
@@ -55,6 +56,15 @@ namespace API.Services
 
         public string WhutheringWavesStatTypeDeterminate(string stat, decimal value, bool isPercentage, out decimal normalizedValue)
         {
+            // Normalize the stat name
+            string normalizedStat = stat.ToUpperInvariant();
+            // Check if the stat is a cost
+            if (normalizedStat.Contains("COST"))
+            {
+                normalizedValue = value;
+                return OcrStatType.Cost.ToString();
+            }
+
             // Dictionary of possible stats and their possible values
             var substatValues = new Dictionary<string, decimal[]>
             {
@@ -76,20 +86,12 @@ namespace API.Services
                 { "DEF", new decimal[] { 30m, 40m, 50m, 60m } },
             };
 
-            // Normalize the stat name
-            string normalizedStat = stat.ToUpperInvariant();
             if (isPercentage && !normalizedStat.EndsWith("%"))
             {
                 normalizedStat += "%";
             }
             
-            // Check if the stat is a cost
-            if (normalizedStat.Contains("COST"))
-            {
-                normalizedValue = value;
-                return OcrStatType.Cost.ToString();
-            }
-
+            
             // First check - exact match
             if (substatValues.ContainsKey(normalizedStat))
             {
