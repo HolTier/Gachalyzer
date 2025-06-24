@@ -1,5 +1,7 @@
 using API.Data;
-using API.Services;
+using API.Services.Ocr;
+using API.StatProcessing;
+using API.StatProcessing.WhutheringWaves;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
@@ -47,6 +49,16 @@ builder.Services.AddCors(options =>
 });
 
 // Add custom services
+builder.Services.AddScoped<IOcrResultProcessor, OcrResultProcessor>();
+
+// Stats services
+builder.Services.AddScoped<IGameStatResolver, WhutheringWavesStatResolver>();
+builder.Services.AddScoped<WhutheringWavesStatResolver>();
+
+// Factory
+builder.Services.AddScoped<IGameStatResolverFactory, GameStatResolverFactory>();
+
+// Main service
 builder.Services.AddScoped<IOcrResultProcessor, OcrResultProcessor>();
 
 // Add PostgreSQL support

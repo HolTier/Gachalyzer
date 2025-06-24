@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using System.Net.Http.Headers;
-using API.Services;
 using API.Dtos;
 using System.Text.Json;
+using API.Services.Ocr;
 
 namespace API.Controllers
 {

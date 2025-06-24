@@ -4,18 +4,32 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using API.Dtos;
-using API.Services;
+using API.Services.Ocr;
+using API.StatProcessing;
+using API.StatProcessing.WhutheringWaves;
 using FluentAssertions;
+using Microsoft.Extensions.DependencyInjection;
 
-namespace API.Tests.Services
+namespace API.Tests.Services.Ocr
 {
     public class OcrResultProcessorTests
     {
-        private readonly OcrResultProcessor _processor;
+        private readonly IOcrResultProcessor _processor;
 
         public OcrResultProcessorTests()
         {
-            _processor = new OcrResultProcessor();
+            var services = new ServiceCollection();
+
+            // Register
+            services.AddScoped<IGameStatResolver, WhutheringWavesStatResolver>();
+            services.AddScoped<WhutheringWavesStatResolver>();
+            services.AddScoped<IGameStatResolverFactory, GameStatResolverFactory>();
+            services.AddScoped<IOcrResultProcessor, OcrResultProcessor>();
+
+            var serviceProvider = services.BuildServiceProvider();
+
+            // Get instance for tests
+            _processor = serviceProvider.GetRequiredService<IOcrResultProcessor>();
         }
 
         [Fact]

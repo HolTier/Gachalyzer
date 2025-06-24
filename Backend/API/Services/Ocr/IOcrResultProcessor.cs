@@ -1,10 +1,9 @@
 ﻿using API.Dtos;
 
-namespace API.Services
+namespace API.Services.Ocr
 {
     public interface IOcrResultProcessor
     {
         List<OcrStatDto> Process(List<string> lines, GameType gameType);
-        string WhutheringWavesStatTypeDeterminate(string stat, decimal value, bool isPercentage, out decimal normalizedValue);
     }
 }

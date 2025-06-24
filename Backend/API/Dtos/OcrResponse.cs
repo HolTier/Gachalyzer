@@ -2,6 +2,6 @@
 {
     public class OcrResponse
     {
-        public List<string> Result { get; set; }
+        public List<string>? Result { get; set; }
     }
 }

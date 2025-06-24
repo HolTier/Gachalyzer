@@ -1,67 +1,18 @@
-﻿using System.Diagnostics;
-using API.Dtos;
+﻿using API.Dtos;
+using System.Diagnostics;
 
-namespace API.Services
+namespace API.StatProcessing.WhutheringWaves
 {
-    public class OcrResultProcessor : IOcrResultProcessor
+    public class WhutheringWavesStatResolver : IGameStatResolver
     {
-        public List<OcrStatDto> Process(List<string> lines, GameType gameType)
-        {
-            var result = new List<OcrStatDto>();
-
-            foreach (var line in lines)
-            {
-                int lastSpaceIndex = line.LastIndexOf(' ');
-
-                var stat = string.Empty;
-                var rawValue = string.Empty;
-
-                if (lastSpaceIndex > 0)
-                {
-                    stat = line.Substring(0, lastSpaceIndex).Trim();
-                    rawValue = line.Substring(lastSpaceIndex + 1).Trim();
-                }
-                else
-                {
-                    stat = line.Trim();
-                }
-
-                bool isPercentage = rawValue.EndsWith("%");
-                string numericValue = isPercentage ? rawValue.TrimEnd('%') : rawValue;
-
-                decimal? value = null;
-                if (decimal.TryParse(numericValue, System.Globalization.NumberStyles.Number, 
-                        System.Globalization.CultureInfo.InvariantCulture, out var parsedValue))
-                    value = parsedValue;
-
-                decimal normalizedValue = value ?? 0;
-                string statType = gameType switch
-                {
-                    GameType.WhutheringWaves => WhutheringWavesStatTypeDeterminate(stat, value ?? 0, isPercentage, out normalizedValue),
-                    _ => OcrStatType.Unknown.ToString()
-                };
-
-                result.Add(new OcrStatDto
-                {
-                    Stat = stat,
-                    StatType = statType,
-                    RawValue = rawValue,
-                    Value = normalizedValue,
-                    IsPercentage = isPercentage,
-                });
-            }
-
-            return result;
-        }
-
-        public string WhutheringWavesStatTypeDeterminate(string stat, decimal value, bool isPercentage, out decimal normalizedValue)
+        public string DetermineStatType(string statName, decimal value, bool isPercentage, out decimal normalized)
         {
             // Normalize the stat name
-            string normalizedStat = stat.ToUpperInvariant();
+            string normalizedStat = statName.ToUpperInvariant();
             // Check if the stat is a cost
             if (normalizedStat.Contains("COST"))
             {
-                normalizedValue = value;
+                normalized = value;
                 return OcrStatType.Cost.ToString();
             }
 
@@ -90,15 +41,15 @@ namespace API.Services
             {
                 normalizedStat += "%";
             }
-            
-            
+
+
             // First check - exact match
             if (substatValues.ContainsKey(normalizedStat))
             {
                 // Check if the value is in the list of possible values
                 if (substatValues[normalizedStat].Contains(value))
                 {
-                    normalizedValue = value;
+                    normalized = value;
                     return OcrStatType.SubStat.ToString();
                 }
 
@@ -107,7 +58,7 @@ namespace API.Services
                 decimal dividedValue = value / 10;
                 if (substatValues[normalizedStat].Contains(dividedValue))
                 {
-                    normalizedValue = dividedValue;
+                    normalized = dividedValue;
                     return OcrStatType.SubStat.ToString();
                 }
 
@@ -115,7 +66,7 @@ namespace API.Services
                 decimal dividedValueBy100 = value / 100;
                 if (substatValues[normalizedStat].Contains(dividedValueBy100))
                 {
-                    normalizedValue = dividedValueBy100;
+                    normalized = dividedValueBy100;
                     return OcrStatType.SubStat.ToString();
                 }
             }
@@ -123,7 +74,7 @@ namespace API.Services
             // TODO: Add checks for main stats
 
             // Return a main stat
-            normalizedValue = value;
+            normalized = value;
             return OcrStatType.MainStat.ToString();
         }
     }
