@@ -114,5 +114,28 @@ namespace API.Tests.Controllers
             dto.MainStats.Should().BeEmpty();
             dto.SubStats.Should().BeEmpty();
         }
+
+        // TODO: Change after refactor.
+        [Fact]
+        public async Task GetWuwaInitData_Returns500_WhenDbThrows()
+        {
+            // Arrange
+            var contextMock = new Mock<AppDbContext>(new DbContextOptionsBuilder<AppDbContext>().Options);
+            var wuwaMainStatsDbSetMock = new Mock<DbSet<WuwaMainStat>>();
+
+            contextMock.Setup(c => c.WuwaMainStats).Returns(wuwaMainStatsDbSetMock.Object);
+            wuwaMainStatsDbSetMock.Setup(s => s.ToListAsync(It.IsAny<CancellationToken>()))
+                                  .ThrowsAsync(new Exception("DB failure"));
+
+            var cacheMock = new Mock<IDistributedCache>();
+            var controller = new InitDataController(contextMock.Object, cacheMock.Object);
+
+            // Act
+            var result = await controller.GetWuwaInitData();
+
+            // Assert
+            var objectResult = result.Should().BeOfType<ObjectResult>().Subject;
+            objectResult.StatusCode.Should().Be(500);
+        }
     }
 }

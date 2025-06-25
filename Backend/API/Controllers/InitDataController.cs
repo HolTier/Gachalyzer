@@ -25,31 +25,38 @@ namespace API.Controllers
         {
             const string cacheKey = "WuwaInitData";
 
-            string? cachedData = await _cache.GetStringAsync(cacheKey);
-
-            // check if data is already cached, if so, return it
-            if (!string.IsNullOrEmpty(cachedData))
+            try
             {
-                var deserializedData = JsonSerializer.Deserialize<WuwaInitDto>(cachedData);
-                return Ok(deserializedData);
+                string? cachedData = await _cache.GetStringAsync(cacheKey);
+
+                // check if data is already cached, if so, return it
+                if (!string.IsNullOrEmpty(cachedData))
+                {
+                    var deserializedData = JsonSerializer.Deserialize<WuwaInitDto>(cachedData);
+                    return Ok(deserializedData);
+                }
+
+                // if not cached, fetch data from the database
+                var result = new WuwaInitDto
+                {
+                    MainStats = await _context.WuwaMainStats.ToListAsync(),
+                    SubStats = await _context.WuwaSubStats.ToListAsync()
+                };
+
+                var serialized = JsonSerializer.Serialize(result);
+                var options = new DistributedCacheEntryOptions
+                {
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(1) // Cache for 1 day
+                };
+
+                // Set the cache
+                await _cache.SetStringAsync(cacheKey, serialized, options);
+                return Ok(result);
             }
-
-            // if not cached, fetch data from the database
-            var result = new WuwaInitDto
+            catch(Exception)
             {
-                MainStats = await _context.WuwaMainStats.ToListAsync(),
-                SubStats = await _context.WuwaSubStats.ToListAsync()
-            };
-
-            var serialized = JsonSerializer.Serialize(result);
-            var options = new DistributedCacheEntryOptions
-            {
-                AbsoluteExpirationRelativeToNow = TimeSpan.FromDays(1) // Cache for 1 day
-            };
-
-            // Set the cache
-            await _cache.SetStringAsync(cacheKey, serialized, options);
-            return Ok(result);
+                return StatusCode(500, "Internal Server error");
+            }
         }
     }
 }
