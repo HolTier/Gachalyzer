@@ -1,4 +1,5 @@
 using API.Data;
+using API.Mappings;
 using API.Services.Ocr;
 using API.StatProcessing;
 using API.StatProcessing.WhutheringWaves;
@@ -47,6 +48,9 @@ builder.Services.AddCors(options =>
                    .AllowAnyMethod();
         });
 });
+
+// Automapper
+builder.Services.AddAutoMapper(typeof(GameStatProfile));
 
 // Add custom services
 builder.Services.AddScoped<IOcrResultProcessor, OcrResultProcessor>();
