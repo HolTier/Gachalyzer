@@ -1,5 +1,6 @@
 using API.Data;
 using API.Mappings;
+using API.Repositories;
 using API.Services.Ocr;
 using API.StatProcessing;
 using API.StatProcessing.WhutheringWaves;
@@ -53,6 +54,11 @@ builder.Services.AddCors(options =>
 builder.Services.AddAutoMapper(typeof(GameStatProfile));
 
 // Add custom services
+// Repositories
+builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+builder.Services.AddScoped<IGameStatRepository, GameStatRepository>();
+
+// Processors
 builder.Services.AddScoped<IOcrResultProcessor, OcrResultProcessor>();
 
 // Stats services

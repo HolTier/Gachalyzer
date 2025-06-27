@@ -13,129 +13,138 @@ using Moq;
 using API.Models;
 using FluentAssertions;
 using API.Dtos;
+using API.Repositories;
 
 namespace API.Tests.Controllers
 {
     public class InitDataControllerTests
     {
-        private readonly AppDbContext _context;
         private readonly Mock<IDistributedCache> _cacheMock;
         private readonly InitDataController _controller;
+        private readonly Mock<IGameStatRepository> _gameStatRepositoryMock;
 
         public InitDataControllerTests()
         {
-            var options = new DbContextOptionsBuilder<AppDbContext>()
-                .UseInMemoryDatabase(databaseName: "TestDb")
-                .Options;
-            _context = new AppDbContext(options);
+            _gameStatRepositoryMock = new Mock<IGameStatRepository>();
 
             _cacheMock = new Mock<IDistributedCache>();
-            _controller = new InitDataController(_context, _cacheMock.Object);
+            _controller = new InitDataController(_gameStatRepositoryMock.Object, _cacheMock.Object);
         }
 
         [Fact]
-        public async Task GetWuwaInitData_ReturnsOk_WithData()
-        {
-            // Seed
-            _context.WuwaMainStats.Add(new WuwaMainStat { Id = 1, Name = "MainStat1" });
-            _context.WuwaSubStats.Add(new WuwaSubStat { Id = 1, Name = "SubStat2" });
-            await _context.SaveChangesAsync();
-
-            // Arrange
-            _cacheMock.Setup(c => c.GetAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(null as byte[]);
-
-            // Act
-            var result = await _controller.GetWuwaInitData();
-
-            // Assert
-            var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
-            var dto = okResult.Value.Should().BeOfType<WuwaInitDto>().Subject;
-            dto.MainStats.Should().ContainSingle();
-            dto.SubStats.Should().ContainSingle();
-        }
-
-        [Fact]
-        public async Task GetWuwaInitData_ReturnsCachedData_WhenAvailable()
+        public async Task GetStatsInitData_ReturnsOkAndCachesResult_WithDbData()
         {
             // Arrange
-            var cachedData = new WuwaInitDto
+            var gameStats = new List<GameStatDto>
             {
-                MainStats = new List<WuwaMainStat> { new WuwaMainStat { Id = 1, Name = "CachedMainStat" } },
-                SubStats = new List<WuwaSubStat> { new WuwaSubStat { Id = 1, Name = "CachedSubStat" } }
+                new GameStatDto
+                {
+                    Id = 1,
+                    Name = "HP%",
+                    GameId = 1,
+                    GameName = "Wuthering Waves",
+                    StatTypeId = 1,
+                    StatTypeName = "Main"
+                }
             };
-            var serializedData = System.Text.Json.JsonSerializer.Serialize(cachedData);
-            _cacheMock.Setup(c => c.GetAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(Encoding.UTF8.GetBytes(serializedData));
+
+            _cacheMock.Setup(c => c.GetAsync("StatsInitData", It.IsAny<CancellationToken>()))
+                .ReturnsAsync(null as byte[]);
+
+            _gameStatRepositoryMock.Setup(r => r.GetAllStatsWithMetaAsync())
+                .ReturnsAsync(gameStats);
 
             // Act
-            var result = await _controller.GetWuwaInitData();
+            var result = await _controller.GetStatsInitData();
 
             // Assert
             var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
-            var dto = okResult.Value.Should().BeOfType<WuwaInitDto>().Subject;
-            dto.MainStats.Should().ContainSingle();
-            dto.SubStats.Should().ContainSingle();
-        }
+            var dto = okResult.Value.Should().BeAssignableTo<IEnumerable<GameStatDto>>().Subject.ToList();
+            dto.Should().NotBeNull();
+            dto.Should().ContainSingle();
+            dto.Single().Name.Should().Be("HP%");
+            dto.Single().GameName.Should().Be("Wuthering Waves");
+            dto.Single().StatTypeName.Should().Be("Main");
+            _gameStatRepositoryMock.Verify(r => r.GetAllStatsWithMetaAsync(), Times.Once);
 
-        [Fact]
-        public async Task GetWuwaInitData_CachesData_WhenNotCached()
-        {
-            // Arrange
-            _cacheMock.Setup(c => c.GetAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
-                .ReturnsAsync(null as byte[]);
-
-            // Act
-            var result = await _controller.GetWuwaInitData();
-
-            // Assert
             _cacheMock.Verify(c => c.SetAsync(
-                It.IsAny<string>(),
+                "StatsInitData",
                 It.IsAny<byte[]>(),
                 It.IsAny<DistributedCacheEntryOptions>(),
                 It.IsAny<CancellationToken>()),
                 Times.Once);
-
         }
 
         [Fact]
-        public async Task GetWuwaInitData_ReturnOk_WhenNoData()
+        public async Task GetStatsInitData_ReturnsCachedData_WhenAvailable()
         {
             // Arrange
-            _cacheMock.Setup(c => c.GetAsync(It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            var cachedDto = new List<GameStatDto>
+            {
+                new GameStatDto
+                {
+                    Id = 1,
+                    Name = "HP%",
+                    GameId = 1,
+                    GameName = "Wuthering Waves",
+                    StatTypeId = 1,
+                    StatTypeName = "Main"
+                }
+            };
+
+            var cachedData = System.Text.Json.JsonSerializer.Serialize(cachedDto);
+            _cacheMock.Setup(c => c.GetAsync("StatsInitData", It.IsAny<CancellationToken>()))
+                .ReturnsAsync(Encoding.UTF8.GetBytes(cachedData));
+
+            // Act
+            var result = await _controller.GetStatsInitData();
+
+            // Assert
+            var okResult = result.Should().BeAssignableTo<OkObjectResult>().Subject;
+            var dto = okResult.Value.Should().BeAssignableTo<IEnumerable<GameStatDto>>().Subject.ToList();
+            dto.Should().NotBeNull();
+            dto.Should().ContainSingle();
+            dto.Single().Name.Should().Be("HP%");
+            dto.Single().GameName.Should().Be("Wuthering Waves");
+            dto.Single().StatTypeName.Should().Be("Main");
+            _gameStatRepositoryMock.Verify(r => r.GetAllStatsWithMetaAsync(), Times.Never);
+        }
+
+        [Fact]
+        public async Task GetStatsInitData_ReturnOk_WhenNoData()
+        {
+            // Arrange
+            _cacheMock.Setup(c => c.GetAsync("StatsInitData", It.IsAny<CancellationToken>()))
                 .ReturnsAsync(null as byte[]);
 
             // Act
-            var result = await _controller.GetWuwaInitData();
+            var result = await _controller.GetStatsInitData();
 
             // Assert
             var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
-            var dto = okResult.Value.Should().BeOfType<WuwaInitDto>().Subject;
-            dto.MainStats.Should().BeEmpty();
-            dto.SubStats.Should().BeEmpty();
+            var dto = okResult.Value.Should().BeAssignableTo<IEnumerable<GameStatDto>>().Subject.ToList();
+            dto.Should().NotBeNull();
+            dto.Should().BeEmpty();
+            _gameStatRepositoryMock.Verify(r => r.GetAllStatsWithMetaAsync(), Times.Once);
         }
 
         // TODO: Change after refactor.
         [Fact]
-        public async Task GetWuwaInitData_Returns500_WhenDbThrows()
+        public async Task GetStatsInitData_Returns500_WhenDbThrows()
         {
             // Arrange
-            var contextMock = new Mock<AppDbContext>(new DbContextOptionsBuilder<AppDbContext>().Options);
-            var wuwaMainStatsDbSetMock = new Mock<DbSet<WuwaMainStat>>();
-
-            contextMock.Setup(c => c.WuwaMainStats).Returns(wuwaMainStatsDbSetMock.Object);
-            wuwaMainStatsDbSetMock.Setup(s => s.ToListAsync(It.IsAny<CancellationToken>()))
-                                  .ThrowsAsync(new Exception("DB failure"));
-
-            var cacheMock = new Mock<IDistributedCache>();
-            var controller = new InitDataController(contextMock.Object, cacheMock.Object);
+            _cacheMock.Setup(c => c.GetAsync("StatsInitData", It.IsAny<CancellationToken>()))
+                .ReturnsAsync(null as byte[]);
+            _gameStatRepositoryMock.Setup(r => r.GetAllStatsWithMetaAsync())
+                .ThrowsAsync(new Exception("Database error"));
 
             // Act
-            var result = await controller.GetWuwaInitData();
+            var result = await _controller.GetStatsInitData();
 
             // Assert
             var objectResult = result.Should().BeOfType<ObjectResult>().Subject;
             objectResult.StatusCode.Should().Be(500);
+            _gameStatRepositoryMock.Verify(r => r.GetAllStatsWithMetaAsync(), Times.Once);
         }
     }
 }

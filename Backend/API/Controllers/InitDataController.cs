@@ -1,6 +1,7 @@
 ﻿using System.Text.Json;
 using API.Data;
 using API.Dtos;
+using API.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
@@ -11,19 +12,19 @@ namespace API.Controllers
     [Route("api/[controller]")]
     public class InitDataController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly IGameStatRepository _gameStatRepository;
         private readonly IDistributedCache _cache;
 
-        public InitDataController(AppDbContext context, IDistributedCache cache)
+        public InitDataController(IGameStatRepository gameStatRepository, IDistributedCache cache)
         {
-            _context = context;
+            _gameStatRepository = gameStatRepository;
             _cache = cache;
         }
 
-        [HttpGet("initWuwa")]
-        public async Task<IActionResult> GetWuwaInitData()
+        [HttpGet("initStats")]
+        public async Task<IActionResult> GetStatsInitData()
         {
-            const string cacheKey = "WuwaInitData";
+            const string cacheKey = "StatsInitData";
 
             try
             {
@@ -32,16 +33,12 @@ namespace API.Controllers
                 // check if data is already cached, if so, return it
                 if (!string.IsNullOrEmpty(cachedData))
                 {
-                    var deserializedData = JsonSerializer.Deserialize<WuwaInitDto>(cachedData);
+                    var deserializedData = JsonSerializer.Deserialize<List<GameStatDto>>(cachedData);
                     return Ok(deserializedData);
                 }
 
                 // if not cached, fetch data from the database
-                var result = new WuwaInitDto
-                {
-                    MainStats = await _context.WuwaMainStats.ToListAsync(),
-                    SubStats = await _context.WuwaSubStats.ToListAsync()
-                };
+                var result = await _gameStatRepository.GetAllStatsWithMetaAsync();
 
                 var serialized = JsonSerializer.Serialize(result);
                 var options = new DistributedCacheEntryOptions
@@ -53,9 +50,9 @@ namespace API.Controllers
                 await _cache.SetStringAsync(cacheKey, serialized, options);
                 return Ok(result);
             }
-            catch(Exception)
+            catch(Exception ex)
             {
-                return StatusCode(500, "Internal Server error");
+                return StatusCode(500, "Internal Server error: " + ex.Message);
             }
         }
     }
