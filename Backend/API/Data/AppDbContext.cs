@@ -31,7 +31,7 @@ namespace API.Data
                 new StatType { Id = 2, Name = "Sub"}
             );
 
-            // Wuwa Main Stats
+            // Wuwa Main Stats GameId 1, StatTypeId 1
             modelBuilder.Entity<GameStat>().HasData(
                 new GameStat { Id = 1, Name = "HP%", GameId = 1, StatTypeId = 1 },
                 new GameStat { Id = 2, Name = "ATK%", GameId = 1, StatTypeId = 1 },
@@ -49,21 +49,21 @@ namespace API.Data
                 new GameStat {Id = 14, Name = "Healing Bonus", GameId = 1, StatTypeId = 1 }
             );
 
-            // Wuwa Sub Stats
+            // Wuwa Sub Stats GameId 1, StatTypeId 2
             modelBuilder.Entity<GameStat>().HasData(
-                new GameStat {Id = 1, Name = "HP", GameId = 1, StatTypeId = 2 },
-                new GameStat {Id = 2, Name = "ATK", GameId = 1, StatTypeId = 2 },
-                new GameStat {Id = 3, Name = "DEF", GameId = 1, StatTypeId = 2 },
-                new GameStat {Id = 4, Name = "Energy Regen", GameId = 1, StatTypeId = 2 },
-                new GameStat {Id = 5, Name = "Crit. Rate", GameId = 1, StatTypeId = 2 },
-                new GameStat {Id = 6, Name = "Crit. DMG", GameId = 1, StatTypeId = 2 },
-                new GameStat {Id = 8, Name = "ATK%", GameId = 1, StatTypeId = 2 },
-                new GameStat {Id = 9, Name = "DEF%", GameId = 1, StatTypeId = 2 },
-                new GameStat {Id = 10, Name = "HP%", GameId = 1, StatTypeId = 2 },
-                new GameStat {Id = 11, Name = "Basic Attack DMG Bonus", GameId = 1, StatTypeId = 2 },
-                new GameStat {Id = 12, Name = "Heavy Attack DMG Bonus", GameId = 1, StatTypeId = 2 },
-                new GameStat {Id = 13, Name = "Resonance Skill DMG Bonus", GameId = 1, StatTypeId = 2 },
-                new GameStat {Id = 14, Name = "Resonance Liberation DMG Bonus", GameId = 1, StatTypeId = 2 }
+                new GameStat {Id = 15, Name = "HP", GameId = 1, StatTypeId = 2 },
+                new GameStat {Id = 16, Name = "ATK", GameId = 1, StatTypeId = 2 },
+                new GameStat {Id = 17, Name = "DEF", GameId = 1, StatTypeId = 2 },
+                new GameStat {Id = 18, Name = "Energy Regen", GameId = 1, StatTypeId = 2 },
+                new GameStat {Id = 19, Name = "Crit. Rate", GameId = 1, StatTypeId = 2 },
+                new GameStat {Id = 20, Name = "Crit. DMG", GameId = 1, StatTypeId = 2 },
+                new GameStat {Id = 21, Name = "ATK%", GameId = 1, StatTypeId = 2 },
+                new GameStat {Id = 22, Name = "DEF%", GameId = 1, StatTypeId = 2 },
+                new GameStat {Id = 23, Name = "HP%", GameId = 1, StatTypeId = 2 },
+                new GameStat {Id = 24, Name = "Basic Attack DMG Bonus", GameId = 1, StatTypeId = 2 },
+                new GameStat {Id = 25, Name = "Heavy Attack DMG Bonus", GameId = 1, StatTypeId = 2 },
+                new GameStat {Id = 26, Name = "Resonance Skill DMG Bonus", GameId = 1, StatTypeId = 2 },
+                new GameStat {Id = 27, Name = "Resonance Liberation DMG Bonus", GameId = 1, StatTypeId = 2 }
             );
         }
     }
