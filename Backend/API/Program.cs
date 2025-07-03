@@ -1,6 +1,7 @@
 using API.Data;
 using API.Mappings;
 using API.Repositories;
+using API.Services.Files;
 using API.Services.Ocr;
 using API.StatProcessing;
 using API.StatProcessing.WhutheringWaves;
@@ -70,6 +71,7 @@ builder.Services.AddScoped<IGameStatResolverFactory, GameStatResolverFactory>();
 
 // Main service
 builder.Services.AddScoped<IOcrResultProcessor, OcrResultProcessor>();
+builder.Services.AddScoped<IFIleProcessingService, FileProcessingService>();
 
 // Add PostgreSQL support
 builder.Services.AddDbContext<AppDbContext>(options =>
