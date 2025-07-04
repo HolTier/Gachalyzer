@@ -1,7 +1,9 @@
-﻿namespace API.Services.Files
+﻿using API.Dtos;
+
+namespace API.Services.Files
 {
     public interface IFIleProcessingService
     {
-        Task<(bool IsSuccess, object Result, string? ErrorMessage)> ProcessFileAsync(List<IFormFile> files);
+        Task<FileProcessingResult> ProcessFileAsync(List<IFormFile> files);
     }
 }

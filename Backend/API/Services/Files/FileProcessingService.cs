@@ -17,16 +17,21 @@ namespace API.Services.Files
             _ocrResultProcessor = ocrResultProcessor;
         }
 
-        public async Task<(bool IsSuccess, object Result, string? ErrorMessage)> ProcessFileAsync(List<IFormFile> files)
+        public async Task<FileProcessingResult> ProcessFileAsync(List<IFormFile> files)
         {
             string[] permittedExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff" };
-            var allResults = new List<object>();
+            var allResults = new List<FileStatsDto>();
 
             foreach (var file in files)
             {
                 var ext = Path.GetExtension(file.FileName).ToLower();
                 if (!permittedExtensions.Contains(ext))
-                    return (false, null!, $"Invalid file type: {file.FileName}");
+                    return new FileProcessingResult
+                    {
+                        IsSuccess = false,
+                        FileStats = new List<FileStatsDto>(),
+                        ErrorMessage = $"Invalid file type: {file.FileName}. Allowed types are: {string.Join(", ", permittedExtensions)}"
+                    };
 
                 using var formContent = new MultipartFormDataContent();
                 using var fileStream = file.OpenReadStream();
@@ -38,7 +43,12 @@ namespace API.Services.Files
                 if (!response.IsSuccessStatusCode)
                 {
                     var error = await response.Content.ReadAsStringAsync();
-                    return (false, null!, $"Error from OCR service: {error}");
+                    return new FileProcessingResult
+                    {
+                        IsSuccess = false,
+                        FileStats = new List<FileStatsDto>(),
+                        ErrorMessage = $"OCR service returned an error for file: {file.FileName}. Status code: {response.StatusCode}, Error: {error}"
+                    };
                 }
 
                 var rawResult = await response.Content.ReadAsStringAsync();
@@ -48,14 +58,23 @@ namespace API.Services.Files
                 });
 
                 if (ocrResponse?.Result == null || ocrResponse.Result.Count == 0)
-                    return (false, null!, $"OCR returned no result for file: {file.FileName}");
+                    return new FileProcessingResult
+                    {
+                        IsSuccess = false,
+                        FileStats = new List<FileStatsDto>(),
+                        ErrorMessage = $"OCR returned no results for file: {file.FileName}."
+                    };
 
                 var processed = _ocrResultProcessor.Process(ocrResponse.Result, GameType.WhutheringWaves);
-                allResults.Add(new { File = file.FileName, Result = processed });
+                allResults.Add(new FileStatsDto { FileName = file.FileName, Stats = processed });
             }
 
-            object result = allResults.Count == 1 ? allResults[0] : allResults;
-            return (true, result, null);
+            return new FileProcessingResult
+            {
+                IsSuccess = true,
+                FileStats = allResults,
+                ErrorMessage = null
+            };
         }
     }
 }

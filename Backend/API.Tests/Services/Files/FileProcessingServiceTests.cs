@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using API.Dtos;
 using API.Services.Files;
 using API.Services.Ocr;
+using API.StatProcessing;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -18,27 +19,32 @@ namespace API.Tests.Services.Files
 {
     public class FileProcessingServiceTests
     {
-        private readonly Mock<IOcrResultProcessor> _ocrResultProcessorMock;
         private readonly IFIleProcessingService _fileProcessingService;
 
         public FileProcessingServiceTests()
         {
-            _ocrResultProcessorMock = new Mock<IOcrResultProcessor>();
-
-            // Setup mock to return a sample result
-            _ocrResultProcessorMock
-                .Setup(x => x.Process(It.IsAny<List<string>>(), It.IsAny<GameType>()))
-                .Returns((List<string> input, GameType _) =>
+            // Mock resolver
+            var resolverMock = new Mock<IGameStatResolver>();
+            resolverMock
+                .Setup(r => r.DetermineStatType(
+                    It.IsAny<string>(),
+                    It.IsAny<decimal>(),
+                    It.IsAny<bool>(),
+                    out It.Ref<decimal>.IsAny))
+                .Returns((string statName, decimal value, bool isPercentage, out decimal normalized) =>
                 {
-                    return input.Select(line => new OcrStatDto
-                    {
-                        Stat = line.Split(' ')[0],
-                        RawValue = line.Split(' ')[1],
-                        Value = decimal.Parse(line.Split(' ')[1].TrimEnd('%')),
-                        IsPercentage = line.EndsWith("%"),
-                        StatType = OcrStatType.SubStat.ToString()
-                    }).ToList();
+                    normalized = value; // For simplicity, just return the value as normalized
+                    return OcrStatType.SubStat.ToString(); // Return a fixed stat type for testing
                 });
+
+            // Mock factory to return resolver
+            var resolverFactoryMock = new Mock<IGameStatResolverFactory>();
+            resolverFactoryMock
+                .Setup(f => f.GetResolver(It.IsAny<GameType>()))
+                .Returns(resolverMock.Object);
+
+            // Use real processor
+            var ocrProcessor = new OcrResultProcessor(resolverFactoryMock.Object);
 
             // Mock HTTP response
             var mockHttpHandler = new Mock<HttpMessageHandler>();
@@ -51,10 +57,7 @@ namespace API.Tests.Services.Files
                 )
                 .ReturnsAsync((HttpRequestMessage request, CancellationToken token) =>
                 {
-                    var mockOcrResponse = new
-                    {
-                        result = new List<string> { "CRIT RATE 7%", "HP 200" }
-                    };
+                    var mockOcrResponse = new { result = new List<string> { "CRIT RATE 7%", "HP 200" } };
                     var json = JsonSerializer.Serialize(mockOcrResponse);
 
                     return new HttpResponseMessage
@@ -70,7 +73,7 @@ namespace API.Tests.Services.Files
             };
 
             // Register services
-            _fileProcessingService = new FileProcessingService(httpClient, _ocrResultProcessorMock.Object);
+            _fileProcessingService = new FileProcessingService(httpClient, ocrProcessor);
         }
 
         [Fact]
@@ -79,28 +82,41 @@ namespace API.Tests.Services.Files
             // Arrange
             var files = new List<IFormFile>
             {
-                new FormFile(new MemoryStream(Encoding.UTF8.GetBytes("Test content")), 0, 12, "file", "test1.jpg")
+                new FormFile(new MemoryStream(Encoding.UTF8.GetBytes("dummy")), 0, 5, "file", "test1.jpg")
                 {
                     Headers = new HeaderDictionary(),
                     ContentType = "image/jpeg"
                 },
-                new FormFile(new MemoryStream(Encoding.UTF8.GetBytes("Test content")), 0, 12, "file", "test2.png")
+                new FormFile(new MemoryStream(Encoding.UTF8.GetBytes("dummy")), 0, 5, "file", "test2.png")
                 {
                     Headers = new HeaderDictionary(),
                     ContentType = "image/png"
                 }
             };
-            
+
             // Act
             var result = await _fileProcessingService.ProcessFileAsync(files);
 
             // Assert
             result.IsSuccess.Should().BeTrue();
-            result.Result.Should().NotBeNull();
-            result.ErrorMessage.Should().BeNull();
+            result.FileStats.Should().NotBeEmpty();
+            result.FileStats.Should().HaveCount(2);
 
-            // Optional: check processed result shape
-            result.Result.ToString().Should().Contain("Processed");
+            result.FileStats[0].Stats.Should().NotBeEmpty();
+            result.FileStats[0].Stats.Should().HaveCount(2);
+            result.FileStats[0].Stats[0].Stat.Should().Be("CRIT RATE");
+            result.FileStats[0].Stats[0].Value.Should().Be(7m);
+            result.FileStats[0].Stats[1].Stat.Should().Be("HP");
+            result.FileStats[0].Stats[1].Value.Should().Be(200m);
+
+            result.FileStats[1].Stats.Should().NotBeEmpty();
+            result.FileStats[1].Stats.Should().HaveCount(2);
+            result.FileStats[1].Stats[0].Stat.Should().Be("CRIT RATE");
+            result.FileStats[1].Stats[0].Value.Should().Be(7m);
+            result.FileStats[1].Stats[1].Stat.Should().Be("HP");
+            result.FileStats[1].Stats[1].Value.Should().Be(200m);
+
+            result.ErrorMessage.Should().BeNullOrEmpty();
         }
     }
 }
