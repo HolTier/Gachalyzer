@@ -19,26 +19,9 @@ namespace API.Controllers
             _fileProcessingService = fIleProcessingService;
         }
 
-        // GET: api/Ocr
-        [HttpGet]
-        public IActionResult Get()
-        {
-            try
-            {
-                // This is a placeholder for the OCR functionality.
-                // In a real application, you would implement the OCR logic here.
-                return Ok("OCR functionality is not implemented yet.");
-            }
-            catch (Exception ex)
-            {
-                // Log the exception (you should have logging configured)
-                return StatusCode(500, $"Internal server error: {ex.Message}");
-            }
-        }
-
         [HttpPost("upload-single")]
         [Consumes("multipart/form-data")]
-        public async Task<IActionResult> PostSingleAsync([FromForm] IFormFile file)
+        public async Task<IActionResult> PostSingleAsync(IFormFile file)
         {
             try
             {
@@ -49,7 +32,7 @@ namespace API.Controllers
 
                 if (!result.IsSuccess)
                     return BadRequest(result.ErrorMessage);
-                
+
                 return Ok(result.FileStats);
             }
             catch (Exception ex)

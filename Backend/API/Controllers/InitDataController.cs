@@ -50,7 +50,7 @@ namespace API.Controllers
                 await _cache.SetStringAsync(cacheKey, serialized, options);
                 return Ok(result);
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 return StatusCode(500, "Internal Server error: " + ex.Message);
             }

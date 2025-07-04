@@ -61,6 +61,7 @@ builder.Services.AddScoped<IGameStatRepository, GameStatRepository>();
 
 // Processors
 builder.Services.AddScoped<IOcrResultProcessor, OcrResultProcessor>();
+builder.Services.AddScoped<IFIleProcessingService, FileProcessingService>();
 
 // Stats services
 builder.Services.AddScoped<IGameStatResolver, WhutheringWavesStatResolver>();
@@ -68,10 +69,6 @@ builder.Services.AddScoped<WhutheringWavesStatResolver>();
 
 // Factory
 builder.Services.AddScoped<IGameStatResolverFactory, GameStatResolverFactory>();
-
-// Main service
-builder.Services.AddScoped<IOcrResultProcessor, OcrResultProcessor>();
-builder.Services.AddScoped<IFIleProcessingService, FileProcessingService>();
 
 // Add PostgreSQL support
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -87,8 +84,15 @@ builder.Services.AddStackExchangeRedisCache(options =>
 // Add logging (implicitly configured via WebApplication.CreateBuilder)
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-app.UseSwagger();
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+}
+
+// Swagger middleware
+app.UseSwagger(
+    
+);
 app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "OCR API V1");
