@@ -38,7 +38,7 @@ namespace API.Controllers
 
         [HttpPost("upload-single")]
         [Consumes("multipart/form-data")]
-        public async Task<IActionResult> PostAsync([FromForm] IFormFile file)
+        public async Task<IActionResult> PostSingleAsync([FromForm] IFormFile file)
         {
             try
             {

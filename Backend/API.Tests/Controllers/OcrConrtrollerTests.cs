@@ -29,7 +29,7 @@ namespace API.Tests.Controllers
         }
 
         [Fact]
-        public async Task PostAsync_ReturnsOk_WithValidFile()
+        public async Task PostSingleAsync_ReturnsOk_WithValidFile()
         {
             // Arrange
             var fileName = "test.png";
@@ -58,7 +58,7 @@ namespace API.Tests.Controllers
                 .ReturnsAsync(result);
 
             // Act
-            var response = await _controller.PostAsync(formFile);
+            var response = await _controller.PostSingleAsync(formFile);
 
             // Assert
             var okResult = response.Should().BeOfType<OkObjectResult>().Subject;
@@ -70,20 +70,20 @@ namespace API.Tests.Controllers
         }
 
         [Fact]
-        public async Task PostAsync_ReturnsBadRequest_WhenFileIsNull()
+        public async Task PostSingleAsync_ReturnsBadRequest_WhenFileIsNull()
         {
             // Arrange
             IFormFile? file = null;
 
             // Act
-            var result = await _controller.PostAsync(file);
+            var result = await _controller.PostSingleAsync(file);
 
             // Assert
             result.Should().BeOfType<BadRequestObjectResult>().Which.Value.Should().Be("No file uploaded.");
         }
 
         [Fact]
-        public async Task PostAsync_ReturnsBadRequest_WhenServiceFails()
+        public async Task PostSingleAsync_ReturnsBadRequest_WhenServiceFails()
         {
             // Arrange
             var formFile = new FormFile(new MemoryStream(Encoding.UTF8.GetBytes("dummy")), 0, 5, "file", "test.png")
@@ -103,7 +103,7 @@ namespace API.Tests.Controllers
                 .ReturnsAsync(failResult);
 
             // Act
-            var result = await _controller.PostAsync(formFile);
+            var result = await _controller.PostSingleAsync(formFile);
 
             // Assert
             result.Should().BeOfType<BadRequestObjectResult>()
