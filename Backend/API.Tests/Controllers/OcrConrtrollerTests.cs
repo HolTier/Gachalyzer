@@ -7,6 +7,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using API.Controllers;
 using API.Dtos;
+using API.Services.Files;
 using API.Services.Ocr;
 using FluentAssertions;
 using Microsoft.AspNetCore.Http;
@@ -16,78 +17,56 @@ using Moq.Protected;
 
 namespace API.Tests.Controllers
 {
-    public class OcrConrtrollerTests
+    public class OcrControllerTests
     {
+        private readonly Mock<IFIleProcessingService> _fileProcessingServiceMock;
         private readonly OcrController _controller;
-        private readonly Mock<HttpClient> _httpClientMock;
-        private readonly Mock<IOcrResultProcessor> _ocrResultProcessorMock;
 
-        public OcrConrtrollerTests()
+        public OcrControllerTests()
         {
-            _httpClientMock = new Mock<HttpClient>();
-            _ocrResultProcessorMock = new Mock<IOcrResultProcessor>();
-            _controller = new OcrController(_httpClientMock.Object, _ocrResultProcessorMock.Object);
+            _fileProcessingServiceMock = new Mock<IFIleProcessingService>();
+            _controller = new OcrController(_fileProcessingServiceMock.Object);
         }
 
         [Fact]
-        public async Task PostAsync_ReturnProcessedResult_WithValidFile()
+        public async Task PostAsync_ReturnsOk_WithValidFile()
         {
             // Arrange
-            var expectedOcrLines = new List<string> { "Line 1", "Line 2" };
-            var expectedProcessedResult = new List<OcrStatDto>()
-            {
-                new OcrStatDto { Stat = "Stat1", Value = 100, IsPercentage = false },
-                new OcrStatDto { Stat = "Stat2", Value = 50, IsPercentage = true }
-            };
-
-            _ocrResultProcessorMock
-                .Setup(p => p.Process(expectedOcrLines, It.IsAny<GameType>()))
-                .Returns(expectedProcessedResult);
-
-            var ocrResponse = new OcrResponse
-            {
-                Result = expectedOcrLines
-            };
-
-            var handlerMock = new Mock<HttpMessageHandler>();
-            handlerMock
-                .Protected()
-                .Setup<Task<HttpResponseMessage>>("SendAsync",
-                    ItExpr.IsAny<HttpRequestMessage>(),
-                    ItExpr.IsAny<CancellationToken>())
-                .ReturnsAsync(new HttpResponseMessage
-                {
-                    StatusCode = HttpStatusCode.OK,
-                    Content = new StringContent(JsonSerializer.Serialize(ocrResponse), Encoding.UTF8, "application/json")
-                });
-
-            var httpClient = new HttpClient(handlerMock.Object)
-            {
-                BaseAddress = new Uri("http://ocr:8000/")
-            };
-
-            var controller = new OcrController(httpClient, _ocrResultProcessorMock.Object);
-
-            // Fake file upload
-            var fileName = "test_image.png";
-            var stream = new MemoryStream(Encoding.UTF8.GetBytes("Fake image content"));
-            var formFile = new FormFile(stream, 0, stream.Length, "file", fileName)
+            var fileName = "test.png";
+            var formFile = new FormFile(new MemoryStream(Encoding.UTF8.GetBytes("dummy")), 0, 5, "file", "test.png")
             {
                 Headers = new HeaderDictionary(),
                 ContentType = "image/png"
             };
 
+            var fakeStats = new List<OcrStatDto>
+            {
+                new() { Stat = "Crit Rate", Value = 7, IsPercentage = true }
+            };
+
+            var result = new FileProcessingResult
+            {
+                IsSuccess = true,
+                FileStats = new List<FileStatsDto>
+            {
+                new() { FileName = fileName, Stats = fakeStats }
+            }
+            };
+
+            _fileProcessingServiceMock
+                .Setup(s => s.ProcessFileAsync(It.IsAny<List<IFormFile>>()))
+                .ReturnsAsync(result);
+
             // Act
-            var result = await controller.PostAsync(formFile);
+            var response = await _controller.PostAsync(formFile);
 
             // Assert
-            var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
-            var processedResult = okResult.Value.Should().BeAssignableTo<IEnumerable<OcrStatDto>>().Subject.ToList();
-            processedResult.Should().NotBeNull();
-            processedResult.Should().HaveCount(expectedProcessedResult.Count);
-            processedResult.Should().ContainSingle(x => x.Stat == "Stat1" && x.Value == 100 && !x.IsPercentage);
-            processedResult.Should().ContainSingle(x => x.Stat == "Stat2" && x.Value == 50 && x.IsPercentage);
-            _ocrResultProcessorMock.Verify(p => p.Process(expectedOcrLines, It.IsAny<GameType>()), Times.Once);
+            var okResult = response.Should().BeOfType<OkObjectResult>().Subject;
+            var data = okResult.Value.Should().BeAssignableTo<List<FileStatsDto>>().Subject;
+
+            data.Should().ContainSingle();
+            data[0].FileName.Should().Be(fileName);
+            data[0].Stats.Should().BeEquivalentTo(fakeStats);
         }
 
         [Fact]
@@ -100,67 +79,36 @@ namespace API.Tests.Controllers
             var result = await _controller.PostAsync(file);
 
             // Assert
-            result.Should().BeOfType<BadRequestObjectResult>();
-            var badRequestResult = result as BadRequestObjectResult;
-            badRequestResult.Value.Should().Be("File is required.");
+            result.Should().BeOfType<BadRequestObjectResult>().Which.Value.Should().Be("No file uploaded.");
         }
 
         [Fact]
-        public async Task PostAsync_ReturnsBadRequest_WhenFileIsInvalidType()
+        public async Task PostAsync_ReturnsBadRequest_WhenServiceFails()
         {
             // Arrange
-            var fileName = "test_document.txt";
-            var stream = new MemoryStream(Encoding.UTF8.GetBytes("Fake document content"));
-            var formFile = new FormFile(stream, 0, stream.Length, "file", fileName)
-            {
-                Headers = new HeaderDictionary(),
-                ContentType = "text/plain"
-            };
-
-            // Act
-            var result = await _controller.PostAsync(formFile);
-
-            // Assert
-            result.Should().BeOfType<BadRequestObjectResult>();
-            var badRequestResult = result as BadRequestObjectResult;
-            badRequestResult.Value.Should().Be("Invalid file type. Please upload an image.");
-        }
-
-        [Fact]
-        public async Task PostAsync_ReturnsInternalServerError_WhenOcrServiceFails()
-        {
-            // Arrange
-            var fileName = "test_image.png";
-            var stream = new MemoryStream(Encoding.UTF8.GetBytes("Fake image content"));
-            var formFile = new FormFile(stream, 0, stream.Length, "file", fileName)
+            var formFile = new FormFile(new MemoryStream(Encoding.UTF8.GetBytes("dummy")), 0, 5, "file", "test.png")
             {
                 Headers = new HeaderDictionary(),
                 ContentType = "image/png"
             };
 
-            var handlerMock = new Mock<HttpMessageHandler>();
-            handlerMock
-                .Protected()
-                .Setup<Task<HttpResponseMessage>>("SendAsync",
-                    ItExpr.IsAny<HttpRequestMessage>(),
-                    ItExpr.IsAny<CancellationToken>())
-                .ThrowsAsync(new HttpRequestException("OCR service error"));
-
-            var httpClient = new HttpClient(handlerMock.Object)
+            var failResult = new FileProcessingResult
             {
-                BaseAddress = new Uri("http://ocr:8000/")
+                IsSuccess = false,
+                ErrorMessage = "Invalid file type"
             };
 
-            var controller = new OcrController(httpClient, _ocrResultProcessorMock.Object);
+            _fileProcessingServiceMock
+                .Setup(s => s.ProcessFileAsync(It.IsAny<List<IFormFile>>()))
+                .ReturnsAsync(failResult);
 
             // Act
-            var result = await controller.PostAsync(formFile);
+            var result = await _controller.PostAsync(formFile);
 
             // Assert
-            result.Should().BeOfType<ObjectResult>();
-            var objectResult = result as ObjectResult;
-            objectResult.StatusCode.Should().Be(500);
-            objectResult.Value.Should().Be("Internal Server Error: OCR service error");
+            result.Should().BeOfType<BadRequestObjectResult>()
+                  .Which.Value.Should().Be("Invalid file type");
         }
     }
 }
+

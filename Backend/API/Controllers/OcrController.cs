@@ -4,6 +4,7 @@ using System.Net.Http.Headers;
 using API.Dtos;
 using System.Text.Json;
 using API.Services.Ocr;
+using API.Services.Files;
 
 namespace API.Controllers
 {
@@ -11,13 +12,11 @@ namespace API.Controllers
     [ApiController]
     public class OcrController : ControllerBase
     {
-        private readonly HttpClient _httpClient;
-        private readonly IOcrResultProcessor _ocrResultProcessor;
+        private readonly IFIleProcessingService _fileProcessingService;
 
-        public OcrController(HttpClient httpClient, IOcrResultProcessor ocrResultProcessor)
+        public OcrController(IFIleProcessingService fIleProcessingService)
         {
-            _httpClient = httpClient;
-            _ocrResultProcessor = ocrResultProcessor;
+            _fileProcessingService = fIleProcessingService;
         }
 
         // GET: api/Ocr
@@ -37,53 +36,21 @@ namespace API.Controllers
             }
         }
 
-        [HttpPost]
+        [HttpPost("upload-single")]
         [Consumes("multipart/form-data")]
         public async Task<IActionResult> PostAsync([FromForm] IFormFile file)
         {
             try
             {
                 if (file == null || file.Length == 0)
-                    return BadRequest("File is required.");
+                    return BadRequest("No file uploaded.");
 
-                string[] permittedExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff" };
-                string fileExtension = Path.GetExtension(file.FileName).ToLower();
+                var result = await _fileProcessingService.ProcessFileAsync(new List<IFormFile> { file });
 
-                if (!permittedExtensions.Contains(fileExtension))
-                    return BadRequest("Invalid file type. Please upload an image.");
-
-                using var formContent = new MultipartFormDataContent();
-                using var fileStream = file.OpenReadStream();
-                using var fileContent = new StreamContent(fileStream);
-                fileContent.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType);
-                formContent.Add(fileContent, "file", file.FileName);
-
-                var response = await _httpClient.PostAsync("http://ocr:8000/analyze-image/", formContent);
-
-                if (response.IsSuccessStatusCode)
-                {
-                    var rawResult = await response.Content.ReadAsStringAsync();
-
-                    // Deserialize the result from JSON
-                    var ocrResponse = JsonSerializer.Deserialize<OcrResponse>(rawResult, new JsonSerializerOptions
-                    {
-                        PropertyNameCaseInsensitive = true
-                    });
-
-                    // Validate
-                    if (ocrResponse?.Result == null || ocrResponse.Result.Count == 0)
-                        return BadRequest("OCR returned no results.");
-
-                    // Pass lines to the processor
-                    var processedResult = _ocrResultProcessor.Process(ocrResponse.Result, GameType.WhutheringWaves);
-
-                    return Ok(processedResult);
-                }
-                else
-                {
-                    var error = await response.Content.ReadAsStringAsync();
-                    return StatusCode((int)response.StatusCode, $"Error processing the image: {error}");
-                }
+                if (!result.IsSuccess)
+                    return BadRequest(result.ErrorMessage);
+                
+                return Ok(result.FileStats);
             }
             catch (Exception ex)
             {
