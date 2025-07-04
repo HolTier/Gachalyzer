@@ -40,5 +40,27 @@ namespace API.Controllers
                 return StatusCode(500, $"Internal Server Error: {ex.Message}");
             }
         }
+
+        [HttpPost("upload-multiple")]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> PostMultipleAsync(List<IFormFile> files)
+        {
+            try
+            {
+                if (files == null || !files.Any())
+                    return BadRequest("No files uploaded.");
+
+                var result = await _fileProcessingService.ProcessFileAsync(files);
+
+                if (!result.IsSuccess)
+                    return BadRequest(result.ErrorMessage);
+
+                return Ok(result.FileStats);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal Server Error: {ex.Message}");
+            }
+        }
     }
 }

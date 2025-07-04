@@ -109,6 +109,54 @@ namespace API.Tests.Controllers
             result.Should().BeOfType<BadRequestObjectResult>()
                   .Which.Value.Should().Be("Invalid file type");
         }
+
+        [Fact]
+        public async Task PostMultipleAsync_ReturnsOk_WithValidFiles()
+        {
+            // Arrange
+            var files = new List<IFormFile>
+            {
+                new FormFile(new MemoryStream(Encoding.UTF8.GetBytes("dummy")), 0, 5, "file", "test1.png")
+                {
+                    Headers = new HeaderDictionary(),
+                    ContentType = "image/png"
+                },
+                new FormFile(new MemoryStream(Encoding.UTF8.GetBytes("dummy")), 0, 5, "file", "test2.jpg")
+                {
+                    Headers = new HeaderDictionary(),
+                    ContentType = "image/jpeg"
+                }
+            };
+
+            var fakeStats = new List<OcrStatDto>
+            {
+                new() { Stat = "Crit Rate", Value = 7, IsPercentage = true },
+                new() { Stat = "HP", Value = 200, IsPercentage = false }
+            };
+
+            var result = new FileProcessingResult
+            {
+                IsSuccess = true,
+                FileStats = files.Select(f => new FileStatsDto
+                {
+                    FileName = f.FileName,
+                    Stats = fakeStats
+                }).ToList()
+            };
+            _fileProcessingServiceMock
+                .Setup(s => s.ProcessFileAsync(files))
+                .ReturnsAsync(result);
+
+            // Act
+            var response = await _controller.PostMultipleAsync(files);
+
+            // Assert
+            var okResult = response.Should().BeOfType<OkObjectResult>().Subject;
+            var data = okResult.Value.Should().BeAssignableTo<List<FileStatsDto>>().Subject;
+            data.Should().HaveCount(2);
+            data[0].FileName.Should().Be("test1.png");
+            data[0].Stats.Should().BeEquivalentTo(fakeStats);
+        }
     }
 }
 
