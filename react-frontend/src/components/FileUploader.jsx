@@ -50,7 +50,7 @@ function FileUploader() {
             setError('Error uploading file');
         } finally {
             setLoading(false);
-            console.log(dataWuwa)
+            console.log(dataWuwa);
         }
     }
 
