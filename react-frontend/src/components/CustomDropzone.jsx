@@ -31,16 +31,32 @@ function CustomDropzone({ onFilesSelected }) {
     }
 
     const handleRemove = (indexToRemove) => {
+        // Revoke the URL
+        if (files[indexToRemove].preview)
+            URL.revokeObjectURL(files[indexToRemove].preview);
+
         const updatedFiles = files.filter((_, index) => index !== indexToRemove);
         setFiles(updatedFiles);
         if (onFilesSelected) onFilesSelected(updatedFiles.map(f => f.file));
     };
 
+    const isFileAlreadyAdded = (file) => {
+        return files.some(
+            existingFile => 
+                existingFile.file.name === file.name && 
+                existingFile.file.size === file.size && 
+                existingFile.file.lastModified === file.lastModified
+        );
+    };
+
     const addFiles = (selectedFiles) => {
-        const newFiles = selectedFiles.map(file => ({
-            file,
-            preview: file.type.startsWith("image/") ? URL.createObjectURL(file) : null
-        }));
+        const newFiles = selectedFiles
+            .filter(file => !isFileAlreadyAdded(file))
+            .map(file => ({
+                file,
+                preview: file.type.startsWith("image/") ? URL.createObjectURL(file) : null,
+                id: `${file.name}-${file.lastModified}-${file.size}`
+            }));
         const updatedFiles = [...files, ...newFiles];
         setFiles(updatedFiles);
         if (onFilesSelected) onFilesSelected(updatedFiles.map(f => f.file));
@@ -50,7 +66,7 @@ function CustomDropzone({ onFilesSelected }) {
         return () => {
             files.forEach(f => f.preview && URL.revokeObjectURL(f.preview));
         };
-    }, [files]);
+    }, []);
 
     return (
         <Paper
@@ -88,7 +104,7 @@ function CustomDropzone({ onFilesSelected }) {
                     }}
                 >
                     {files.map((f, index) => (
-                        <ListItem key={index}
+                        <ListItem key={f.id}
                             sx={{ 
                                 display: 'flex', 
                                 flexDirection: 'column', 
