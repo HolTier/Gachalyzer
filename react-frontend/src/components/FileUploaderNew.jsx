@@ -1,11 +1,30 @@
-import React, { useState, useCallback, Component } from "react";
+import React, { useState, useCallback, Component, createContext, useEffect } from "react";
 import { Box, Button, Card, CardContent, Typography, Divider } from "@mui/material";
 import CustomDropzone from "./CustomDropzone";
 import ArtifactCardBox from "./ArtifactCardBox";
+import { error } from "ajv/dist/vocabularies/applicator/dependencies";
+
+const ApiGameContext = createContext();
 
 function FileUploaderNew() {
     const [files, setFiles] = useState();
     const [ocrResponse, setOcrResponse] = useState([]);
+    const [apiGames, setApiGames] = useState(null);
+
+    useEffect(() => {
+        const cached = localStorage.getItem("api-game-data");
+        if (cached) {
+            setApiGames(JSON.parse(cached))
+        } else {
+            fetch("http://127.0.0.1:8080/api/InitData/init-game-stats")
+                .then(res => res.json())
+                .then(json => {
+                    localStorage.setItem("api-game-data", JSON.stringify(json));
+                    setApiGames(json);
+                })
+                .catch(error => console.error(error));
+        }
+    }, [])
 
     const handleOcrRequest = async (event) => {
         console.log(files);
@@ -40,23 +59,25 @@ function FileUploaderNew() {
         <Box>
             <CustomDropzone onFilesSelected = {(f) => setFiles(f)}/>
             <Button variant="contained" onClick={handleOcrRequest}>Upload</Button>
-            {ocrResponse.length > 0 && (
-                <Box sx={{
-                    display: "flex",
-                    flexWrap: "wrap",
-                    gap: "2",
-                    alignItems: "stretch"
-                }}>
-                    {ocrResponse.map((fs, index) => (
-                        <Box key={index} 
-                            flexBasis={{ xs: '48%', sm: '30%', md: '23%', lg: '15%' }}
-                            sx={{ display: 'flex' }}
-                        >
-                            <ArtifactCardBox stats={fs.stats} sx={{ flex: 1 }} />
-                        </Box>
-                    ))}
-                </Box>
-            )}
+            <ApiGameContext.Provider value={apiGames} >
+                {ocrResponse.length > 0 && (
+                    <Box sx={{
+                        display: "flex",
+                        flexWrap: "wrap",
+                        gap: "2",
+                        alignItems: "stretch"
+                    }}>
+                        {ocrResponse.map((fs, index) => (
+                            <Box key={index} 
+                                flexBasis={{ xs: '48%', sm: '30%', md: '23%', lg: '15%' }}
+                                sx={{ display: 'flex' }}
+                            >
+                                <ArtifactCardBox stats={fs.stats} sx={{ flex: 1 }} />
+                            </Box>
+                        ))}
+                    </Box>
+                )}
+            </ApiGameContext.Provider>
         </Box>
     );
 }

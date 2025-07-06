@@ -21,7 +21,7 @@ namespace API.Controllers
             _cache = cache;
         }
 
-        [HttpGet("initStats")]
+        [HttpGet("init-game-stats")]
         public async Task<IActionResult> GetStatsInitData()
         {
             const string cacheKey = "StatsInitData";
