@@ -70,7 +70,11 @@ function FileUploaderNew() {
                         {ocrResponse.map((fs, index) => (
                             <Box key={index} 
                                 flexBasis={{ xs: '48%', sm: '30%', md: '23%', lg: '15%' }}
-                                sx={{ display: 'flex' }}
+                                sx={{ 
+                                    display: 'flex',
+                                    p: 1,
+                                    minWidth: 0
+                                }}
                             >
                                 <ArtifactCardBox stats={fs.stats} sx={{ flex: 1 }} />
                             </Box>
