@@ -1,8 +1,8 @@
-import React, { useState, useCallback, Component, createContext, useEffect } from "react";
-import { Box, Button, Card, CardContent, Typography, Divider } from "@mui/material";
+import React, { useState, createContext, useEffect } from "react";
+import { Box, Button } from "@mui/material";
 import CustomDropzone from "./CustomDropzone";
 import ArtifactCardBox from "./ArtifactCardBox";
-import { error } from "ajv/dist/vocabularies/applicator/dependencies";
+
 
 const ApiGameContext = createContext();
 

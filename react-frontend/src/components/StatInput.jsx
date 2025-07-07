@@ -28,14 +28,13 @@ function StatInput({ value, isPercentage, onChangeValue, onTogglePercentage }) {
                     input: {
                         endAdornment: (
                             <InputAdornment position="end">
-                                <IconButton onClick={onTogglePercentage} size="small">
+                                <IconButton onClick={() => onTogglePercentage()} size="small">
                                     {isPercentage ? <PercentIcon /> : <NumbersIcon />}
                                 </IconButton>
                             </InputAdornment>
                         )
                     }
                 }}
-            
             >
             </TextField>
         </Box>
