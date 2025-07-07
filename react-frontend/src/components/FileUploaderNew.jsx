@@ -2,6 +2,7 @@ import React, { useState, createContext, useEffect } from "react";
 import { Box, Button } from "@mui/material";
 import CustomDropzone from "./CustomDropzone";
 import ArtifactCardBox from "./ArtifactCardBox";
+import ArtifactCardBoxTmp from "./ArtifactCardBoxTmp";
 
 
 const ApiGameContext = createContext();
@@ -76,7 +77,7 @@ function FileUploaderNew() {
                                     minWidth: 0
                                 }}
                             >
-                                <ArtifactCardBox stats={fs.stats} sx={{ flex: 1 }} />
+                                <ArtifactCardBoxTmp stats={fs.stats} sx={{ flex: 1 }} />
                             </Box>
                         ))}
                     </Box>
