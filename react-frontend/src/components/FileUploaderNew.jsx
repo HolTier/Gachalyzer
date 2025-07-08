@@ -1,9 +1,8 @@
 import React, { useState, createContext, useEffect } from "react";
-import { Box, Button } from "@mui/material";
+import { Box, Button, Grid } from "@mui/material";
 import CustomDropzone from "./CustomDropzone";
 import ArtifactCardBox from "./ArtifactCardBox";
 import ArtifactCardBoxTmp from "./ArtifactCardBoxTmp";
-
 
 const ApiGameContext = createContext();
 
@@ -62,25 +61,13 @@ function FileUploaderNew() {
             <Button variant="contained" onClick={handleOcrRequest}>Upload</Button>
             <ApiGameContext.Provider value={apiGames} >
                 {ocrResponse.length > 0 && (
-                    <Box sx={{
-                        display: "flex",
-                        flexWrap: "wrap",
-                        gap: "2",
-                        alignItems: "stretch"
-                    }}>
+                    <Grid container spacing={2}>
                         {ocrResponse.map((fs, index) => (
-                            <Box key={index} 
-                                flexBasis={{ xs: '48%', sm: '30%', md: '23%', lg: '15%' }}
-                                sx={{ 
-                                    display: 'flex',
-                                    p: 1,
-                                    minWidth: 0
-                                }}
-                            >
+                            <Grid key={index}>
                                 <ArtifactCardBoxTmp stats={fs.stats} sx={{ flex: 1 }} />
-                            </Box>
+                            </Grid>
                         ))}
-                    </Box>
+                    </Grid>
                 )}
             </ApiGameContext.Provider>
         </Box>

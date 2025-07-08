@@ -1,8 +1,8 @@
-import { closestCenter, DndContext, DragOverlay, rectIntersection, useDroppable } from '@dnd-kit/core';
+import { closestCenter, DndContext, DragOverlay, pointerWithin, rectIntersection, useDroppable } from '@dnd-kit/core';
 import { arrayMove, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import React, { useState, useRef } from 'react';
 import SortableStat from "./SortableStat";
-import { Box, Paper, Typography } from '@mui/material'; 
+import { Box, Divider, Paper, Typography } from '@mui/material'; 
 
 function DroppableContainer({ id, children, isEmpty, isOver }) {
     const { setNodeRef } = useDroppable({ id });
@@ -69,6 +69,32 @@ function ArtifactCardBoxTmp({ stats }) {
         sourceIndex: null,
     });
 
+    const renderStatSection = (title, statsKey) => (
+        <>
+            <Typography variant="h6" gutterBottom>{title}</Typography>
+            <DroppableContainer
+            id={statsKey}
+            isEmpty={allStats[statsKey].length === 0}
+            isOver={overId === statsKey}
+            >
+                <SortableContext
+                    items={allStats[statsKey].map(stat => stat.id)}
+                    strategy={verticalListSortingStrategy}
+                >
+                    {allStats[statsKey].map((stat) => (
+                        <SortableStat
+                        key={stat.id}
+                        stat={stat}
+                        onChangeValue={handleChange}
+                        onTogglePercentage={togglePercentage}
+                        data-id={stat.id}
+                        />
+                    ))}
+                </SortableContext>
+            </DroppableContainer>
+        </>
+    );
+
     const findContainer = (id) => {
         // Check if it's a container ID
         if (id === 'mainStats' || id === 'subStats') {
@@ -129,11 +155,14 @@ function ArtifactCardBoxTmp({ stats }) {
                 const targetArr = [...prev[targetList]];
                 const statToMove = sourceArr.find(stat => stat.id === active.id);
                 const updatedSource = sourceArr.filter(stat => stat.id !== active.id);
-                const insertIndex = targetArr.length; // Always insert at the end for now
-                // Prevent duplicate insert if already present in target
-                if (targetArr.some(stat => stat.id === active.id)) {
-                    return prev;
-                }
+                
+                // Prevent duplicates
+                if (targetArr.some(stat => stat.id === active.id)) return prev;
+
+                // Calculate insertion index
+                const overIndex = targetArr.findIndex(stat => stat.id === over.id);
+                const insertIndex = overIndex >= 0 ? overIndex : targetArr.length;
+
                 const updatedTarget = [...targetArr];
                 updatedTarget.splice(insertIndex, 0, {
                     ...statToMove,
@@ -207,61 +236,28 @@ function ArtifactCardBoxTmp({ stats }) {
     return (
         <Box>
             <DndContext
-                collisionDetection={rectIntersection}
+                collisionDetection={pointerWithin}
                 onDragStart={handleDragStart}
                 onDragOver={handleDragOver}
                 onDragEnd={handleDragEnd}
             >
                 <Paper elevation={3} sx={{ p: 2, width: '400px', mx: 'auto' }}>
-                    <Typography variant="h6" gutterBottom>Main Stats</Typography>
-                    <DroppableContainer
-                        id="mainStats"
-                        isEmpty={allStats.mainStats.length === 0}
-                        isOver={overId === 'mainStats'}
-                    >
-                        <SortableContext items={allStats.mainStats.map(stat => stat.id)} strategy={verticalListSortingStrategy}>
-                            {allStats.mainStats.map((stat) => (
-                                <div key={stat.id}>
-                                    <SortableStat
-                                        stat={stat}
-                                        onChangeValue={handleChange}
-                                        onTogglePercentage={togglePercentage}
-                                        data-id={stat.id}
-                                    />
-                                </div>
-                            ))}
-                        </SortableContext>
-                    </DroppableContainer>
-                    <Box my={2}><hr style={{ border: 'none', borderTop: '2px solid #eee' }} /></Box>
-                    <Typography variant="h6" gutterBottom>Sub Stats</Typography>
-                    <DroppableContainer
-                        id="subStats"
-                        isEmpty={allStats.subStats.length === 0}
-                        isOver={overId === 'subStats'}
-                    >
-                        <SortableContext items={allStats.subStats.map(stat => stat.id)} strategy={verticalListSortingStrategy}>
-                            {allStats.subStats.map((stat) => (
-                                <div key={stat.id}>
-                                    <SortableStat
-                                        stat={stat}
-                                        onChangeValue={handleChange}
-                                        onTogglePercentage={togglePercentage}
-                                        data-id={stat.id}
-                                    />
-                                </div>
-                            ))}
-                        </SortableContext>
-                    </DroppableContainer>
+                    {renderStatSection("Main Stats", "mainStats")}
+                    <Divider sx={{ my: 1 }} />
+                    {renderStatSection("Sub Stats", "subStats")}
                 </Paper>
                 <DragOverlay>
                     {activeId ? (
-                        <Box
+                        <Paper
+                            elevation={4}
                             sx={{
-                                opacity: 0.8,
+                                pointerEvents: 'none', // makes overlay "invisible" to cursor
+                                opacity: 0.9,
                                 transform: 'rotate(5deg)',
                                 border: '2px dashed #1976d2',
                                 backgroundColor: '#f5f5f5',
-                                borderRadius: 1
+                                borderRadius: 1,
+                                p: 1,
                             }}
                         >
                             <SortableStat
@@ -269,7 +265,7 @@ function ArtifactCardBoxTmp({ stats }) {
                                 onChangeValue={() => {}}
                                 onTogglePercentage={() => {}}
                             />
-                        </Box>
+                        </Paper>
                     ) : null}
                 </DragOverlay>
             </DndContext>
