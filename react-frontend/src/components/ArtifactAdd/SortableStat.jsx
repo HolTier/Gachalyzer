@@ -3,9 +3,9 @@ import { CSS } from "@dnd-kit/utilities";
 import { DragIndicator } from "@mui/icons-material";
 import { Box, Typography, IconButton } from "@mui/material";
 import StatInput from "./StatInput";
-import { DragOverlay } from "@dnd-kit/core";
+import GameStatAutocomplete from "./GameStatAutocomplete";
 
-const SortableStat = ({ stat, onChangeValue, onTogglePercentage, dragOverType }) => {
+const SortableStat = ({ stat, onChangeValue, onTogglePercentage, dragOverType, apiGameData, onGameStatChange }) => {
     const { setNodeRef, attributes, listeners, transform, transition, isDragging } = 
         useSortable({ 
             id: stat.id,
@@ -22,13 +22,6 @@ const SortableStat = ({ stat, onChangeValue, onTogglePercentage, dragOverType })
         cursor: "default",
         
     }
-
-    const getVariant = () => {
-        if (isDragging && dragOverType) {
-            return dragOverType === "MainStat" ? "body1" : "subtitle2";
-        }
-        return stat.statType === "MainStat" ? "body1" : "subtitle2";
-    };
 
     return (
         <Box
@@ -52,13 +45,11 @@ const SortableStat = ({ stat, onChangeValue, onTogglePercentage, dragOverType })
             >
                 <DragIndicator fontSize="small" />
             </IconButton>
-            <Typography 
-                variant={stat.statType === "MainStat" ? "body1" : "subtitle2"} 
-                fontWeight={isDragging && dragOverType === 'MainStat' ? 'bold' : 
-                           stat.statType === 'MainStat' ? 'bold' : 'normal'}
-            >
-                {stat.stat}
-            </Typography>
+            <GameStatAutocomplete 
+                value={stat.stat}
+                apiGameData={apiGameData}
+                onChangeValue={(val) => onGameStatChange(stat.id, val)}
+            />
             <StatInput
                 value={stat.value}
                 isPercentage={stat.isPercentage}

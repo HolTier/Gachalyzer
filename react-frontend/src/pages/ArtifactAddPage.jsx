@@ -1,12 +1,17 @@
 import React, { useState, createContext, useEffect } from "react";
 import { Box, Button, Grid } from "@mui/material";
-import CustomDropzone from "./CustomDropzone";
-import ArtifactCardBox from "./ArtifactCardBox";
-import ArtifactCardBoxTmp from "./ArtifactCardBoxTmp";
+import CustomDropzone from "../components/ArtifactAdd/CustomDropzone";
+import ArtifactCardBoxTmp from "../components/ArtifactAdd/ArtifactCardBoxTmp";
+import { useApiGameData } from "../hooks/useApiGameData";
 
-function FileUploaderNew() {
+function ArtifactAddPage() {
     const [files, setFiles] = useState();
     const [ocrResponse, setOcrResponse] = useState([]);
+    const { data: apiGames, loading } = useApiGameData();
+
+    useEffect(() => {
+        console.log("APIDATA: " + {apiGames});
+    })
 
     const handleOcrRequest = async (event) => {
         console.log(files);
@@ -45,7 +50,7 @@ function FileUploaderNew() {
                     <Grid container spacing={2}>
                         {ocrResponse.map((fs, index) => (
                             <Grid key={index}>
-                                <ArtifactCardBoxTmp stats={fs.stats} sx={{ flex: 1 }} />
+                                <ArtifactCardBoxTmp stats={fs.stats} apiGameData={apiGames} sx={{ flex: 1 }} />
                             </Grid>
                         ))}
                     </Grid>
@@ -54,4 +59,4 @@ function FileUploaderNew() {
     );
 }
 
-export default FileUploaderNew;
+export default ArtifactAddPage;

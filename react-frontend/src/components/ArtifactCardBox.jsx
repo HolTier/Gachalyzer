@@ -5,7 +5,7 @@ import {
     SortableContext,
     verticalListSortingStrategy
 } from "@dnd-kit/sortable";
-import SortableStat from "./SortableStat";
+import SortableStat from "./ArtifactAdd/SortableStat";
 import { closestCenter, DndContext, DragOverlay, useDroppable } from "@dnd-kit/core";
 import { PointerSensor, useSensor, useSensors } from "@dnd-kit/core";
 

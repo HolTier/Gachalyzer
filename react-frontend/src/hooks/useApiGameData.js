@@ -10,17 +10,21 @@ export function useApiGameData() {
     useEffect(() => {
         const cached = localStorage.getItem("api-game-data");
         const timestamp = localStorage.getItem("api-game-data-timestamp");
+        console.log("Cached: " + cached);
 
         const isFresh = cached && timestamp &&
             (Date.now() - parseInt(timestamp, 10)) < EXPIRATION_MS;
 
         if (isFresh) {
-            setData(JSON.parse(cached));
+            const parsed = JSON.parse(cached);
+            console.log("Parsed DATA: ", parsed);
+            setData(parsed);
             setLoading(false);
         } else {
             fetch("http://127.0.0.1:8080/api/InitData/init-game-stats")
                 .then(res => res.json())
                 .then(json => {
+                    const arr = Array.isArray(json) ? json : json.data;
                     localStorage.setItem("api-game-data", JSON.stringify(json));
                     localStorage.setItem("api-game-data-timestamp", Date.now().toString());
                     setData(json);

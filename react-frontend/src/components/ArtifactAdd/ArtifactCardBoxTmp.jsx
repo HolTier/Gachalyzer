@@ -1,6 +1,6 @@
 import { closestCenter, DndContext, DragOverlay, pointerWithin, rectIntersection, useDroppable } from '@dnd-kit/core';
 import { arrayMove, SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import SortableStat from "./SortableStat";
 import { Box, Divider, Paper, Typography } from '@mui/material'; 
 
@@ -39,7 +39,9 @@ function DroppableContainer({ id, children, isEmpty, isOver }) {
     );
 }
 
-function ArtifactCardBoxTmp({ stats }) {
+// TODO: Split this component into smaller parts for better readability and maintainability
+// This component handles the artifact card box with sortable stats
+function ArtifactCardBoxTmp({ stats, apiGameData }) {
     const nextIdRef = useRef(1000);
     
     // Helper function to add IDs to stats
@@ -59,6 +61,10 @@ function ArtifactCardBoxTmp({ stats }) {
         subStats: addIdsToStats(stats.filter((s) => s.statType === 'SubStat')),
     });
 
+    // TODO: Replace with game parametrs
+    const apiMainGameData = (apiGameData || []).filter(s => s.gameName === 'Wuthering Waves' && s.statTypeName === 'Main');
+    const apiSubGameData = (apiGameData || []).filter(s => s.gameName === 'Wuthering Waves' && s.statTypeName === 'Sub');
+
     const [activeId, setActiveId] = useState(null);
     const [overId, setOverId] = useState(null);
 
@@ -69,7 +75,7 @@ function ArtifactCardBoxTmp({ stats }) {
         sourceIndex: null,
     });
 
-    const renderStatSection = (title, statsKey) => (
+    const renderStatSection = (title, statsKey, gameData) => (
         <>
             <Typography variant="h6" gutterBottom>{title}</Typography>
             <DroppableContainer
@@ -87,7 +93,9 @@ function ArtifactCardBoxTmp({ stats }) {
                         stat={stat}
                         onChangeValue={handleChange}
                         onTogglePercentage={togglePercentage}
+                        onGameStatChange={handleStatChange}
                         data-id={stat.id}
+                        apiGameData={gameData}
                         />
                     ))}
                 </SortableContext>
@@ -233,6 +241,20 @@ function ArtifactCardBoxTmp({ stats }) {
         });
     };
 
+    const handleStatChange = (statId, newValue) => {
+        setAllStats(prev => {
+            const containerKey = findContainer(statId);
+            if (!containerKey) return prev;
+
+            return {
+                ...prev,
+                [containerKey]: prev[containerKey].map(s => 
+                    s.id === statId ? { ...s, stat: newValue} : s
+                )
+            };
+        });
+    };
+
     return (
         <Box>
             <DndContext
@@ -242,9 +264,9 @@ function ArtifactCardBoxTmp({ stats }) {
                 onDragEnd={handleDragEnd}
             >
                 <Paper elevation={3} sx={{ p: 2, width: '400px', mx: 'auto' }}>
-                    {renderStatSection("Main Stats", "mainStats")}
+                    {renderStatSection("Main Stats", "mainStats", apiMainGameData)}
                     <Divider sx={{ my: 1 }} />
-                    {renderStatSection("Sub Stats", "subStats")}
+                    {renderStatSection("Sub Stats", "subStats", apiSubGameData)}
                 </Paper>
                 <DragOverlay>
                     {activeId ? (
@@ -262,6 +284,7 @@ function ArtifactCardBoxTmp({ stats }) {
                         >
                             <SortableStat
                                 stat={findStat(activeId)}
+                                apiGameData={null}
                                 onChangeValue={() => {}}
                                 onTogglePercentage={() => {}}
                             />

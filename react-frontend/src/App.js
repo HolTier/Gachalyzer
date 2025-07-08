@@ -1,12 +1,11 @@
 import logo from './logo.svg';
 import './App.css';
-import FileUploader from './components/FileUploader';
-import FileUploaderNew from './components/FileUploaderNew';
+import ArtifactAddPage from './pages/ArtifactAddPage';
 
 function App() {
   return (
     <div className="App">
-      <FileUploaderNew />
+      <ArtifactAddPage />
     </div>
   );
 }
