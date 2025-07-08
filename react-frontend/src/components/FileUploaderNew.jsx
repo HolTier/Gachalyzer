@@ -4,27 +4,9 @@ import CustomDropzone from "./CustomDropzone";
 import ArtifactCardBox from "./ArtifactCardBox";
 import ArtifactCardBoxTmp from "./ArtifactCardBoxTmp";
 
-const ApiGameContext = createContext();
-
 function FileUploaderNew() {
     const [files, setFiles] = useState();
     const [ocrResponse, setOcrResponse] = useState([]);
-    const [apiGames, setApiGames] = useState(null);
-
-    useEffect(() => {
-        const cached = localStorage.getItem("api-game-data");
-        if (cached) {
-            setApiGames(JSON.parse(cached))
-        } else {
-            fetch("http://127.0.0.1:8080/api/InitData/init-game-stats")
-                .then(res => res.json())
-                .then(json => {
-                    localStorage.setItem("api-game-data", JSON.stringify(json));
-                    setApiGames(json);
-                })
-                .catch(error => console.error(error));
-        }
-    }, [])
 
     const handleOcrRequest = async (event) => {
         console.log(files);
@@ -59,7 +41,6 @@ function FileUploaderNew() {
         <Box>
             <CustomDropzone onFilesSelected = {(f) => setFiles(f)}/>
             <Button variant="contained" onClick={handleOcrRequest}>Upload</Button>
-            <ApiGameContext.Provider value={apiGames} >
                 {ocrResponse.length > 0 && (
                     <Grid container spacing={2}>
                         {ocrResponse.map((fs, index) => (
@@ -69,7 +50,6 @@ function FileUploaderNew() {
                         ))}
                     </Grid>
                 )}
-            </ApiGameContext.Provider>
         </Box>
     );
 }
