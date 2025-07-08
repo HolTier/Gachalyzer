@@ -70,15 +70,19 @@ function CustomDropzone({ onFilesSelected }) {
 
     return (
         <Paper
-            onDragOver = {handleDragOver}
-            onDrop = {handleDrop}
-            onClick = {handleClick}
             sx={{
-                border: '2px dashed #888',
+                border: '2px dashed',
+                borderColor: 'primary.main',
                 padding: 4,
                 textAlign: 'center',
-                backgroundColor: '#f8f8f8',
+                backgroundColor: 'background.paper',
+                color: 'text.primary',
                 cursor: 'pointer',
+                boxShadow: 3,
+                transition: 'background 0.2s',
+                '&:hover': {
+                    backgroundColor: 'background.default',
+                },
             }}
         >
             <input
@@ -105,11 +109,13 @@ function CustomDropzone({ onFilesSelected }) {
                 >
                     {files.map((f, index) => (
                         <ListItem key={f.id}
-                            sx={{ 
-                                display: 'flex', 
-                                flexDirection: 'column', 
-                                alignItems: 'center', 
-                                marginRight: 2 
+                            sx={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                alignItems: 'center',
+                                marginRight: 2,
+                                backgroundColor: 'transparent',
+                                color: 'text.primary',
                             }}
                         >
                             <Box sx={{
@@ -135,9 +141,10 @@ function CustomDropzone({ onFilesSelected }) {
                                         position: 'absolute',
                                         top: -8,
                                         right: -8,
-                                        backgroundColor: 'white',
+                                        backgroundColor: 'background.paper',
+                                        color: 'text.primary',
                                         zIndex: 1,
-                                        '&:hover': { backgroundColor: '#eee' },
+                                        '&:hover': { backgroundColor: 'primary.dark' },
                                     }}
                                 >
                                     <CloseIcon sx={{ fontSize: 10}}></CloseIcon>

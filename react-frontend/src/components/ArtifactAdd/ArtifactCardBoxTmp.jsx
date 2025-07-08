@@ -11,13 +11,16 @@ function DroppableContainer({ id, children, isEmpty, isOver }) {
         <Box
             ref={setNodeRef}
             sx={{
-                minHeight: isEmpty ? '100px' : 'auto',
-                border: isEmpty && isOver ? '2px dashed #1976d2' : 'none',
-                borderRadius: 1,
-                backgroundColor: isEmpty && isOver ? '#f0f8ff' : 'transparent',
+                minHeight: isEmpty ? '80px' : 'auto',
+                border: isEmpty && isOver ? '2px dashed' : 'none',
+                borderColor: isEmpty && isOver ? 'primary.main' : 'transparent',
+                borderRadius: 2,
+                backgroundColor: isEmpty && isOver ? 'primary.50' : 'transparent',
                 display: 'flex',
                 flexDirection: 'column',
-                gap: 1
+                gap: 0.75,
+                padding: isEmpty ? 1 : 0,
+                transition: 'all 0.2s ease-in-out',
             }}
         >
             {isEmpty && isOver && (
@@ -26,12 +29,14 @@ function DroppableContainer({ id, children, isEmpty, isOver }) {
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        height: '100px',
-                        color: '#1976d2',
-                        fontStyle: 'italic'
+                        height: '80px',
+                        color: 'primary.main',
+                        fontStyle: 'italic',
+                        fontSize: '0.875rem',
+                        fontWeight: 500,
                     }}
                 >
-                    Drop here
+                    Drop stat here
                 </Box>
             )}
             {children}
@@ -77,11 +82,22 @@ function ArtifactCardBoxTmp({ stats, apiGameData }) {
 
     const renderStatSection = (title, statsKey, gameData) => (
         <>
-            <Typography variant="h6" gutterBottom>{title}</Typography>
+            <Typography 
+                variant="subtitle2" 
+                sx={{ 
+                    mb: 1,
+                    fontSize: '0.9rem', 
+                    fontWeight: 600,
+                    color: 'text.primary',
+                    letterSpacing: '0.02em',
+                }}
+            >
+                {title}
+            </Typography>
             <DroppableContainer
-            id={statsKey}
-            isEmpty={allStats[statsKey].length === 0}
-            isOver={overId === statsKey}
+                id={statsKey}
+                isEmpty={allStats[statsKey].length === 0}
+                isOver={overId === statsKey}
             >
                 <SortableContext
                     items={allStats[statsKey].map(stat => stat.id)}
@@ -263,23 +279,40 @@ function ArtifactCardBoxTmp({ stats, apiGameData }) {
                 onDragOver={handleDragOver}
                 onDragEnd={handleDragEnd}
             >
-                <Paper elevation={3} sx={{ p: 2, width: '400px', mx: 'auto' }}>
+                <Paper elevation={3} sx={{ 
+                        p: 2, 
+                        width: '400px', 
+                        mx: 'auto', 
+                        backgroundColor: 'background.paper', 
+                        color: 'text.primary', 
+                        borderRadius: 3,
+                        border: '1px solid',
+                        borderColor: 'divider',
+                        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+                    }}
+                >
                     {renderStatSection("Main Stats", "mainStats", apiMainGameData)}
-                    <Divider sx={{ my: 1 }} />
+                    <Divider sx={{ 
+                        my: 1.5, 
+                        borderColor: 'divider',
+                        opacity: 0.7,
+                    }} />
                     {renderStatSection("Sub Stats", "subStats", apiSubGameData)}
                 </Paper>
                 <DragOverlay>
                     {activeId ? (
                         <Paper
-                            elevation={4}
+                            elevation={8}
                             sx={{
-                                pointerEvents: 'none', // makes overlay "invisible" to cursor
-                                opacity: 0.9,
-                                transform: 'rotate(5deg)',
-                                border: '2px dashed #1976d2',
-                                backgroundColor: '#f5f5f5',
-                                borderRadius: 1,
+                                pointerEvents: 'none',
+                                opacity: 0.95,
+                                transform: 'rotate(3deg) scale(1.02)',
+                                border: '2px solid',
+                                borderColor: 'primary.main',
+                                backgroundColor: 'background.paper',
+                                borderRadius: 2,
                                 p: 1,
+                                boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
                             }}
                         >
                             <SortableStat

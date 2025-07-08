@@ -27,12 +27,22 @@ const SortableStat = ({ stat, onChangeValue, onTogglePercentage, dragOverType, a
         <Box
             ref={setNodeRef}
             sx={{
-                display: 'flex',
+                display: 'grid',
+                gridTemplateColumns: 'auto 1fr auto',
                 alignItems: 'center',
-                justifyContent: 'space-between',
-                padding: 1,
-                marginBottom: 1,
-                backgroundColor: isDragging ? '#f0f0f0' : '#fff',
+                gap: 1,
+                padding: '8px 12px',
+                marginBottom: 0.5,
+                backgroundColor: isDragging ? 'action.selected' : 'background.paper',
+                borderRadius: 2,
+                border: '1px solid',
+                borderColor: isDragging ? 'primary.main' : 'divider',
+                boxShadow: isDragging ? 4 : 1,
+                transition: 'all 0.2s ease-in-out',
+                '&:hover': {
+                    borderColor: 'primary.light',
+                    boxShadow: 2,
+                },
                 ...style,
             }}
         >
@@ -40,7 +50,15 @@ const SortableStat = ({ stat, onChangeValue, onTogglePercentage, dragOverType, a
                 {...attributes}
                 {...listeners}
                 size="small"
-                sx={{ cursor: 'grab', mr: 1 }}
+                sx={{ 
+                    cursor: 'grab', 
+                    color: 'text.secondary',
+                    p: 0.5,
+                    '&:hover': {
+                        color: 'primary.main',
+                        backgroundColor: 'action.hover',
+                    }
+                }}
                 aria-label="Drag to reorder"
             >
                 <DragIndicator fontSize="small" />
