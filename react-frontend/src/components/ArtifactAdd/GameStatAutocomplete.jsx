@@ -2,11 +2,7 @@ import { Autocomplete, TextField, Box, Tooltip } from "@mui/material";
 import { useEffect } from "react";
 
 function GameStatAutocomplete({apiGameData, value, onChangeValue}) {
-    const selectedOption = apiGameData?.find(opt => opt.name === value) || null;
-
-    useEffect(() => {
-        console.log("V " +value);
-    })
+    const selectedOption = value ? apiGameData?.find(opt => opt.name === value) || { name: value } : null;
 
     return (
         <Tooltip 
