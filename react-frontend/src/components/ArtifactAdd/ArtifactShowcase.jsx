@@ -1,12 +1,11 @@
 import { DndContext, DragOverlay, pointerWithin } from '@dnd-kit/core';
-import SortableStat from "./SortableStat";
 import { Box, Divider, Paper } from '@mui/material'; 
 import { useArtifactStats } from '../../hooks/useArtifactStats';
 import { useDragHandlers } from '../../hooks/useDragHandlers';
 import StatSection from './StatSection';
 import DragPreview from './DragPreview';
 
-function ArtifactCardBoxTmp({ stats, apiGameData }) {
+function ArtifactShowcase({ stats, apiGameData }) {
     const {
         allStats, setAllStats, findContainer, findStat,
         handleChange, togglePercentage, handleStatChange, nextIdRef
@@ -66,4 +65,4 @@ function ArtifactCardBoxTmp({ stats, apiGameData }) {
     );
 }
 
-export default ArtifactCardBoxTmp;
+export default ArtifactShowcase;

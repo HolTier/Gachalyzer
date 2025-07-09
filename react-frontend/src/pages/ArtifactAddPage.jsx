@@ -2,7 +2,7 @@ import React, { useState, createContext, useEffect } from "react";
 import { Box, Button, Grid, Container, Typography, Paper, LinearProgress } from "@mui/material";
 import { CloudUpload, Analytics } from "@mui/icons-material";
 import CustomDropzone from "../components/ArtifactAdd/CustomDropzone";
-import ArtifactCardBoxTmp from "../components/ArtifactAdd/ArtifactCardBoxTmp";
+import ArtifactShowcase from "../components/ArtifactAdd/ArtifactShowcase";
 import { useApiGameData } from "../hooks/useApiGameData";
 
 function ArtifactAddPage() {
@@ -142,7 +142,7 @@ function ArtifactAddPage() {
                     <Grid container spacing={3}>
                         {ocrResponse.map((fs, index) => (
                             <Grid item xs={12} sm={6} md={4} key={index}>
-                                <ArtifactCardBoxTmp 
+                                <ArtifactShowcase 
                                     stats={fs.stats} 
                                     apiGameData={apiGames}
                                 />
