@@ -5,11 +5,10 @@ import { useDragHandlers } from '../../hooks/useDragHandlers';
 import StatSection from './StatSection';
 import DragPreview from './DragPreview';
 
-function ArtifactShowcase({ stats, apiGameData }) {
+function ArtifactShowcase({ allStats, setAllStats, nextIdRef, apiGameData }) {
     const {
-        allStats, setAllStats, findContainer, findStat,
-        handleChange, togglePercentage, handleStatChange, nextIdRef
-    } = useArtifactStats(stats);
+        findContainer, findStat, handleChange, togglePercentage, handleStatChange,
+    } = useArtifactStats({ allStats, setAllStats, nextIdRef });
 
     const {
         activeId, overId, handleDragStart, handleDragOver, handleDragEnd

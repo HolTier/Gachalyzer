@@ -4,6 +4,7 @@ import { CloudUpload, Analytics } from "@mui/icons-material";
 import CustomDropzone from "../components/ArtifactAdd/CustomDropzone";
 import ArtifactShowcase from "../components/ArtifactAdd/ArtifactShowcase";
 import { useApiGameData } from "../hooks/useApiGameData";
+import ArtifactDisplayWrapper from "../components/ArtifactAdd/ArtifactDispalyWrapper";
 
 function ArtifactAddPage() {
     const [files, setFiles] = useState();
@@ -142,7 +143,7 @@ function ArtifactAddPage() {
                     <Grid container spacing={3}>
                         {ocrResponse.map((fs, index) => (
                             <Grid item xs={12} sm={6} md={4} key={index}>
-                                <ArtifactShowcase 
+                                <ArtifactDisplayWrapper 
                                     stats={fs.stats} 
                                     apiGameData={apiGames}
                                 />

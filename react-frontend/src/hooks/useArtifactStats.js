@@ -1,24 +1,6 @@
 import { useRef, useState } from "react";
 
-export function useArtifactStats(initialStats) {
-    const nextIdRef = useRef(1000);
-    // Helper function to add IDs to stats
-    const addIdsToStats = (statsArray) => {
-        return statsArray.map(stat => {
-            if (!stat.id) {
-                const newId = `stat-${nextIdRef.current}`;
-                nextIdRef.current += 1;
-                return { ...stat, id: newId };
-            }
-            return stat;
-        });
-    };
-    
-    const [allStats, setAllStats] = useState({
-            mainStats: addIdsToStats(initialStats.filter((s) => s.statType === 'MainStat')),
-            subStats: addIdsToStats(initialStats.filter((s) => s.statType === 'SubStat')),
-    });
-
+export function useArtifactStats({allStats, setAllStats, nextIdRef}) {
     const findContainer = (id) => {
         // Check if it's a container ID
         if (id === 'mainStats' || id === 'subStats') {
