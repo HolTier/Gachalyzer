@@ -16,7 +16,7 @@ function GameStatAutocomplete({apiGameData, value, onChangeValue}) {
             onChange={(event, newValue) => onChangeValue(newValue ? newValue.name : "")}
             disablePortal
             disableClearable
-            freeSolo
+            //freeSolo
             options={apiGameData || []}
             getOptionLabel={(option) => option?.name || ""}
             size="small"
@@ -83,7 +83,7 @@ function GameStatAutocomplete({apiGameData, value, onChangeValue}) {
                     {option.name}
                 </Box>
             )}
-            isOptionEqualToValue={(option, value) => option?.name === value}
+            isOptionEqualToValue={(option, value) => option?.name === value?.name}
         />
         </Tooltip>
     );

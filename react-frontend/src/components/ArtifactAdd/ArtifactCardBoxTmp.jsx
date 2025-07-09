@@ -8,7 +8,7 @@ import StatSection from './StatSection';
 function ArtifactCardBoxTmp({ stats, apiGameData }) {
     const {
         allStats, setAllStats, findContainer, findStat,
-        handleChange, tooglePercentage, handleStatChange, nextIdRef
+        handleChange, togglePercentage, handleStatChange, nextIdRef
     } = useArtifactStats(stats);
 
     const {
@@ -39,9 +39,9 @@ function ArtifactCardBoxTmp({ stats, apiGameData }) {
                         title={"Main Stats"} 
                         statsKey={"mainStats"} 
                         stats={allStats.mainStats}
-                        apiGameData={apiGameData}
+                        apiGameData={apiGameData.filter((s) => s.statTypeName === 'Main')}
                         onChangeValue={handleChange}
-                        onTogglePercentage={tooglePercentage}
+                        onTogglePercentage={togglePercentage}
                         onGameStatChange={handleStatChange}
                     />
                     <Divider sx={{ my: 1.5, borderColor: 'divider', opacity: 0.7, }} />
@@ -49,9 +49,9 @@ function ArtifactCardBoxTmp({ stats, apiGameData }) {
                         title={"Sub Stats"} 
                         statsKey={"subStats"} 
                         stats={allStats.subStats}
-                        apiGameData={apiGameData}
+                        apiGameData={apiGameData.filter((s) => s.statTypeName === 'Sub')}
                         onChangeValue={handleChange}
-                        onTogglePercentage={tooglePercentage}
+                        onTogglePercentage={togglePercentage}
                         onGameStatChange={handleStatChange}
                     />
                 </Paper>

@@ -156,7 +156,7 @@ function CustomDropzone({ onFilesSelected }) {
             </Paper>
 
             {files.length > 0 && (
-                <Box sx={{ mt: 2 }}>
+                <Box sx={{ mt: 2, p: 0, m: 0, width: '100%' }}>
                     <Typography 
                         variant="subtitle2" 
                         sx={{ 
@@ -172,6 +172,12 @@ function CustomDropzone({ onFilesSelected }) {
                             display: 'flex',
                             flexWrap: 'wrap',
                             gap: 1.5,
+                            p: 0,
+                            m: 0,
+                            justifyContent: 'flex-start',
+                            alignItems: 'flex-start',
+                            width: '100%',
+                            boxSizing: 'border-box',
                         }}
                     >
                         {files.map((f, index) => (
@@ -189,6 +195,10 @@ function CustomDropzone({ onFilesSelected }) {
                                         borderColor: 'primary.main',
                                         boxShadow: 2,
                                     },
+                                    m: 0,
+                                    p: 0,
+                                    minWidth: 100,
+                                    maxWidth: 100,
                                 }}
                             >
                                 <Box sx={{ position: 'relative' }}>
