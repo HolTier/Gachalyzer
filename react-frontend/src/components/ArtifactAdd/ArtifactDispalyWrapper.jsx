@@ -6,7 +6,8 @@ import ArtifactMiniCard from "./ArtifactMiniCard";
 import { useState, useRef } from "react";
 
 function ArtifactDisplayWrapper({ stats, apiGameData }) {
-    const allStatsState = useAllStatsState(stats);
+    // Use the hook to get state and setters
+    const { allStats, setAllStats, nextIdRef } = useAllStatsState(stats);
     const [showShowcase, setShowShowcase] = useState(false);
     const [isHovering, setIsHovering] = useState(false);
     const miniCardRef = useRef(null);
@@ -50,7 +51,7 @@ function ArtifactDisplayWrapper({ stats, apiGameData }) {
                     <Paper elevation={3} sx={{ borderRadius: 3, width: 180, position: 'relative', pointerEvents: 'auto', background: 'none', boxShadow: 0 }}>
                         <ArtifactMiniCard
                             ref={miniCardRef}
-                            allStats={allStatsState.allStats}
+                            allStats={allStats}
                             onClick={handleMiniCardClick}
                             hovered={isHovering}
                             sx={{
@@ -66,7 +67,9 @@ function ArtifactDisplayWrapper({ stats, apiGameData }) {
             {showShowcase && (
                 <Paper elevation={6} sx={{ borderRadius: 3, width: 440, overflow: 'hidden', position: 'absolute', zIndex: 3 }}>
                     <ArtifactShowcase
-                        {...allStatsState}
+                        allStats={allStats}
+                        setAllStats={setAllStats}
+                        nextIdRef={nextIdRef}
                         apiGameData={apiGameData}
                         editMode={true}
                         bare={true} // Pass bare prop to prevent double Paper

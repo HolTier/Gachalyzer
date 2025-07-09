@@ -44,9 +44,14 @@ export function useArtifactStats({allStats, setAllStats, nextIdRef}) {
 
             return {
                 ...prev,
-                [containerKey]: prev[containerKey].map(stat =>
-                    stat.id === statId ? { ...stat, value: newValue } : stat
-                )
+                [containerKey]: prev[containerKey].map(stat => {
+                    if (stat.id === statId) {
+                        const isPercentage = stat.isPercentage;
+                        const rawValue = isPercentage ? `${newValue}%` : `${newValue}`;
+                        return { ...stat, value: newValue, rawValue };
+                    }
+                    return stat;
+                })
             };
         });
     };
@@ -58,9 +63,14 @@ export function useArtifactStats({allStats, setAllStats, nextIdRef}) {
 
             return {
                 ...prev,
-                [containerKey]: prev[containerKey].map(stat =>
-                    stat.id === statId ? { ...stat, isPercentage: !stat.isPercentage } : stat
-                )
+                [containerKey]: prev[containerKey].map(stat => {
+                    if (stat.id === statId) {
+                        const isPercentage = !stat.isPercentage;
+                        const rawValue = isPercentage ? `${stat.value ?? ''}%` : `${stat.value ?? ''}`;
+                        return { ...stat, isPercentage, rawValue };
+                    }
+                    return stat;
+                })
             };
         });
     };
