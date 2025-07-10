@@ -1,9 +1,13 @@
-import { Box, Paper, IconButton } from "@mui/material";
+import { Box, Paper, IconButton, Dialog, DialogContent, DialogTitle, Slide } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import ArtifactShowcase from "./ArtifactShowcase";
 import { useAllStatsState } from "../../hooks/useAllStatsState";
 import ArtifactMiniCard from "./ArtifactMiniCard";
-import { useState, useRef } from "react";
+import { useState, useRef, forwardRef } from "react";
+
+const Transition = forwardRef(function Transition(props, ref) {
+    return <Slide direction="up" ref={ref} {...props} />;
+});
 
 function ArtifactDisplayWrapper({ stats, apiGameData }) {
     // Use the hook to get state and setters
@@ -29,79 +33,137 @@ function ArtifactDisplayWrapper({ stats, apiGameData }) {
     const handleHoverLeave = () => setIsHovering(false);
 
     return (
-        <Box position="relative" minHeight={500} width={440} mx="auto" display="flex" justifyContent="center" alignItems="center">
-            {!showShowcase && (
-                <Box
-                    sx={{
-                        position: 'absolute',
-                        zIndex: 2,
-                        width: 220,
-                        height: 220,
-                        left: '50%',
-                        top: '50%',
-                        transform: 'translate(-50%, -50%)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        pointerEvents: 'none', // only card is clickable
-                    }}
-                    onMouseEnter={handleHoverEnter}
-                    onMouseLeave={handleHoverLeave}
-                >
-                    <Paper elevation={3} sx={{ borderRadius: 3, width: 180, position: 'relative', pointerEvents: 'auto', background: 'none', boxShadow: 0 }}>
-                        <ArtifactMiniCard
-                            ref={miniCardRef}
-                            allStats={allStats}
-                            onClick={handleMiniCardClick}
-                            hovered={isHovering}
-                            sx={{
-                                cursor: 'pointer',
-                                width: 180,
-                                boxShadow: 0,
-                                pointerEvents: 'auto',
-                            }}
-                        />
-                    </Paper>
-                </Box>
-            )}
-            {showShowcase && (
-                <Paper elevation={6} sx={{ borderRadius: 3, width: 440, overflow: 'hidden', position: 'absolute', zIndex: 3 }}>
-                    <ArtifactShowcase
+        <Box position="relative" display="flex" justifyContent="center" alignItems="center">
+            <Box
+                sx={{
+                    position: 'relative',
+                    zIndex: 2,
+                    width: 'auto',
+                    height: 'auto',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    pointerEvents: 'none', // only card is clickable
+                    p: 0,
+                    m: 0,
+                }}
+                onMouseEnter={handleHoverEnter}
+                onMouseLeave={handleHoverLeave}
+            >
+                <Paper elevation={3} sx={{ borderRadius: 3, width: 'fit-content', position: 'relative', pointerEvents: 'auto', background: 'none', boxShadow: 0, p: 0, m: 0 }}>
+                    <ArtifactMiniCard
+                        ref={miniCardRef}
                         allStats={allStats}
-                        setAllStats={setAllStats}
-                        nextIdRef={nextIdRef}
-                        apiGameData={apiGameData}
-                        editMode={true}
-                        bare={true} // Pass bare prop to prevent double Paper
+                        onClick={!showShowcase ? handleMiniCardClick : undefined}
+                        hovered={isHovering && !showShowcase}
                         sx={{
-                            width: 440,
+                            cursor: !showShowcase ? 'pointer' : 'default',
+                            width: 180,
+                            hight: 400,
                             boxShadow: 0,
-                            pointerEvents: 'auto',
+                            pointerEvents: !showShowcase ? 'auto' : 'none',
+                            m: 0,
+                            opacity: showShowcase ? 0.5 : 1,
+                            filter: showShowcase ? 'blur(1px)' : 'none',
+                            transition: 'opacity 0.2s, filter 0.2s',
                         }}
                     />
+                    {showShowcase && (
+                        <Box sx={{
+                            position: 'absolute',
+                            top: 0,
+                            left: 0,
+                            width: '100%',
+                            height: '100%',
+                            zIndex: 10,
+                            background: 'transparent',
+                        }} />
+                    )}
+                </Paper>
+            </Box>
+            <Dialog
+                open={showShowcase}
+                onClose={handleCloseShowcase}
+                maxWidth="sm"
+                fullWidth
+                slots={{transition: Transition}}
+                slotProps={{
+                    paper: {
+                        sx: {
+                            borderRadius: 6,
+                            boxShadow: 8,
+                            p: 0,
+                            overflow: 'visible',
+                            minWidth: 0,
+                            minHeight: 0,
+                            maxWidth: 500,
+                        },
+                    }
+                }}
+            >
+                <DialogTitle
+                    sx={{
+                        p: 0,
+                        display: 'flex',
+                        justifyContent: 'flex-end',
+                        background: 'transparent',
+                        minHeight: 0,
+                    }}
+                >
                     <IconButton
                         onClick={handleCloseShowcase}
                         title="Close"
                         sx={{
-                            position: 'absolute',
-                            top: 8,
-                            right: 8,
-                            zIndex: 20,
                             backgroundColor: 'transparent',
                             color: 'text.primary',
                             boxShadow: 'none',
-                            p: 0.5,
+                            m: 1,
                             '&:hover': {
                                 backgroundColor: 'action.hover',
                             },
                         }}
-                        size="small"
+                        size="medium"
                         aria-label="close"
                     >
                         <CloseIcon fontSize="medium" />
                     </IconButton>
-                </Paper>
-            )}
+                </DialogTitle>
+                <DialogContent
+                    sx={{
+                        p: { xs: 2, sm: 3 },
+                        borderRadius: 6,
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        minWidth: 0,
+                        minHeight: 0,
+                    }}
+                >
+                    <Box
+                        sx={{
+                            width: '100%',
+                            maxWidth: 440,
+                            borderRadius: 4,
+                            boxShadow: 0,
+                            p: 0,
+                        }}
+                    >
+                        <ArtifactShowcase
+                            allStats={allStats}
+                            setAllStats={setAllStats}
+                            nextIdRef={nextIdRef}
+                            apiGameData={apiGameData}
+                            editMode={true}
+                            bare={true}
+                            sx={{
+                                width: '100%',
+                                boxShadow: 0,
+                                pointerEvents: 'auto',
+                            }}
+                        />
+                    </Box>
+                </DialogContent>
+            </Dialog>
         </Box>
     );
 }
