@@ -4,20 +4,12 @@ import { useState } from "react";
 export function useDragHandlers({ allStats, setAllStats, findContainer }) {
     const [activeId, setActiveId] = useState(null);
     const [overId, setOverId] = useState(null);
-
-    // Track drag state
-    const [dragState, setDragState] = useState({
-        activeId: null,
-        sourceList: null,
-        sourceIndex: null,
-    });
+    const [isDragging, setIsDragging] = useState(false);
 
     const handleDragStart = (event) => {
         const { id } = event.active;
-        const sourceList = findContainer(id);
-        const sourceIndex = allStats[sourceList].findIndex(stat => stat.id === id);
-        setDragState({ activeId: id, sourceList, sourceIndex });
         setActiveId(id);
+        setIsDragging(true);
     };
 
     const handleDragOver = (event) => {
@@ -56,7 +48,6 @@ export function useDragHandlers({ allStats, setAllStats, findContainer }) {
                     [targetList]: updatedTarget,
                 };
             });
-            setDragState((state) => ({ ...state, sourceList: targetList }));
         }
     };
 
@@ -65,7 +56,6 @@ export function useDragHandlers({ allStats, setAllStats, findContainer }) {
         setActiveId(null);
         setOverId(null);
         if (!over || active.id === over.id) {
-            setDragState({ activeId: null, sourceList: null, sourceIndex: null });
             return;
         }
         const sourceList = findContainer(active.id);
@@ -83,7 +73,7 @@ export function useDragHandlers({ allStats, setAllStats, findContainer }) {
                 };
             });
         }
-        setDragState({ activeId: null, sourceList: null, sourceIndex: null });
+        setIsDragging(false);
     };
 
     return {

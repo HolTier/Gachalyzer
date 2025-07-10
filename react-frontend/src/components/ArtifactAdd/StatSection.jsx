@@ -1,9 +1,23 @@
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import DroppableContainer from './DroppableContainer';
 import SortableStat from './SortableStat';
-import { Typography } from '@mui/material'
+import { Typography, Box, Fade, Button } from '@mui/material'
+import { useState } from 'react';
 
-function StatSection({ title, statsKey, stats = [], apiGameData, isOver, onChangeValue, onTogglePercentage, onGameStatChange}) {
+function StatSection({ 
+    title, 
+    statsKey, 
+    stats = [], 
+    apiGameData, 
+    isOver, 
+    onChangeValue, 
+    onTogglePercentage, 
+    onGameStatChange, 
+    isDragging,
+    onAddStat
+}) {
+    const [hoverBottom, setHoverBottom] = useState(false);
+
     return (
         <>
             <Typography 
@@ -39,6 +53,35 @@ function StatSection({ title, statsKey, stats = [], apiGameData, isOver, onChang
                         />
                     ))}
                 </SortableContext>
+
+                {/* Hover-sensitive bottom area */}
+                <Box
+                    onMouseEnter={() => setHoverBottom(true)}
+                    onMouseLeave={() => setHoverBottom(false)}
+                    sx={{
+                        height: 36,
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        mt: 0.5,
+                    }}
+                >
+                    <Fade in={hoverBottom && !isDragging}>
+                        <Button
+                            size="small"
+                            variant="text"
+                            onClick={onAddStat}
+                            sx={{
+                                fontSize: '0.75rem',
+                                textTransform: 'none',
+                                borderRadius: 2,
+                                px: 1.5,
+                            }}
+                        >
+                            + Add Stat
+                        </Button>
+                    </Fade>
+                </Box>
             </DroppableContainer>
         </>
     );

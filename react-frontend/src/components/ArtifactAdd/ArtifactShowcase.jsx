@@ -7,11 +7,11 @@ import DragPreview from './DragPreview';
 
 function ArtifactShowcase({ allStats, setAllStats, nextIdRef, apiGameData, bare }) {
     const {
-        findContainer, findStat, handleChange, togglePercentage, handleStatChange,
+        findContainer, findStat, handleChange, togglePercentage, handleStatChange, addNewStat
     } = useArtifactStats({ allStats, setAllStats, nextIdRef });
 
     const {
-        activeId, overId, handleDragStart, handleDragOver, handleDragEnd
+        activeId, overId, handleDragStart, handleDragOver, handleDragEnd, isDragging
     } = useDragHandlers({ allStats, setAllStats, findContainer });
 
     const content = (
@@ -24,6 +24,8 @@ function ArtifactShowcase({ allStats, setAllStats, nextIdRef, apiGameData, bare 
                 onChangeValue={handleChange}
                 onTogglePercentage={togglePercentage}
                 onGameStatChange={handleStatChange}
+                isDragging={isDragging}
+                onAddStat={addNewStat}
             />
             <Divider sx={{ my: 1.5, borderColor: 'divider', opacity: 0.7, }} />
             <StatSection 
@@ -34,6 +36,8 @@ function ArtifactShowcase({ allStats, setAllStats, nextIdRef, apiGameData, bare 
                 onChangeValue={handleChange}
                 onTogglePercentage={togglePercentage}
                 onGameStatChange={handleStatChange}
+                isDragging={isDragging}
+                onAddStat={addNewStat}
             />
         </>
     );
