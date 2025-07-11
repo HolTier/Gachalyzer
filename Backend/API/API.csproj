@@ -16,6 +16,12 @@
     <EmbeddedResource Remove="Mapping\**" />
     <None Remove="Mapping\**" />
   </ItemGroup>
+	
+  <ItemGroup>
+    <None Update="Resources\Trggers\DatabaseTrigger.sql">
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="14.0.0" />
@@ -28,6 +34,10 @@
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Resources\Triggers\" />
   </ItemGroup>
 
 </Project>
