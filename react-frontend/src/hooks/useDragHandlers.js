@@ -81,6 +81,7 @@ export function useDragHandlers({ allStats, setAllStats, findContainer }) {
         overId,
         handleDragStart,
         handleDragOver,
-        handleDragEnd
+        handleDragEnd,
+        isDragging
     };
 }

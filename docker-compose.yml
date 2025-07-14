@@ -75,10 +75,34 @@ services:
  
   redis:
     image: redis:latest
+    healthcheck:
+        test: ["CMD", "redis-cli", "ping"]
+        interval: 10s
+        timeout: 3s
+        retries: 5
     ports:
         - "6379:6379"
     networks:
       - my_network
+
+  listener:
+    image: ${DOCKER_REGISTRY-}listener
+    build: 
+        context: ./database_listener
+        dockerfile: Dockerfile
+    depends_on:
+        postgres:
+            condition: service_healthy
+        redis:
+            condition: service_healthy
+    environment: 
+        - POSTGRES_USER=postgres
+        - POSTGRES_PASSWORD=postgres
+        - POSTGRES_DB=GachalayzerDB
+        - POSTGRES_HOST=postgres
+        - REDIS_HOST=redis
+    networks:
+        - my_network
 
 networks:
     my_network:
