@@ -6,9 +6,9 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-DROP TRIGGER IF EXISTS artifact_name_updated_trigger ON GameArtifactNames;
+DROP TRIGGER IF EXISTS artifact_name_updated_trigger ON "GameArtifactNames";
 
 CREATE TRIGGER artifact_name_updated_trigger
-AFTER INSERT OR UPDATE ON GameArtifactNames
-FOR EACH STATMENT
+AFTER INSERT OR UPDATE ON "GameArtifactNames"
+FOR EACH STATEMENT
 EXECUTE FUNCTION notify_artifact_name_updated();

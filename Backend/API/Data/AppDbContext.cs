@@ -23,19 +23,19 @@ namespace API.Data
             // Seeding initial data
             // Games
             modelBuilder.Entity<Game>().HasData(
-                new Game { Id = 1, Name = "Wuthering Waves", MaxMainStats = 1, MaxSubStats = 4 }
+                new Game {Id = 1, Name = "Wuthering Waves", MaxMainStats = 1, MaxSubStats = 4 }
             );
 
             // StatTypes
             modelBuilder.Entity<StatType>().HasData(
-                new StatType { Id = 1, Name = "Main" },
-                new StatType { Id = 2, Name = "Sub"}
+                new StatType {Id = 1, Name = "Main" },
+                new StatType {Id = 2, Name = "Sub"}
             );
 
             // Wuwa Main Stats GameId 1, StatTypeId 1
             modelBuilder.Entity<GameStat>().HasData(
-                new GameStat { Id = 1, Name = "HP%", GameId = 1, StatTypeId = 1 },
-                new GameStat { Id = 2, Name = "ATK%", GameId = 1, StatTypeId = 1 },
+                new GameStat {Id = 1, Name = "HP%", GameId = 1, StatTypeId = 1 },
+                new GameStat {Id = 2, Name = "ATK%", GameId = 1, StatTypeId = 1 },
                 new GameStat {Id = 3, Name = "DEF%", GameId = 1, StatTypeId = 1 },
                 new GameStat {Id = 4, Name = "Glacio DMG Bonus", GameId = 1, StatTypeId = 1 },
                 new GameStat {Id = 5, Name = "Fusion DMG Bonus", GameId = 1, StatTypeId = 1 },

@@ -104,11 +104,19 @@ using (var scope = app.Services.CreateScope())
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     db.Database.Migrate(); // applies any pending migrations automatically
 
-    // Create Triggers
-    var path = Path.Combine(AppContext.BaseDirectory, "Resources", "Triggers", "DatabaseTrigger.sql");
-    var sql = File.ReadAllText(path);
+    try
+    {
+        // Create Triggers
+        var path = Path.Combine(AppContext.BaseDirectory, "Resources", "Triggers", "DatabaseTrigger.sql");
+        var sql = File.ReadAllText(path);
 
-    db.Database.ExecuteSqlRaw(sql);
+        db.Database.ExecuteSqlRaw(sql);
+    }
+    catch(Exception ex)
+    {
+        Console.WriteLine(ex);
+    }
+    
 }
 
 //app.UseHttpsRedirection();

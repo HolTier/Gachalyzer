@@ -18,7 +18,7 @@
   </ItemGroup>
 	
   <ItemGroup>
-    <None Update="Resources\Trggers\DatabaseTrigger.sql">
+    <None Update="Resources\Triggers\DatabaseTrigger.sql">
         <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
