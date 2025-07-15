@@ -1,14 +1,14 @@
 CREATE OR REPLACE FUNCTION notify_artifact_name_updated()
 RETURNS TRIGGER AS $$
 BEGIN
-	PERFORM pg_notify('artifact_update', 'changed');
-	RETURN NULL;
+	PERFORM pg_notify('artifact_names_update', 'game:' || NEW.game_id::text);
+	RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
 DROP TRIGGER IF EXISTS artifact_name_updated_trigger ON "GameArtifactNames";
 
 CREATE TRIGGER artifact_name_updated_trigger
-AFTER INSERT OR UPDATE ON "GameArtifactNames"
-FOR EACH STATEMENT
+AFTER INSERT OR UPDATE OR DELETE ON "GameArtifactNames"
+FOR EACH ROW
 EXECUTE FUNCTION notify_artifact_name_updated();
