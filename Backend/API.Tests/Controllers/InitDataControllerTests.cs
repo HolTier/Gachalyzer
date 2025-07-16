@@ -14,25 +14,32 @@ using API.Models;
 using FluentAssertions;
 using API.Dtos;
 using API.Repositories;
+using API.Services.Cache;
 
 namespace API.Tests.Controllers
 {
     public class InitDataControllerTests
     {
-        private readonly Mock<IDistributedCache> _cacheMock;
-        private readonly InitDataController _controller;
         private readonly Mock<IGameStatRepository> _gameStatRepositoryMock;
+        private readonly Mock<IGameArtifactNameRepository> _artifactRepoMock;
+        private readonly Mock<ICachedDataService> _cachedDataServiceMock;
+        private readonly InitDataController _controller;
 
         public InitDataControllerTests()
         {
             _gameStatRepositoryMock = new Mock<IGameStatRepository>();
+            _artifactRepoMock = new Mock<IGameArtifactNameRepository>();
+            _cachedDataServiceMock = new Mock<ICachedDataService>();
 
-            _cacheMock = new Mock<IDistributedCache>();
-            _controller = new InitDataController(_gameStatRepositoryMock.Object, _cacheMock.Object);
+            _controller = new InitDataController(
+                _gameStatRepositoryMock.Object,
+                _cachedDataServiceMock.Object,
+                _artifactRepoMock.Object
+            );
         }
 
         [Fact]
-        public async Task GetStatsInitData_ReturnsOkAndCachesResult_WithDbData()
+        public async Task GetStatsInitData_ReturnsOkAndCallRepository_IfNotCached()
         {
             // Arrange
             var gameStats = new List<GameStatDto>
@@ -48,11 +55,18 @@ namespace API.Tests.Controllers
                 }
             };
 
-            _cacheMock.Setup(c => c.GetAsync("StatsInitData", It.IsAny<CancellationToken>()))
-                .ReturnsAsync(null as byte[]);
-
             _gameStatRepositoryMock.Setup(r => r.GetAllStatsWithMetaAsync())
                 .ReturnsAsync(gameStats);
+
+            _cachedDataServiceMock
+                .Setup(c => c.GetOrSetCacheAsync(
+                    "StatsInitData",
+                    It.IsAny<Func<Task<IEnumerable<GameStatDto>>>>()
+                ))
+                .Returns<string, Func<Task<IEnumerable<GameStatDto>>>>(
+                    (_, func) => func().ContinueWith(t => t.Result.ToList())
+                );
+
 
             // Act
             var result = await _controller.GetStatsInitData();
@@ -66,13 +80,6 @@ namespace API.Tests.Controllers
             dto.Single().GameName.Should().Be("Wuthering Waves");
             dto.Single().StatTypeName.Should().Be("Main");
             _gameStatRepositoryMock.Verify(r => r.GetAllStatsWithMetaAsync(), Times.Once);
-
-            _cacheMock.Verify(c => c.SetAsync(
-                "StatsInitData",
-                It.IsAny<byte[]>(),
-                It.IsAny<DistributedCacheEntryOptions>(),
-                It.IsAny<CancellationToken>()),
-                Times.Once);
         }
 
         [Fact]
@@ -92,9 +99,12 @@ namespace API.Tests.Controllers
                 }
             };
 
-            var cachedData = System.Text.Json.JsonSerializer.Serialize(cachedDto);
-            _cacheMock.Setup(c => c.GetAsync("StatsInitData", It.IsAny<CancellationToken>()))
-                .ReturnsAsync(Encoding.UTF8.GetBytes(cachedData));
+            _cachedDataServiceMock
+                .Setup(c => c.GetOrSetCacheAsync(
+                    "StatsInitData",
+                    It.IsAny<Func<Task<IEnumerable<GameStatDto>>>>()
+                ))
+                .ReturnsAsync(cachedDto);
 
             // Act
             var result = await _controller.GetStatsInitData();
@@ -114,8 +124,18 @@ namespace API.Tests.Controllers
         public async Task GetStatsInitData_ReturnOk_WhenNoData()
         {
             // Arrange
-            _cacheMock.Setup(c => c.GetAsync("StatsInitData", It.IsAny<CancellationToken>()))
-                .ReturnsAsync(null as byte[]);
+            _gameStatRepositoryMock
+                .Setup(r => r.GetAllStatsWithMetaAsync())
+                .ReturnsAsync(new List<GameStatDto>());
+
+            _cachedDataServiceMock
+                .Setup(c => c.GetOrSetCacheAsync(
+                    "StatsInitData",
+                    It.IsAny<Func<Task<IEnumerable<GameStatDto>>>>()
+                ))
+                .Returns<string, Func<Task<IEnumerable<GameStatDto>>>>(
+                    (_, func) => func().ContinueWith(t => t.Result.ToList())
+                );
 
             // Act
             var result = await _controller.GetStatsInitData();
@@ -128,15 +148,22 @@ namespace API.Tests.Controllers
             _gameStatRepositoryMock.Verify(r => r.GetAllStatsWithMetaAsync(), Times.Once);
         }
 
-        // TODO: Change after refactor.
         [Fact]
         public async Task GetStatsInitData_Returns500_WhenDbThrows()
         {
             // Arrange
-            _cacheMock.Setup(c => c.GetAsync("StatsInitData", It.IsAny<CancellationToken>()))
-                .ReturnsAsync(null as byte[]);
-            _gameStatRepositoryMock.Setup(r => r.GetAllStatsWithMetaAsync())
+            _gameStatRepositoryMock
+                .Setup(r => r.GetAllStatsWithMetaAsync())
                 .ThrowsAsync(new Exception("Database error"));
+
+            _cachedDataServiceMock
+                .Setup(c => c.GetOrSetCacheAsync(
+                    "StatsInitData",
+                    It.IsAny<Func<Task<IEnumerable<GameStatDto>>>>()
+                ))
+                .Returns<string, Func<Task<IEnumerable<GameStatDto>>>>(
+                    (_, func) => func().ContinueWith(t => t.Result.ToList())
+                );
 
             // Act
             var result = await _controller.GetStatsInitData();
