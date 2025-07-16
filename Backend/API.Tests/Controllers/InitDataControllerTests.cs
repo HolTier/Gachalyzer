@@ -173,5 +173,45 @@ namespace API.Tests.Controllers
             objectResult.StatusCode.Should().Be(500);
             _gameStatRepositoryMock.Verify(r => r.GetAllStatsWithMetaAsync(), Times.Once);
         }
+
+        [Fact]
+        public async Task GetGameArtifactNames_ReturnsOkAndCallRepository_IfNotCached()
+        {
+            // Arrange
+            var artifactNames = new List<GameArtifactName>
+            {
+                    new GameArtifactName
+                    {
+                        Id = 1,
+                        Name = "Test Artifact",
+                        GameId = 1,
+                    }
+            };
+
+            _artifactRepoMock
+                .Setup(r => r.GetAllAsync())
+                .ReturnsAsync(artifactNames);
+
+            _cachedDataServiceMock
+                .Setup(c => c.GetOrSetCacheAsync(
+                    "artifact:all",
+                    It.IsAny<Func<Task<IEnumerable<GameArtifactName>>>>()
+                ))
+                .Returns<string, Func<Task<IEnumerable<GameArtifactName>>>>(
+                    (_, func) => func().ContinueWith(t => t.Result.ToList())
+                );
+
+
+            // Act
+            var result = await _controller.GetGameArtifactNames();
+
+            // Assert
+            var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+            var dto = okResult.Value.Should().BeAssignableTo<IEnumerable<GameArtifactName>>().Subject.ToList();
+            dto.Should().NotBeNull();
+            dto.Should().ContainSingle();
+            dto.Single().Name.Should().Be("Test Artifact");
+            _artifactRepoMock.Verify(r => r.GetAllAsync(), Times.Once);
+        }
     }
 }

@@ -48,7 +48,7 @@ namespace API.Controllers
             try
             {
                 var data = await _cachedDataService.GetOrSetCacheAsync(
-                        "artifcat:all",
+                        "artifact:all",
                         () => _gameArtifactNameRepository.GetAllAsync()
                 );
                 return Ok(data);
