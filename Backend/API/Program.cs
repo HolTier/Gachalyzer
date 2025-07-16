@@ -1,6 +1,8 @@
 using API.Data;
 using API.Mappings;
+using API.Models;
 using API.Repositories;
+using API.Services.Cache;
 using API.Services.Files;
 using API.Services.Ocr;
 using API.StatProcessing;
@@ -58,6 +60,7 @@ builder.Services.AddAutoMapper(typeof(GameStatProfile));
 // Repositories
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped<IGameStatRepository, GameStatRepository>();
+builder.Services.AddScoped<IGameArtifactNameRepository, GameArtifactNameRepository>();
 
 // Processors
 builder.Services.AddScoped<IOcrResultProcessor, OcrResultProcessor>();
@@ -66,6 +69,9 @@ builder.Services.AddScoped<IFIleProcessingService, FileProcessingService>();
 // Stats services
 builder.Services.AddScoped<IGameStatResolver, WhutheringWavesStatResolver>();
 builder.Services.AddScoped<WhutheringWavesStatResolver>();
+
+// Other services
+builder.Services.AddSingleton<ICachedDataService, CachedDataService>();
 
 // Factory
 builder.Services.AddScoped<IGameStatResolverFactory, GameStatResolverFactory>();
