@@ -1,7 +1,7 @@
 CREATE OR REPLACE FUNCTION notify_artifact_name_updated()
 RETURNS TRIGGER AS $$
 BEGIN
-	PERFORM pg_notify('artifact_names_update', 'game:' || NEW.game_id::text);
+	PERFORM pg_notify('artifact_names_update', 'game:' || NEW.GameId::text);
 	RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
