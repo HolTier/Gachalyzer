@@ -7,6 +7,9 @@ services:
     ports:
         - "8080:8080"
         - "8081:8081"
+    environment:
+        - ConnectionStrings__DefaultConnection=Server=${POSTGRES_HOST};PORT=${POSTGRES_PORT};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD};Database=${POSTGRES_DB}
+        - ConnectionStrings__RedisConnection=redis:6379
     depends_on:
         postgres:
             condition: service_healthy
