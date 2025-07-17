@@ -122,3 +122,9 @@ postgres_data
 
 # Ignore pgadmin data volume
 pgadmin_data
+
+# Environment variables file
+.env
+.env*
+**/.env*
+!.env.example
