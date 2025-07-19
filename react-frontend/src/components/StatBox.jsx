@@ -13,11 +13,11 @@ import {
     FormControl,
     InputLabel
 } from "@mui/material";
+import { m } from "framer-motion";
 
 const StatBox = ({ data, dataWuwa }) => {
     const [stats, setStats] = useState(data || []);;
 
-    // Provide default empty arrays if dataWuwa is null/undefined
     const safeDataWuwa = dataWuwa || {
         mainStats: [],
         subStats: []
@@ -43,11 +43,9 @@ const StatBox = ({ data, dataWuwa }) => {
         let statIndex;
 
         if (statType === "MainStat") {
-            // Find if this main stat already exists
             statIndex = stats.findIndex(s => s.statType === "MainStat" && s.stat === displayedMainStats[index].stat);
             
             if (statIndex === -1) {
-                // Add new main stat
                 updatedStats.push({
                     stat: newName,
                     statType: "MainStat",
@@ -56,20 +54,16 @@ const StatBox = ({ data, dataWuwa }) => {
                     isPercentage: newName.includes('%')
                 });
             } else {
-                // Update existing main stat name
                 updatedStats[statIndex].stat = newName;
                 updatedStats[statIndex].isPercentage = newName.includes('%');
             }
             
-            // Update displayedMainStats reference
             displayedMainStats[index].stat = newName;
             displayedMainStats[index].isPercentage = newName.includes('%');
         } else {
-            // Find if this sub stat already exists
             statIndex = stats.findIndex(s => s.statType === "SubStat" && s.stat === displayedSubStats[index]?.stat);
             
             if (statIndex === -1) {
-                // Add new sub stat
                 updatedStats.push({
                     stat: newName,
                     statType: "SubStat",
@@ -78,12 +72,10 @@ const StatBox = ({ data, dataWuwa }) => {
                     isPercentage: newName.includes('%')
                 });
             } else {
-                // Update existing sub stat name
                 updatedStats[statIndex].stat = newName;
                 updatedStats[statIndex].isPercentage = newName.includes('%');
             }
             
-            // Update displayedSubStats reference if it exists
             if (displayedSubStats[index]) {
                 displayedSubStats[index].stat = newName;
                 displayedSubStats[index].isPercentage = newName.includes('%');
@@ -93,9 +85,9 @@ const StatBox = ({ data, dataWuwa }) => {
         setStats(updatedStats);
     };
 
-
-    // Ensure we have max 4 sub stats
-    const displayedSubStats = subStats.slice(0, 4);
+    const minSubStats = 0;
+    const maxSubStats = 4;
+    const displayedSubStats = subStats.slice(minSubStats, maxSubStats);
 
     const handleStatChange = (statType, index, newValue) => {
         const updatedStats = [...stats]
@@ -108,7 +100,6 @@ const StatBox = ({ data, dataWuwa }) => {
         }
 
         if (statIndex === -1) {
-            // Add new stat if it doesn't exist
             const newStat = {
                 stat: statType === "MainStat" ? displayedMainStats[index].stat : displayedSubStats[index].stat,
                 statType,
@@ -118,7 +109,6 @@ const StatBox = ({ data, dataWuwa }) => {
             };
             updatedStats.push(newStat);
         } else {
-            // Update existing stat
             updatedStats[statIndex].value = newValue;
             updatedStats[statIndex].rawValue = updatedStats[statIndex].isPercentage
                 ? `${newValue}%`
@@ -205,7 +195,6 @@ const StatBox = ({ data, dataWuwa }) => {
                     </Grid>
                 ))}
                 
-                {/* Fill empty slots if less than 4 sub stats */}
                 {Array.from({ length: 4 - displayedSubStats.length }).map((_, index) => (
                     <Grid item xs={6} key={`empty-${index}`}>
                         <FormControl fullWidth>

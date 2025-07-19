@@ -7,16 +7,14 @@ namespace API.StatProcessing.WhutheringWaves
     {
         public string DetermineStatType(string statName, decimal value, bool isPercentage, out decimal normalized)
         {
-            // Normalize the stat name
             string normalizedStat = statName.ToUpperInvariant();
-            // Check if the stat is a cost
+
             if (normalizedStat.Contains("COST"))
             {
                 normalized = value;
                 return OcrStatType.Cost.ToString();
             }
 
-            // Dictionary of possible stats and their possible values
             var substatValues = new Dictionary<string, decimal[]>
             {
                 // Precentage stats
@@ -42,11 +40,8 @@ namespace API.StatProcessing.WhutheringWaves
                 normalizedStat += "%";
             }
 
-
-            // First check - exact match
             if (substatValues.ContainsKey(normalizedStat))
             {
-                // Check if the value is in the list of possible values
                 if (substatValues[normalizedStat].Contains(value))
                 {
                     normalized = value;
@@ -54,7 +49,7 @@ namespace API.StatProcessing.WhutheringWaves
                 }
 
                 Debug.WriteLine(normalizedStat);
-                // Second check - divide by 10
+
                 decimal dividedValue = value / 10;
                 if (substatValues[normalizedStat].Contains(dividedValue))
                 {
@@ -62,7 +57,6 @@ namespace API.StatProcessing.WhutheringWaves
                     return OcrStatType.SubStat.ToString();
                 }
 
-                // Third check - divide by 100
                 decimal dividedValueBy100 = value / 100;
                 if (substatValues[normalizedStat].Contains(dividedValueBy100))
                 {
@@ -72,8 +66,6 @@ namespace API.StatProcessing.WhutheringWaves
             }
 
             // TODO: Add checks for main stats
-
-            // Return a main stat
             normalized = value;
             return OcrStatType.MainStat.ToString();
         }

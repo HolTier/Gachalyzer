@@ -8,20 +8,16 @@ from difflib import get_close_matches
 from constants import KEYWORDS, CLEANING_KEYS
 
 def process_image(file_content: bytes):
-    # Preprocess the image to get contours
     print("Preprocessing image...")
     image, contours = preprocess_image(file_content)
     print("Image preprocessed.")
     
-    # Extract text from the contours
     ocr_lines = extract_text_from_contours(image, contours)
     print("Text extracted from image: ", ocr_lines)
     
-    # Clean and match the extracted text with known stats
     # cleaned_text = clean_text(ocr_lines, KEYWORDS)
     # print("Text cleaned and matched with known stats: ", cleaned_text)
 
-    # Find keywords in the cleaned text
     found_keywords = find_keywords_in_text(ocr_lines)
     print("Keywords found in text.: ", found_keywords)
 

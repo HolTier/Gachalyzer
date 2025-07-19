@@ -39,7 +39,6 @@ function CustomDropzone({ onFilesSelected }) {
     }
 
     const handleRemove = (indexToRemove) => {
-        // Revoke the URL
         if (files[indexToRemove].preview)
             URL.revokeObjectURL(files[indexToRemove].preview);
 

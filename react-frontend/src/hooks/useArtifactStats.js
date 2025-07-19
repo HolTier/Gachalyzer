@@ -2,11 +2,10 @@ import { useRef, useState } from "react";
 
 export function useArtifactStats({allStats, setAllStats, nextIdRef}) {
     const findContainer = (id) => {
-        // Check if it's a container ID
         if (id === 'mainStats' || id === 'subStats') {
             return id;
         }
-        // Check if it's a stat ID
+
         return Object.keys(allStats).find((key) => 
             allStats[key].some(stat => stat.id === id)
         );
@@ -18,7 +17,6 @@ export function useArtifactStats({allStats, setAllStats, nextIdRef}) {
         return allStats[container].find(stat => stat.id === id);
     };
 
-    // Function to add a new stat with auto-generated ID
     const addNewStat = (statType, statData) => {
         const newStat = {
             ...statData,
@@ -36,7 +34,6 @@ export function useArtifactStats({allStats, setAllStats, nextIdRef}) {
         }));
     };
 
-    // Handler functions for SortableStat
     const handleChange = (statId, newValue) => {
         setAllStats(prev => {
             const containerKey = findContainer(statId);

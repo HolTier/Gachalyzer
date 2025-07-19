@@ -16,13 +16,12 @@ function GameStatAutocomplete({apiGameData, value, onChangeValue}) {
             onChange={(event, newValue) => onChangeValue(newValue ? newValue.name : "")}
             disablePortal
             disableClearable
-            //freeSolo
             options={apiGameData || []}
             getOptionLabel={(option) => option?.name || ""}
             size="small"
             sx={{
                 flex: 1,
-                minWidth: 0, // Allow shrinking
+                minWidth: 0,
                 '& .MuiAutocomplete-inputRoot': {
                     border: 'none',
                     padding: '0 !important',
@@ -52,7 +51,7 @@ function GameStatAutocomplete({apiGameData, value, onChangeValue}) {
                     minHeight: 'auto',
                 },
                 '& .MuiAutocomplete-endAdornment': {
-                    display: 'none', // Hide dropdown arrow and X
+                    display: 'none',
                 },
             }}
             renderInput={(params) => (

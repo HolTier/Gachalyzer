@@ -83,7 +83,8 @@ function ArtifactCardBox ({ stats }) {
     const handleDragStart = (event) => {
         const { active } = event;
         setActiveId(active.id);
-        setDragOverInfo(null); // Clear any existing drag over info
+        setDragOverInfo(null);
+
         // Find and set the active drag item
         const item = 
             mainStats.find(stat => stat.key === active.id) || 
@@ -183,7 +184,6 @@ function ArtifactCardBox ({ stats }) {
         let overIndex;
         
         if (over.id === overContainer) {
-            // Dragging over the empty list container
             overIndex = overList.length;
         } else {
             // Dragging over an item
@@ -193,7 +193,6 @@ function ArtifactCardBox ({ stats }) {
                 return;
             }
             
-            // If moving within same container, adjust index based on drag direction
             if (activeContainer === overContainer) {
                 const activeIndex = overList.findIndex(item => item.key === active.id);
                 if (activeIndex !== -1) {

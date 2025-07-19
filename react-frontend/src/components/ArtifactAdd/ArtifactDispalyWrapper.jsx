@@ -10,25 +10,22 @@ const Transition = forwardRef(function Transition(props, ref) {
 });
 
 function ArtifactDisplayWrapper({ stats, apiGameData }) {
-    // Use the hook to get state and setters
     const { allStats, setAllStats, nextIdRef } = useAllStatsState(stats);
     const [showShowcase, setShowShowcase] = useState(false);
     const [isHovering, setIsHovering] = useState(false);
     const miniCardRef = useRef(null);
 
-    // Handler to open showcase
     const handleMiniCardClick = () => setShowShowcase(true);
-    // Handler to close showcase
+
     const handleCloseShowcase = () => {
         setShowShowcase(false);
-        setIsHovering(false); // Reset hover state when closing showcase
-        // Blur MiniCard if focused
+        setIsHovering(false); 
+
         if (miniCardRef.current) {
             miniCardRef.current.blur();
         }
     };
 
-    // Handler for hover area
     const handleHoverEnter = () => setIsHovering(true);
     const handleHoverLeave = () => setIsHovering(false);
 
@@ -43,7 +40,7 @@ function ArtifactDisplayWrapper({ stats, apiGameData }) {
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    pointerEvents: 'none', // only card is clickable
+                    pointerEvents: 'none',
                     p: 0,
                     m: 0,
                 }}

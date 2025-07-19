@@ -32,7 +32,6 @@ namespace API.Data
                 new StatType {Id = 2, Name = "Sub"}
             );
 
-            // Wuwa Main Stats GameId 1, StatTypeId 1
             modelBuilder.Entity<GameStat>().HasData(
                 new GameStat {Id = 1, Name = "HP%", GameId = 1, StatTypeId = 1 },
                 new GameStat {Id = 2, Name = "ATK%", GameId = 1, StatTypeId = 1 },
@@ -50,7 +49,6 @@ namespace API.Data
                 new GameStat {Id = 14, Name = "Healing Bonus", GameId = 1, StatTypeId = 1 }
             );
 
-            // Wuwa Sub Stats GameId 1, StatTypeId 2
             modelBuilder.Entity<GameStat>().HasData(
                 new GameStat {Id = 15, Name = "HP", GameId = 1, StatTypeId = 2 },
                 new GameStat {Id = 16, Name = "ATK", GameId = 1, StatTypeId = 2 },

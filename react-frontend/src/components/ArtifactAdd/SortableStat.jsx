@@ -10,8 +10,8 @@ const SortableStat = ({ stat, onChangeValue, onTogglePercentage, dragOverType, a
         useSortable({ 
             id: stat.id,
             activationConstraint: {
-                delay: 400, // ms to hold before drag starts
-                tolerance: 5 // px movement allowed before drag
+                delay: 400,
+                tolerance: 5
             }
         });
     
