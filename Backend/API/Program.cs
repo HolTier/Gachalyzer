@@ -118,7 +118,7 @@ app.UseSwaggerUI(c =>
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
-    db.Database.Migrate(); // applies any pending migrations automatically
+    db.Database.Migrate();
 
     try
     {
@@ -132,7 +132,16 @@ using (var scope = app.Services.CreateScope())
     {
         Console.WriteLine(ex);
     }
-    
+}
+
+// Seed data
+if (app.Environment.IsDevelopment())
+{
+    using (var scope = app.Services.CreateScope())
+    {
+        var env = scope.ServiceProvider.GetRequiredService<IWebHostEnvironment>();
+        await DbSeeder.SeedAsync(scope.ServiceProvider, env);
+    }
 }
 
 //app.UseHttpsRedirection();
