@@ -3,6 +3,7 @@ using API.Dtos;
 using System.Text.Json;
 using API.Services.Ocr;
 using System.Net.Http.Headers;
+using API.Config;
 
 namespace API.Services.Files
 {
@@ -10,17 +11,20 @@ namespace API.Services.Files
     {
         private readonly HttpClient _httpClient;
         private readonly IOcrResultProcessor _ocrResultProcessor;
+        private readonly GlobalConfig _globalConfig;
 
-        public FileProcessingService(HttpClient httpClient, IOcrResultProcessor ocrResultProcessor)
+        public FileProcessingService(HttpClient httpClient, IOcrResultProcessor ocrResultProcessor, GlobalConfig globalConfig)
         {
             _httpClient = httpClient;
             _ocrResultProcessor = ocrResultProcessor;
+            _globalConfig = globalConfig;
         }
 
         public async Task<FileProcessingResult> ProcessFileAsync(List<IFormFile> files)
         {
             string[] permittedExtensions = { ".jpg", ".jpeg", ".png", ".gif", ".bmp", ".tiff" };
             var allResults = new List<FileStatsDto>();
+            string ocrUrl = (_globalConfig.OCRUrl ?? "http://ocr:8000") + "/analyze-image/";
 
             foreach (var file in files)
             {
@@ -39,7 +43,7 @@ namespace API.Services.Files
                 fileContent.Headers.ContentType = new MediaTypeHeaderValue(file.ContentType);
                 formContent.Add(fileContent, "file", file.FileName);
 
-                var response = await _httpClient.PostAsync("http://ocr:8000/analyze-image/", formContent);
+                var response = await _httpClient.PostAsync(ocrUrl, formContent);
                 if (!response.IsSuccessStatusCode)
                 {
                     var error = await response.Content.ReadAsStringAsync();

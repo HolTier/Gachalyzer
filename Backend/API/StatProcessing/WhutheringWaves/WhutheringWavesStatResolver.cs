@@ -5,6 +5,16 @@ namespace API.StatProcessing.WhutheringWaves
 {
     public class WhutheringWavesStatResolver : IGameStatResolver
     {
+        // An array of scales to normalize OCR errors in values.
+        private static readonly decimal[] OcrErrorScale = new[]
+        {
+            100m,
+            10m,
+            1m,
+            1m / 10m,
+            1m / 100m,
+        };
+
         public string DetermineStatType(string statName, decimal value, bool isPercentage, out decimal normalized)
         {
             string normalizedStat = statName.ToUpperInvariant();
@@ -36,38 +46,30 @@ namespace API.StatProcessing.WhutheringWaves
             };
 
             if (isPercentage && !normalizedStat.EndsWith("%"))
-            {
                 normalizedStat += "%";
-            }
 
-            if (substatValues.ContainsKey(normalizedStat))
-            {
-                if (substatValues[normalizedStat].Contains(value))
-                {
-                    normalized = value;
-                    return OcrStatType.SubStat.ToString();
-                }
-
-                Debug.WriteLine(normalizedStat);
-
-                decimal dividedValue = value / 10;
-                if (substatValues[normalizedStat].Contains(dividedValue))
-                {
-                    normalized = dividedValue;
-                    return OcrStatType.SubStat.ToString();
-                }
-
-                decimal dividedValueBy100 = value / 100;
-                if (substatValues[normalizedStat].Contains(dividedValueBy100))
-                {
-                    normalized = dividedValueBy100;
-                    return OcrStatType.SubStat.ToString();
-                }
-            }
+            if(TryNormalizeValue(value, substatValues.GetValueOrDefault(normalizedStat, Array.Empty<decimal>()), out normalized))
+                return OcrStatType.SubStat.ToString();
 
             // TODO: Add checks for main stats
             normalized = value;
             return OcrStatType.MainStat.ToString();
+        }
+
+        private static bool TryNormalizeValue(decimal originalValue, IEnumerable<decimal> validValues, out decimal normalized)
+        {
+            foreach (var scale in OcrErrorScale)
+            {
+                decimal scaled = originalValue * scale;
+                if (validValues.Contains(scaled))
+                {
+                    normalized = scaled;
+                    return true;
+                }
+            }
+
+            normalized = originalValue;
+            return false;
         }
     }
 }

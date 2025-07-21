@@ -1,3 +1,4 @@
+using API.Config;
 using API.Data;
 using API.Mappings;
 using API.Models;
@@ -11,6 +12,15 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
+
+string? ocrUrl = builder.Configuration["OCR_URL"];
+string? corsOrigins = builder.Configuration["CORS_ORIGINS"];
+
+builder.Services.AddSingleton(new GlobalConfig
+{
+    OCRUrl = ocrUrl,
+    CorsOrigins = corsOrigins
+});
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -46,10 +56,10 @@ builder.Services.AddCors(options =>
         builder =>
         {
             builder.WithOrigins(
-                 "http://localhost:3000",
-                 "http://127.0.0.1:3000")
-                   .AllowAnyHeader()
-                   .AllowAnyMethod();
+                corsOrigins ?? "http://localhost:3000", 
+                "http://127.0.0.1:3000")
+                .AllowAnyHeader()
+                .AllowAnyMethod();
         });
 });
 

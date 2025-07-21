@@ -5,6 +5,7 @@ using System.Net;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using API.Config;
 using API.Dtos;
 using API.Services.Files;
 using API.Services.Ocr;
@@ -23,7 +24,6 @@ namespace API.Tests.Services.Files
 
         public FileProcessingServiceTests()
         {
-            // Mock resolver
             var resolverMock = new Mock<IGameStatResolver>();
             resolverMock
                 .Setup(r => r.DetermineStatType(
@@ -33,20 +33,17 @@ namespace API.Tests.Services.Files
                     out It.Ref<decimal>.IsAny))
                 .Returns((string statName, decimal value, bool isPercentage, out decimal normalized) =>
                 {
-                    normalized = value; // For simplicity, just return the value as normalized
-                    return OcrStatType.SubStat.ToString(); // Return a fixed stat type for testing
+                    normalized = value; 
+                    return OcrStatType.SubStat.ToString();
                 });
 
-            // Mock factory to return resolver
             var resolverFactoryMock = new Mock<IGameStatResolverFactory>();
             resolverFactoryMock
                 .Setup(f => f.GetResolver(It.IsAny<GameType>()))
                 .Returns(resolverMock.Object);
 
-            // Use real processor
             var ocrProcessor = new OcrResultProcessor(resolverFactoryMock.Object);
 
-            // Mock HTTP response
             var mockHttpHandler = new Mock<HttpMessageHandler>();
             mockHttpHandler
                 .Protected()
@@ -72,8 +69,12 @@ namespace API.Tests.Services.Files
                 BaseAddress = new Uri("http://ocr:8000/")
             };
 
-            // Register services
-            _fileProcessingService = new FileProcessingService(httpClient, ocrProcessor);
+            var globalConfig = new GlobalConfig
+            {
+                OCRUrl = "http://ocr:8000"
+            };
+
+            _fileProcessingService = new FileProcessingService(httpClient, ocrProcessor, globalConfig);
         }
 
         [Fact]
@@ -187,9 +188,14 @@ namespace API.Tests.Services.Files
                 .Setup(f => f.GetResolver(It.IsAny<GameType>()))
                 .Returns(resolverMock.Object);
 
+            var globalConfig = new GlobalConfig
+            {
+                OCRUrl = "http://ocr:8000"
+            };
+
             // Use real processor
             var ocrProcessor = new OcrResultProcessor(resolverFactoryMock.Object);
-            var fileProcessingService = new FileProcessingService(httpClient, ocrProcessor);
+            var fileProcessingService = new FileProcessingService(httpClient, ocrProcessor, globalConfig);
             var files = new List<IFormFile>
             {
                 new FormFile(new MemoryStream(Encoding.UTF8.GetBytes("dummy")), 0, 5, "file", "test1.jpg")
