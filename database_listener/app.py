@@ -5,9 +5,15 @@ import select
 import redis
 
 from handlers.handle_artifact_names import handle as handle_artifact_names
+from handlers.handle_game import handle as handle_game
+from handlers.handle_stat_type import handle as handle_stat_type
+from handlers.handle_game_stats import handle as handle_game_stats
 
 CHANNEL_HANDLERS = {
     "artifact_names_update": handle_artifact_names,
+    "game_update": handle_game,
+    "stat_type_update": handle_stat_type,
+    "game_stats_update": handle_game_stats,
 }
 
 PG_CONN = {
