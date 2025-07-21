@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { API_CONFIG } from "../config/api";
 
 const INIT_WUWA_KEY = "initWuwaData";
 
@@ -14,7 +15,7 @@ export function useInitWuwa() {
             setDataWuwa(JSON.parse(cached));
             setLoadingWuwa(false);
         } else {
-            fetch("http://127.0.0.1:8080/api/InitData/initWuwa")
+            fetch(API_CONFIG.BASE_URL + API_CONFIG.ENDPOINTS.INIT_WUWA)
                 .then(res =>{
                     if(!res.ok){
                         console.log("throwed");

@@ -11,9 +11,9 @@ CHANNEL_HANDLERS = {
 }
 
 PG_CONN = {
-    "dbname": os.getenv("POSTGRES_DB"),
-    "user": os.getenv("POSTGRES_USER"),
-    "password": os.getenv("POSTGRES_PASSWORD"),
+    "dbname": os.getenv("POSTGRES_DB", "postgres"),
+    "user": os.getenv("POSTGRES_USER", "postgres"),
+    "password": os.getenv("POSTGRES_PASSWORD", "postrgres"),
     "host": os.getenv("POSTGRES_HOST", "localhost"),
 }
 

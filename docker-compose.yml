@@ -44,7 +44,7 @@ services:
         - CHOKIDAR_USEPOLLING=${CHOKIDAR_USEPOLLING}
         - WATCHPACK_POLLING=${WATCHPACK_POLLING}
         - WDS_SOCKET_PORT=${WDS_SOCKET_PORT}
-        - REACT_APP_API_URL=${API_URL}:${API_PORT}/${API_HOST}
+        - REACT_APP_API_URL=${REACT_APP_API_URL}
     depends_on:
         - api
     networks:
