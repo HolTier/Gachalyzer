@@ -1,6 +1,6 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException
-from fastapi.responses import JSONResponse
-from ocr import process_image  
+from fastapi.responses import JSONResponse 
+from ocr_main import process_image
 
 app = FastAPI(
     redirect_slashes=False
