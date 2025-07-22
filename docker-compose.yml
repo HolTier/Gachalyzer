@@ -27,6 +27,8 @@ services:
         dockerfile: Dockerfile
     ports:
         - "${OCR_PORT}:${OCR_PORT}"
+    environment:
+        - API_URL = ${REACT_APP_API_URL}
     networks:
       - my_network
 

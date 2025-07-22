@@ -11,7 +11,7 @@ async def analyze_image(file: UploadFile = File(...)):
     print("Received file:", file.filename)
     try:
         content = await file.read()
-        result = process_image(content)
+        result = await process_image(content)
         return JSONResponse(content={"result": result})
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

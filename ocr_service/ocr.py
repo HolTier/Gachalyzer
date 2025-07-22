@@ -5,9 +5,75 @@ from matplotlib import pyplot as plt
 import pytesseract
 from typing import List
 from difflib import get_close_matches
+import requests
+import json
+import os
+import asyncio
 from constants import KEYWORDS, CLEANING_KEYS
 
-def process_image(file_content: bytes):
+API_URL = os.getenv("API_URL", "http://localhost:8000")
+
+async def fetch_artifact_names(api_url: str) -> List[str]:
+    try:
+        response = requests.get(api_url, timeout=10)
+        response.raise_for_status()
+
+        data = response.json()
+
+        if isinstance(data, list):
+            return [item.get('name', '') for item in data if 'name' in item]
+        else:
+            return []
+        
+    except requests.RequestException as e:
+        print(f"Error fetching artifact names: {e}")
+        return []
+    
+def find_artifact_names_in_text(text_lines: List[str], artifact_names: List[str]) -> List[str]:
+    found_artifacts = []
+    threshold = 0.7 
+
+    combined_text = ' '.join(text_lines).lower()
+
+    for artifact_name in artifact_names:
+        artifact_lower = artifact_name.lower()
+
+        if artifact_lower in combined_text:
+            found_artifacts.append(artifact_name)
+            continue
+
+        artifact_words = artifact_lower.split()
+
+        if len(artifact_words) > 1:
+            words_found = 0
+            for word in artifact_words:
+                if len(word) > 2 and word in combined_text:
+                    words_found +=1
+            
+            if words_found >= len(artifact_words) * threshold:
+                found_artifacts.append(artifact_name)
+                continue
+        
+        for line in text_lines:
+            clean_line = re.sub(r'[^\w\s]', ' ', line.lower())
+            clean_line = re.sub(r'\s+', ' ', clean_line).strip()
+
+            matches = get_close_matches(artifact_lower, [clean_line], n=1, cutoff=0.75)
+            if matches:
+                found_artifacts.append(artifact_name)
+                break
+                
+            if len(artifact_words) == 1:
+                line_words = clean_line.split()
+                matches = get_close_matches(artifact_lower, line_words, n=1, cutoff=0.8)
+                if matches:
+                    found_artifacts.append(artifact_name)
+                    break
+    
+    return list(set(found_artifacts))
+
+        
+async def process_image(file_content: bytes):
     print("Preprocessing image...")
     image, contours = preprocess_image(file_content)
     print("Image preprocessed.")
@@ -21,8 +87,21 @@ def process_image(file_content: bytes):
     found_keywords = find_keywords_in_text(ocr_lines)
     print("Keywords found in text.: ", found_keywords)
 
-    # Return the found keywords
-    return found_keywords
+    api_url = API_URL + "/init-data/init-game-artifact-name"
+    found_artifacts = []
+    if api_url:
+        try:
+            artifact_names = await fetch_artifact_names(api_url)
+            if artifact_names:
+                found_artifacts = find_artifact_names_in_text(ocr_lines, artifact_names)
+                print("Artifacts found in text:", found_artifacts)
+        except Exception as e:
+            print(f"Error processing artifacts: {e}")
+
+    return {
+        'keywords': found_keywords,
+        'artifacts': found_artifacts
+    }
 
 def preprocess_image(file_content: bytes) -> str:
     # Convert bytes to numpy array
