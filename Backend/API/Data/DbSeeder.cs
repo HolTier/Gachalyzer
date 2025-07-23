@@ -12,6 +12,7 @@ namespace API.Data
         private const string GameStatsSeed = "GameStatsSeed.json";
         private const string GameSeed = "GameSeed.json";
         private const string StatTypesSeed = "StatTypes.json";
+        private const string GameArtifactNamesSeed = "GameArtifactNames.json";
 
         public static async Task SeedAsync(IServiceProvider serviceProvider, IWebHostEnvironment env)
         {
@@ -26,6 +27,7 @@ namespace API.Data
             await SeedFromJsonAsync(db, Path.Combine(SeedDataFolder, GameStatsSeed), db.GameStats);
             await SeedFromJsonAsync(db, Path.Combine(SeedDataFolder, GameSeed), db.Games);
             await SeedFromJsonAsync(db, Path.Combine(SeedDataFolder, StatTypesSeed), db.StatTypes);
+            await SeedFromJsonAsync(db, Path.Combine(SeedDataFolder, GameArtifactNamesSeed), db.GameArtifactNames);
         }
 
         private static async Task SeedFromJsonAsync<T>(DbContext db, string filePath, DbSet<T> dbSet) where T : class
