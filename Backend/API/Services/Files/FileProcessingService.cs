@@ -61,16 +61,28 @@ namespace API.Services.Files
                     PropertyNameCaseInsensitive = true
                 });
 
-                if (ocrResponse?.Result == null || ocrResponse.Result.Count == 0)
+                if ((ocrResponse?.Keywords == null || ocrResponse.Keywords.Count == 0) &&
+                    (ocrResponse?.Artifacts == null || ocrResponse.Artifacts.Count == 0))
+                {
                     return new FileProcessingResult
                     {
                         IsSuccess = false,
                         FileStats = new List<FileStatsDto>(),
                         ErrorMessage = $"OCR returned no results for file: {file.FileName}."
                     };
+                }
 
-                var processed = _ocrResultProcessor.Process(ocrResponse.Result, GameType.WhutheringWaves);
-                allResults.Add(new FileStatsDto { FileName = file.FileName, Stats = processed });
+                var keywords = ocrResponse.Keywords ?? new List<string>();
+                var artifacts = ocrResponse.Artifacts ?? new List<string>();
+
+                var processed = _ocrResultProcessor.Process(keywords, GameType.WhutheringWaves);
+                allResults.Add(
+                    new FileStatsDto { 
+                        FileName = file.FileName, 
+                        Stats = processed, 
+                        Artifacts = artifacts 
+                    }
+                );
             }
 
             return new FileProcessingResult
