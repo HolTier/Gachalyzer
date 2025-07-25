@@ -137,6 +137,7 @@ using (var scope = app.Services.CreateScope())
 // Seed data
 if (app.Environment.IsDevelopment())
 {
+    Console.WriteLine("Seeding database...");
     using (var scope = app.Services.CreateScope())
     {
         var env = scope.ServiceProvider.GetRequiredService<IWebHostEnvironment>();

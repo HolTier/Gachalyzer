@@ -8,15 +8,15 @@ namespace API.Data
 
     public class DbSeeder
     {
-        private const string SeedDataFolder = "SeedData";
+        private const string SeedDataFolder = "Data/SeedData";
         private const string GameStatsSeed = "GameStatsSeed.json";
         private const string GameSeed = "GameSeed.json";
         private const string StatTypesSeed = "StatTypes.json";
-        private const string GameArtifactNamesSeed = "GameArtifactNames.json";
+        private const string GameArtifactNamesSeed = "GameArtifactNamesSeed.json";
 
         public static async Task SeedAsync(IServiceProvider serviceProvider, IWebHostEnvironment env)
         {
-            
+
             if (!env.IsDevelopment()) return;
 
             using var scope = serviceProvider.CreateScope();
@@ -24,19 +24,37 @@ namespace API.Data
 
             await db.Database.EnsureCreatedAsync();
 
-            await SeedFromJsonAsync(db, Path.Combine(SeedDataFolder, GameStatsSeed), db.GameStats);
-            await SeedFromJsonAsync(db, Path.Combine(SeedDataFolder, GameSeed), db.Games);
-            await SeedFromJsonAsync(db, Path.Combine(SeedDataFolder, StatTypesSeed), db.StatTypes);
-            await SeedFromJsonAsync(db, Path.Combine(SeedDataFolder, GameArtifactNamesSeed), db.GameArtifactNames);
+            using var transaction = await db.Database.BeginTransactionAsync();
+            try
+            {
+                await SeedFromJsonAsync(db, Path.Combine(SeedDataFolder, GameSeed), db.Games, env);
+                await SeedFromJsonAsync(db, Path.Combine(SeedDataFolder, StatTypesSeed), db.StatTypes, env);
+                await SeedFromJsonAsync(db, Path.Combine(SeedDataFolder, GameStatsSeed), db.GameStats, env);
+                await SeedFromJsonAsync(db, Path.Combine(SeedDataFolder, GameArtifactNamesSeed), db.GameArtifactNames, env);
+                await transaction.CommitAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error during seeding: {ex.Message}");
+                await transaction.RollbackAsync();
+                throw;
+            }
         }
 
-        private static async Task SeedFromJsonAsync<T>(DbContext db, string filePath, DbSet<T> dbSet) where T : class
+        private static async Task SeedFromJsonAsync<T>(
+            DbContext db, 
+            string filePath,
+            DbSet<T> dbSet,
+            IWebHostEnvironment env) where T : class
         {
+            var fullPath = Path.Combine(env.ContentRootPath, filePath);
+            Console.WriteLine($"Looking for seed file: {fullPath}");
+
             if (await dbSet.AnyAsync()) return;
 
-            if (!File.Exists(filePath)) return;
+            if (!File.Exists(fullPath)) return;
+            var json = await File.ReadAllTextAsync(fullPath);
 
-            var json = await File.ReadAllTextAsync(filePath);
             var records = JsonSerializer.Deserialize<List<T>>(json);
 
             if (records?.Count > 0)
