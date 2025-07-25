@@ -20,6 +20,7 @@ namespace API.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<GameStat>().ToTable("GameStats");
         }
     }
 }

@@ -14,6 +14,7 @@ services:
         - ConnectionStrings__RedisConnection=${REDIS_HOST}:${REDIS_PORT}
         - OCR_URL=${OCR_URL}:${OCR_PORT}
         - API_CORS_ORIGIN=${API_CORS_ORIGIN}
+        - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
     depends_on:
         postgres:
             condition: service_healthy

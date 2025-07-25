@@ -11,8 +11,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250724172354_FixGameStatsName")]
-    partial class FixGameStatsName
+    [Migration("20250725214205_InitialFix")]
+    partial class InitialFix
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -93,7 +93,7 @@ namespace API.Migrations
 
                     b.HasIndex("StatTypeId");
 
-                    b.ToTable("GameStat");
+                    b.ToTable("GameStats", (string)null);
                 });
 
             modelBuilder.Entity("API.Models.StatType", b =>

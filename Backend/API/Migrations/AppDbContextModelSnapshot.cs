@@ -90,7 +90,7 @@ namespace API.Migrations
 
                     b.HasIndex("StatTypeId");
 
-                    b.ToTable("GameStat");
+                    b.ToTable("GameStats", (string)null);
                 });
 
             modelBuilder.Entity("API.Models.StatType", b =>
