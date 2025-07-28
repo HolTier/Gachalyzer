@@ -8,16 +8,21 @@ class APIConfig:
     """Centralized API configuration for the OCR service."""
     
     def __init__(self):
-        self.base_url = os.getenv("API_URL", "http://localhost:8000")
+        self.base_url = os.getenv("API_URL")
+        if not self.base_url:
+            raise ValueError("API_URL environment variable is required")
+        
+        # Ensure the URL doesn't end with a slash for consistent endpoint building
+        self.base_url = self.base_url.rstrip('/')
     
     @property
     def endpoints(self) -> Dict[str, str]:
         """Get all API endpoints."""
         return {
-            "artifact_names": f"{self.base_url}/init-data/init-game-artifact-name",
-            "game_stats": f"{self.base_url}/init-data/init-game-stat",
-            "stat_types": f"{self.base_url}/init-data/init-stat-type",
-            "games": f"{self.base_url}/init-data/init-game",
+            "artifact_names": f"{self.base_url}/initdata/init-game-artifact-name",
+            "game_stats": f"{self.base_url}/initdata/init-game-stat",
+            "stat_types": f"{self.base_url}/initdata/init-stat-type",
+            "games": f"{self.base_url}/initdata/init-game",
         }
     
     def get_endpoint(self, endpoint_name: str) -> str:

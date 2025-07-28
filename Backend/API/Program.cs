@@ -15,6 +15,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 string? ocrUrl = builder.Configuration["OCR_URL"];
 string? corsOrigins = builder.Configuration["CORS_ORIGINS"];
+string? ocrCorsOrigins = builder.Configuration["OCR_CORS_ORIGINS"];
 
 builder.Services.AddSingleton(new GlobalConfig
 {
@@ -57,9 +58,11 @@ builder.Services.AddCors(options =>
         {
             builder.WithOrigins(
                 corsOrigins ?? "http://localhost:3000", 
-                "http://127.0.0.1:3000")
+                "http://127.0.0.1:3000",
+                ocrCorsOrigins ?? "http://localhost:8000")
                 .AllowAnyHeader()
                 .AllowAnyMethod();
+
         });
 });
 

@@ -14,6 +14,7 @@ services:
         - ConnectionStrings__RedisConnection=${REDIS_HOST}:${REDIS_PORT}
         - OCR_URL=${OCR_URL}:${OCR_PORT}
         - API_CORS_ORIGIN=${API_CORS_ORIGIN}
+        - OCR_CORS_ORIGIN=${OCR_CORS_ORIGIN}
         - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
     depends_on:
         postgres:
@@ -29,7 +30,7 @@ services:
     ports:
         - "${OCR_PORT}:${OCR_PORT}"
     environment:
-        - API_URL=${REACT_APP_API_URL}
+        - API_URL=${OCR_API_URL}
     networks:
       - my_network
 

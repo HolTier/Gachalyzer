@@ -30,6 +30,6 @@ async def process_image(file_content: bytes) -> Dict[str, List[str]]:
         print(f"Error processing artifacts: {e}")
 
     return {
-        'keywords': found_keywords,
-        'artifacts': found_artifacts
+        "keywords": found_keywords,
+        "artifacts": found_artifacts
     }
