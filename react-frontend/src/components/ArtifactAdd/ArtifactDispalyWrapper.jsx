@@ -1,16 +1,20 @@
-import { Box, Paper, IconButton, Dialog, DialogContent, DialogTitle, Slide } from "@mui/material";
+import { Box, Paper, IconButton, Dialog, DialogContent, DialogTitle, Slide, Typography } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 import ArtifactShowcase from "./ArtifactShowcase";
 import { useAllStatsState } from "../../hooks/useAllStatsState";
 import ArtifactMiniCard from "./ArtifactMiniCard";
+import ArtifactNameAutocomplete from "./ArtifactNameAutocomplete";
+import { useApiArtifactData } from "../../hooks/useApiArtifactData";
 import { useState, useRef, forwardRef } from "react";
 
 const Transition = forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
-function ArtifactDisplayWrapper({ stats, apiGameData }) {
+function ArtifactDisplayWrapper({ stats, artifacts, apiGameData }) {
     const { allStats, setAllStats, nextIdRef } = useAllStatsState(stats);
+    const { data: apiArtifactData, loading: artifactLoading } = useApiArtifactData();
+    const [artifactName, setArtifactName] = useState(artifacts[0] || "");
     const [showShowcase, setShowShowcase] = useState(false);
     const [isHovering, setIsHovering] = useState(false);
     const miniCardRef = useRef(null);
@@ -29,8 +33,12 @@ function ArtifactDisplayWrapper({ stats, apiGameData }) {
     const handleHoverEnter = () => setIsHovering(true);
     const handleHoverLeave = () => setIsHovering(false);
 
+    const handleArtifactNameChange = (newName) => {
+        setArtifactName(newName);
+    };
+
     return (
-        <Box position="relative" display="flex" justifyContent="center" alignItems="center">
+        <Box position="relative" display="flex" flexDirection="column" justifyContent="center" alignItems="center" gap={2}>
             <Box
                 sx={{
                     position: 'relative',
@@ -51,6 +59,7 @@ function ArtifactDisplayWrapper({ stats, apiGameData }) {
                     <ArtifactMiniCard
                         ref={miniCardRef}
                         allStats={allStats}
+                        artifactName={artifactName}
                         onClick={!showShowcase ? handleMiniCardClick : undefined}
                         hovered={isHovering && !showShowcase}
                         sx={{
@@ -150,6 +159,8 @@ function ArtifactDisplayWrapper({ stats, apiGameData }) {
                             setAllStats={setAllStats}
                             nextIdRef={nextIdRef}
                             apiGameData={apiGameData}
+                            apiArtifactData={apiArtifactData}
+                            artifactName={artifactName}
                             editMode={true}
                             bare={true}
                             sx={{

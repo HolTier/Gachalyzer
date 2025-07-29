@@ -3,6 +3,7 @@ export const API_CONFIG = {
     ENDPOINTS: {
         OCR_UPLOAD_MULTIPLE: "/Ocr/upload-multiple",
         INIT_GAME_STATS: "/InitData/init-game-stats",
+        INIT_GAME_ARTIFACT_NAMES: "/InitData/init-game-artifact-name",
         INIT_WUWA: "/InitData/initWuwa"
     }
 };

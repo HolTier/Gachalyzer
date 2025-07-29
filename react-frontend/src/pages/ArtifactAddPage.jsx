@@ -145,7 +145,8 @@ function ArtifactAddPage() {
                         {ocrResponse.map((fs, index) => (
                             <Grid item xs={12} sm={6} md={4} key={index}>
                                 <ArtifactDisplayWrapper 
-                                    stats={fs.stats} 
+                                    stats={fs.stats}
+                                    artifacts={fs.artifacts}
                                     apiGameData={apiGames}
                                 />
                             </Grid>

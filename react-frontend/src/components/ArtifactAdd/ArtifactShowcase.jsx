@@ -4,8 +4,18 @@ import { useArtifactStats } from '../../hooks/useArtifactStats';
 import { useDragHandlers } from '../../hooks/useDragHandlers';
 import StatSection from './StatSection';
 import DragPreview from './DragPreview';
+import ArtifactNameAutocomplete from './ArtifactNameAutocomplete';
 
-function ArtifactShowcase({ allStats, setAllStats, nextIdRef, apiGameData, bare }) {
+function ArtifactShowcase(
+    { allStats, 
+        setAllStats, 
+        nextIdRef, 
+        apiGameData, 
+        bare, 
+        artifactName, 
+        setArtifactName,
+        apiArtifactData,
+    }) {
     const {
         findContainer, findStat, handleChange, togglePercentage, handleStatChange, addNewStat
     } = useArtifactStats({ allStats, setAllStats, nextIdRef });
@@ -16,6 +26,14 @@ function ArtifactShowcase({ allStats, setAllStats, nextIdRef, apiGameData, bare 
 
     const content = (
         <>
+            <Box sx={{ mb: 2, textAlign: 'center' }}>
+                <ArtifactNameAutocomplete
+                    value={artifactName}
+                    onChangeValue={setArtifactName}
+                    apiArtifactData={apiArtifactData}
+                    sx={{ width: '100%', maxWidth: 300, mb: 1 }}
+                />
+            </Box>
             <StatSection 
                 title={"Main Stats"} 
                 statsKey={"mainStats"} 

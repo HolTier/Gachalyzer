@@ -43,7 +43,7 @@ function StatRow({ stat, value }) {
     );
 }
 
-const ArtifactMiniCard = forwardRef(function ArtifactMiniCard({ allStats, onClick, sx, hovered }, ref) {
+const ArtifactMiniCard = forwardRef(function ArtifactMiniCard({ allStats, onClick, sx, hovered, artifactName }, ref) {
     return (
         <div
             ref={ref}
@@ -74,6 +74,19 @@ const ArtifactMiniCard = forwardRef(function ArtifactMiniCard({ allStats, onClic
                     },
                 }}
             >
+                <Typography
+                    variant="subtitle1"
+                    sx={{
+                        fontWeight: 600,
+                        color: 'text.primary',
+                        mb: 1,
+                        fontSize: { xs: '0.95rem', sm: '1.05rem' },
+                        letterSpacing: '0.01em',
+                        textAlign: 'center',
+                    }}
+                >
+                    {artifactName || 'Artifact Name'}
+                </Typography>
                 <Typography
                     variant="subtitle2"
                     sx={{
