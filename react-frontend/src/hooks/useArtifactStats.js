@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 
 export function useArtifactStats({allStats, setAllStats, nextIdRef}) {
     const findContainer = (id) => {
-        if (id === 'mainStats' || id === 'subStats') {
+        if (id === 'mainStats' || id === 'subStats' || id === 'costStats') {
             return id;
         }
 
@@ -25,10 +25,14 @@ export function useArtifactStats({allStats, setAllStats, nextIdRef}) {
         };
         nextIdRef.current += 1;
 
+        const containerKey = statType === 'MainStat' ? 'mainStats' : 
+                           statType === 'SubStat' ? 'subStats' : 
+                           statType === 'Cost' ? 'costStats' : 'subStats';
+
         setAllStats(prev => ({
             ...prev,
-            [statType === 'MainStat' ? 'mainStats' : 'subStats']: [
-                ...prev[statType === 'MainStat' ? 'mainStats' : 'subStats'],
+            [containerKey]: [
+                ...prev[containerKey],
                 newStat
             ]
         }));

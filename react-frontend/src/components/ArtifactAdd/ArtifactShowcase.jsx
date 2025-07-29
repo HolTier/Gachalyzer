@@ -57,6 +57,18 @@ function ArtifactShowcase(
                 isDragging={isDragging}
                 onAddStat={addNewStat}
             />
+            <Divider sx={{ my: 1.5, borderColor: 'divider', opacity: 0.7, }} />
+            <StatSection 
+                title={"Cost"} 
+                statsKey={"costStats"} 
+                stats={allStats.costStats}
+                apiGameData={apiGameData.filter((s) => s.statTypeName === 'Cost')}
+                onChangeValue={handleChange}
+                onTogglePercentage={togglePercentage}
+                onGameStatChange={handleStatChange}
+                isDragging={isDragging}
+                onAddStat={addNewStat}
+            />
         </>
     );
 

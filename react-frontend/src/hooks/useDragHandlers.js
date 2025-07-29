@@ -40,7 +40,8 @@ export function useDragHandlers({ allStats, setAllStats, findContainer }) {
                 const updatedTarget = [...targetArr];
                 updatedTarget.splice(insertIndex, 0, {
                     ...statToMove,
-                    statType: targetList === 'mainStats' ? 'MainStat' : 'SubStat',
+                    statType: targetList === 'mainStats' ? 'MainStat' : 
+                             targetList === 'subStats' ? 'SubStat' : 'Cost',
                 });
                 return {
                     ...prev,

@@ -161,6 +161,7 @@ function ArtifactDisplayWrapper({ stats, artifacts, apiGameData }) {
                             apiGameData={apiGameData}
                             apiArtifactData={apiArtifactData}
                             artifactName={artifactName}
+                            setArtifactName={setArtifactName}
                             editMode={true}
                             bare={true}
                             sx={{

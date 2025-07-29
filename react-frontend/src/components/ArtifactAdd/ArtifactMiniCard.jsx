@@ -128,6 +128,26 @@ const ArtifactMiniCard = forwardRef(function ArtifactMiniCard({ allStats, onClic
                 {allStats.subStats.map((stat) => (
                     <StatRow key={stat.id} stat={stat.stat} value={stat.rawValue} />
                 ))}
+                {allStats.costStats && allStats.costStats.length > 0 && (
+                    <>
+                        <Divider sx={{ my: 1, borderColor: 'divider', opacity: 0.7 }} />
+                        <Typography
+                            variant="subtitle2"
+                            sx={{
+                                fontWeight: 600,
+                                color: 'text.primary',
+                                mb: 0.5,
+                                fontSize: { xs: '0.95rem', sm: '1.05rem' },
+                                letterSpacing: '0.01em',
+                            }}
+                        >
+                            Cost
+                        </Typography>
+                        {allStats.costStats.map((stat) => (
+                            <StatRow key={stat.id} stat={stat.stat} value={stat.rawValue} />
+                        ))}
+                    </>
+                )}
             </Box>
         </div>
     );

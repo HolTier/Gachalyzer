@@ -18,6 +18,24 @@ function StatSection({
 }) {
     const [hoverBottom, setHoverBottom] = useState(false);
 
+    const handleAddStat = () => {
+        if (statsKey === 'costStats') {
+            if (stats.length >= 1) {
+                return;
+            }
+            const statType = 'Cost';
+            const statData = {
+                stat: 'Cost',
+                value: 0,
+                rawValue: '0',
+                isPercentage: false
+            };
+            onAddStat(statType, statData);
+        } else {
+            onAddStat();
+        }
+    };
+
     return (
         <>
             <Typography 
@@ -66,11 +84,11 @@ function StatSection({
                         mt: 0.5,
                     }}
                 >
-                    <Fade in={hoverBottom && !isDragging}>
+                    <Fade in={hoverBottom && !isDragging && !(statsKey === 'costStats' && stats.length >= 1)}>
                         <Button
                             size="small"
                             variant="text"
-                            onClick={onAddStat}
+                            onClick={handleAddStat}
                             sx={{
                                 fontSize: '0.75rem',
                                 textTransform: 'none',
