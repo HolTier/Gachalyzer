@@ -1,7 +1,7 @@
 import { arrayMove } from "@dnd-kit/sortable";
 import { useState } from "react";
 
-export function useDragHandlers({ allStats, setAllStats, findContainer }) {
+export function useDragHandlers({ allStats, setAllStats, findContainer, deleteStat }) {
     const [activeId, setActiveId] = useState(null);
     const [overId, setOverId] = useState(null);
     const [isDragging, setIsDragging] = useState(false);
@@ -22,7 +22,6 @@ export function useDragHandlers({ allStats, setAllStats, findContainer }) {
         if (!sourceList) return;
         if (!targetList) return;
 
-        // Only handle moving between containers here (live reparenting)
         if (sourceList !== targetList) {
             setAllStats((prev) => {
                 const sourceArr = [...prev[sourceList]];
@@ -30,10 +29,8 @@ export function useDragHandlers({ allStats, setAllStats, findContainer }) {
                 const statToMove = sourceArr.find(stat => stat.id === active.id);
                 const updatedSource = sourceArr.filter(stat => stat.id !== active.id);
                 
-                // Prevent duplicates
                 if (targetArr.some(stat => stat.id === active.id)) return prev;
 
-                // Calculate insertion index
                 const overIndex = targetArr.findIndex(stat => stat.id === over.id);
                 const insertIndex = overIndex >= 0 ? overIndex : targetArr.length;
 
@@ -55,7 +52,15 @@ export function useDragHandlers({ allStats, setAllStats, findContainer }) {
         const { active, over } = event;
         setActiveId(null);
         setOverId(null);
+        
+        if (over && over.id === 'delete-zone') {
+            deleteStat(active.id);
+            setIsDragging(false);
+            return;
+        }
+        
         if (!over || active.id === over.id) {
+            setIsDragging(false);
             return;
         }
         const sourceList = findContainer(active.id);

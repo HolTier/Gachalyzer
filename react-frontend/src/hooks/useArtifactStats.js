@@ -86,6 +86,18 @@ export function useArtifactStats({allStats, setAllStats, nextIdRef}) {
         });
     };
 
+    const deleteStat = (statId) => {
+        setAllStats(prev => {
+            const containerKey = findContainer(statId);
+            if (!containerKey) return prev;
+
+            return {
+                ...prev,
+                [containerKey]: prev[containerKey].filter(stat => stat.id !== statId)
+            };
+        });
+    };
+
     return {
         allStats,
         setAllStats,
@@ -95,6 +107,7 @@ export function useArtifactStats({allStats, setAllStats, nextIdRef}) {
         togglePercentage,
         handleStatChange,
         addNewStat,
+        deleteStat,
         nextIdRef
     };
 }

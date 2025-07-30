@@ -1,7 +1,9 @@
 import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { useDroppable } from '@dnd-kit/core';
 import DroppableContainer from './DroppableContainer';
 import SortableStat from './SortableStat';
 import { Typography, Box, Fade, Button } from '@mui/material'
+import { Delete } from '@mui/icons-material';
 import { useState } from 'react';
 
 function StatSection({ 
@@ -17,6 +19,9 @@ function StatSection({
     onAddStat
 }) {
     const [hoverBottom, setHoverBottom] = useState(false);
+    const { setNodeRef: setDeleteRef, isOver: isOverDelete } = useDroppable({
+        id: 'delete-zone'
+    });
 
     return (
         <>
@@ -55,6 +60,7 @@ function StatSection({
                 </SortableContext>
 
                 <Box
+                    ref={isDragging ? setDeleteRef : undefined}
                     onMouseEnter={() => setHoverBottom(true)}
                     onMouseLeave={() => setHoverBottom(false)}
                     sx={{
@@ -63,23 +69,47 @@ function StatSection({
                         justifyContent: 'center',
                         alignItems: 'center',
                         mt: 0.5,
+                        borderRadius: 2,
+                        transition: 'all 0.2s ease-in-out',
+                        ...(isDragging && {
+                            border: '2px dashed',
+                            borderColor: isOverDelete ? 'error.main' : 'error.light',
+                            backgroundColor: isOverDelete ? 'error.light' : 'rgba(244, 67, 54, 0.04)',
+                            color: isOverDelete ? 'error.contrastText' : 'error.main',
+                        })
                     }}
                 >
-                    <Fade in={hoverBottom && !isDragging}>
-                        <Button
-                            size="small"
-                            variant="text"
-                            onClick={onAddStat}
-                            sx={{
-                                fontSize: '0.75rem',
-                                textTransform: 'none',
-                                borderRadius: 2,
-                                px: 1.5,
-                            }}
-                        >
-                            + Add Stat
-                        </Button>
-                    </Fade>
+                    {isDragging ? (
+                        <Box sx={{ 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            gap: 0.5,
+                            opacity: isOverDelete ? 1 : 0.7,
+                            transform: isOverDelete ? 'scale(1.05)' : 'scale(1)',
+                            transition: 'all 0.2s ease-in-out'
+                        }}>
+                            <Delete fontSize="small" />
+                            <Typography variant="caption" sx={{ fontWeight: 500 }}>
+                                Drop here to delete
+                            </Typography>
+                        </Box>
+                    ) : (
+                        <Fade in={hoverBottom}>
+                            <Button
+                                size="small"
+                                variant="text"
+                                onClick={onAddStat}
+                                sx={{
+                                    fontSize: '0.75rem',
+                                    textTransform: 'none',
+                                    borderRadius: 2,
+                                    px: 1.5,
+                                }}
+                            >
+                                + Add Stat
+                            </Button>
+                        </Fade>
+                    )}
                 </Box>
             </DroppableContainer>
         </>

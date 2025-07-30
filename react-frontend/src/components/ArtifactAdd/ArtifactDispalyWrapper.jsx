@@ -64,8 +64,7 @@ function ArtifactDisplayWrapper({ stats, artifacts, apiGameData }) {
                         hovered={isHovering && !showShowcase}
                         sx={{
                             cursor: !showShowcase ? 'pointer' : 'default',
-                            width: 180,
-                            hight: 400,
+                            width: 380,
                             boxShadow: 0,
                             pointerEvents: !showShowcase ? 'auto' : 'none',
                             m: 0,
@@ -90,7 +89,7 @@ function ArtifactDisplayWrapper({ stats, artifacts, apiGameData }) {
             <Dialog
                 open={showShowcase}
                 onClose={handleCloseShowcase}
-                maxWidth="sm"
+                maxWidth="md"
                 fullWidth
                 slots={{transition: Transition}}
                 slotProps={{
@@ -102,7 +101,7 @@ function ArtifactDisplayWrapper({ stats, artifacts, apiGameData }) {
                             overflow: 'visible',
                             minWidth: 0,
                             minHeight: 0,
-                            maxWidth: 500,
+                            maxWidth: 700,
                         },
                     }
                 }}
@@ -148,7 +147,7 @@ function ArtifactDisplayWrapper({ stats, artifacts, apiGameData }) {
                     <Box
                         sx={{
                             width: '100%',
-                            maxWidth: 440,
+                            maxWidth: 640,
                             borderRadius: 4,
                             boxShadow: 0,
                             p: 0,
