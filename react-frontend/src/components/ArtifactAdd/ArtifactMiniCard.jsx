@@ -43,7 +43,7 @@ function StatRow({ stat, value }) {
     );
 }
 
-const ArtifactMiniCard = forwardRef(function ArtifactMiniCard({ allStats, onClick, sx, hovered, artifactName }, ref) {
+const ArtifactMiniCard = forwardRef(function ArtifactMiniCard({ allStats, onClick, sx, hovered, artifactName, costValue }, ref) {
     return (
         <div
             ref={ref}
@@ -87,6 +87,34 @@ const ArtifactMiniCard = forwardRef(function ArtifactMiniCard({ allStats, onClic
                 >
                     {artifactName || 'Artifact Name'}
                 </Typography>
+                {costValue && (
+                    <Typography
+                        variant="subtitle2"
+                        sx={{
+                            fontWeight: 500,
+                            color: 'text.secondary',
+                            mb: 1,
+                            fontSize: { xs: '0.85rem', sm: '0.95rem' },
+                            letterSpacing: '0.01em',
+                            textAlign: 'center',
+                        }}
+                    >
+                        Cost: {costValue}
+                    </Typography>
+                )}
+                <Typography
+                    variant="subtitle2"
+                    sx={{
+                        fontWeight: 500,
+                        color: 'text.secondary',
+                        mb: 1,
+                        fontSize: { xs: '0.85rem', sm: '0.95rem' },
+                        letterSpacing: '0.01em',
+                        textAlign: 'center',
+                    }}
+                >
+                    
+                </Typography>
                 <Typography
                     variant="subtitle2"
                     sx={{
@@ -128,26 +156,6 @@ const ArtifactMiniCard = forwardRef(function ArtifactMiniCard({ allStats, onClic
                 {allStats.subStats.map((stat) => (
                     <StatRow key={stat.id} stat={stat.stat} value={stat.rawValue} />
                 ))}
-                {allStats.costStats && allStats.costStats.length > 0 && (
-                    <>
-                        <Divider sx={{ my: 1, borderColor: 'divider', opacity: 0.7 }} />
-                        <Typography
-                            variant="subtitle2"
-                            sx={{
-                                fontWeight: 600,
-                                color: 'text.primary',
-                                mb: 0.5,
-                                fontSize: { xs: '0.95rem', sm: '1.05rem' },
-                                letterSpacing: '0.01em',
-                            }}
-                        >
-                            Cost
-                        </Typography>
-                        {allStats.costStats.map((stat) => (
-                            <StatRow key={stat.id} stat={stat.stat} value={stat.rawValue} />
-                        ))}
-                    </>
-                )}
             </Box>
         </div>
     );

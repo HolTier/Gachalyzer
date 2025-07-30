@@ -3,7 +3,6 @@ import CloseIcon from "@mui/icons-material/Close";
 import ArtifactShowcase from "./ArtifactShowcase";
 import { useAllStatsState } from "../../hooks/useAllStatsState";
 import ArtifactMiniCard from "./ArtifactMiniCard";
-import ArtifactNameAutocomplete from "./ArtifactNameAutocomplete";
 import { useApiArtifactData } from "../../hooks/useApiArtifactData";
 import { useState, useRef, forwardRef } from "react";
 
@@ -12,7 +11,7 @@ const Transition = forwardRef(function Transition(props, ref) {
 });
 
 function ArtifactDisplayWrapper({ stats, artifacts, apiGameData }) {
-    const { allStats, setAllStats, nextIdRef } = useAllStatsState(stats);
+    const { allStats, setAllStats, nextIdRef, costValue, setCostValue } = useAllStatsState(stats);
     const { data: apiArtifactData, loading: artifactLoading } = useApiArtifactData();
     const [artifactName, setArtifactName] = useState(artifacts[0] || "");
     const [showShowcase, setShowShowcase] = useState(false);
@@ -60,6 +59,7 @@ function ArtifactDisplayWrapper({ stats, artifacts, apiGameData }) {
                         ref={miniCardRef}
                         allStats={allStats}
                         artifactName={artifactName}
+                        costValue={costValue}
                         onClick={!showShowcase ? handleMiniCardClick : undefined}
                         hovered={isHovering && !showShowcase}
                         sx={{
@@ -161,6 +161,8 @@ function ArtifactDisplayWrapper({ stats, artifacts, apiGameData }) {
                             apiGameData={apiGameData}
                             apiArtifactData={apiArtifactData}
                             artifactName={artifactName}
+                            costValue={costValue}
+                            setCostValue={setCostValue}
                             setArtifactName={setArtifactName}
                             editMode={true}
                             bare={true}

@@ -5,6 +5,7 @@ import { useDragHandlers } from '../../hooks/useDragHandlers';
 import StatSection from './StatSection';
 import DragPreview from './DragPreview';
 import ArtifactNameAutocomplete from './ArtifactNameAutocomplete';
+import CostInput from './CostInput';
 
 function ArtifactShowcase(
     { allStats, 
@@ -15,6 +16,8 @@ function ArtifactShowcase(
         artifactName, 
         setArtifactName,
         apiArtifactData,
+        costValue,
+        setCostValue
     }) {
     const {
         findContainer, findStat, handleChange, togglePercentage, handleStatChange, addNewStat
@@ -32,6 +35,10 @@ function ArtifactShowcase(
                     onChangeValue={setArtifactName}
                     apiArtifactData={apiArtifactData}
                     sx={{ width: '100%', maxWidth: 300, mb: 1 }}
+                />
+                <CostInput
+                    costValue={costValue || ''}
+                    setCostValue={setCostValue}
                 />
             </Box>
             <StatSection 
@@ -51,18 +58,6 @@ function ArtifactShowcase(
                 statsKey={"subStats"} 
                 stats={allStats.subStats}
                 apiGameData={apiGameData.filter((s) => s.statTypeName === 'Sub')}
-                onChangeValue={handleChange}
-                onTogglePercentage={togglePercentage}
-                onGameStatChange={handleStatChange}
-                isDragging={isDragging}
-                onAddStat={addNewStat}
-            />
-            <Divider sx={{ my: 1.5, borderColor: 'divider', opacity: 0.7, }} />
-            <StatSection 
-                title={"Cost"} 
-                statsKey={"costStats"} 
-                stats={allStats.costStats}
-                apiGameData={apiGameData.filter((s) => s.statTypeName === 'Cost')}
                 onChangeValue={handleChange}
                 onTogglePercentage={togglePercentage}
                 onGameStatChange={handleStatChange}

@@ -18,24 +18,6 @@ function StatSection({
 }) {
     const [hoverBottom, setHoverBottom] = useState(false);
 
-    const handleAddStat = () => {
-        if (statsKey === 'costStats') {
-            if (stats.length >= 1) {
-                return;
-            }
-            const statType = 'Cost';
-            const statData = {
-                stat: 'Cost',
-                value: 0,
-                rawValue: '0',
-                isPercentage: false
-            };
-            onAddStat(statType, statData);
-        } else {
-            onAddStat();
-        }
-    };
-
     return (
         <>
             <Typography 
@@ -72,7 +54,6 @@ function StatSection({
                     ))}
                 </SortableContext>
 
-                {/* Hover-sensitive bottom area */}
                 <Box
                     onMouseEnter={() => setHoverBottom(true)}
                     onMouseLeave={() => setHoverBottom(false)}
@@ -84,11 +65,11 @@ function StatSection({
                         mt: 0.5,
                     }}
                 >
-                    <Fade in={hoverBottom && !isDragging && !(statsKey === 'costStats' && stats.length >= 1)}>
+                    <Fade in={hoverBottom && !isDragging}>
                         <Button
                             size="small"
                             variant="text"
-                            onClick={handleAddStat}
+                            onClick={onAddStat}
                             sx={{
                                 fontSize: '0.75rem',
                                 textTransform: 'none',

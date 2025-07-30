@@ -3,7 +3,6 @@ import { CSS } from "@dnd-kit/utilities";
 import { DragIndicator } from "@mui/icons-material";
 import { Box, Typography, IconButton } from "@mui/material";
 import StatInput from "./StatInput";
-import CostInput from "./CostInput";
 import GameStatAutocomplete from "./GameStatAutocomplete";
 
 const SortableStat = ({ stat, onChangeValue, onTogglePercentage, dragOverType, apiGameData, onGameStatChange }) => {
@@ -68,19 +67,12 @@ const SortableStat = ({ stat, onChangeValue, onTogglePercentage, dragOverType, a
                 apiGameData={apiGameData}
                 onChangeValue={(val) => onGameStatChange(stat.id, val)}
             />
-            {stat.statType === 'Cost' ? (
-                <CostInput
-                    value={stat.value}
-                    onChangeValue={(val) => onChangeValue(stat.id, val)}
-                />
-            ) : (
-                <StatInput
-                    value={stat.value}
-                    isPercentage={stat.isPercentage}
-                    onChangeValue={(val) => onChangeValue(stat.id, val)}
-                    onTogglePercentage={() => onTogglePercentage(stat.id)}
-                />
-            )}
+            <StatInput
+                value={stat.value}
+                isPercentage={stat.isPercentage}
+                onChangeValue={(val) => onChangeValue(stat.id, val)}
+                onTogglePercentage={() => onTogglePercentage(stat.id)}
+            />
         </Box>
     );
 }
