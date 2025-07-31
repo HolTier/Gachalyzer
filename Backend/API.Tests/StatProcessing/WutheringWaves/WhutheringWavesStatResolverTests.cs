@@ -12,7 +12,7 @@ namespace API.Tests.StatProcessing.WutheringWaves
     public class WhutheringWavesStatResolverTests
     {
         [Fact]
-        public void DetermineStatType_ReturnSubStat_WhenValidValue()
+        public void DetermineStatType_ShouldReturnSubStat_WhenValidValue()
         {
             // Arrange
             var resolver = new WhutheringWavesStatResolver();

@@ -204,7 +204,6 @@ namespace API.Tests.Controllers
                     (_, func) => func().ContinueWith(t => t.Result.ToList())
                 );
 
-
             // Act
             var result = await _controller.GetGameArtifactNames();
 
@@ -215,6 +214,131 @@ namespace API.Tests.Controllers
             dto.Should().ContainSingle();
             dto.Single().Name.Should().Be("Test Artifact");
             _artifactRepoMock.Verify(r => r.GetAllAsync(), Times.Once);
+        }
+
+        [Fact]
+        public async Task GetCharacters_ReturnOkAndCallRepository_IfNotCached()
+        {
+            // Arrange
+            var characters = new List<CharacterBaseDto>
+            {
+                new CharacterBaseDto
+                {
+                    Id = 1,
+                    Name = "TestCharacter",
+                    GameId = 1,
+                    GameName = "testGame",
+                    SplashArtPath = "/Images/test.jpg",
+                }
+            };
+
+            _characterRepositoryMock
+                .Setup(r => r.GetAllCharacterBaseDtosAsync())
+                .ReturnsAsync(characters);
+
+            _cachedDataServiceMock
+                .Setup(c => c.GetOrSetCacheAsync(
+                    "characters:all",
+                    It.IsAny<Func<Task<IEnumerable<CharacterBaseDto>>>>()
+                ))
+                .Returns<string, Func<Task<IEnumerable<CharacterBaseDto>>>>(
+                    (_, func) => func().ContinueWith(t => t.Result.ToList())
+                );
+
+            // Act
+            var result = await _controller.GetCharacters();
+
+            // Assert
+            var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+            var dto = okResult.Value.Should().BeAssignableTo<IEnumerable<CharacterBaseDto>>().Subject.ToList();
+            dto.Should().NotBeNull();
+            dto.Should().ContainSingle();
+            dto[0].Name.Should().Be("TestCharacter");
+            _characterRepositoryMock.Verify(r => r.GetAllCharacterBaseDtosAsync(), Times.Once);
+        }
+
+        [Fact]
+        public async Task GetCharactersByGameName_ReturnOkAndCallRepository_IfNotCached()
+        {
+            // Arrange
+            string gameName = "testGame";
+            var characters = new List<CharacterBaseDto>
+            {
+                new CharacterBaseDto
+                {
+                    Id = 1,
+                    Name = "TestCharacter",
+                    GameId = 1,
+                    GameName = gameName,
+                    SplashArtPath = "/Images/test.jpg",
+                }
+            };
+
+            _characterRepositoryMock
+               .Setup(r => r.GetCharacterBaseDtosByGameNameAsync(gameName))
+               .ReturnsAsync(characters);
+
+            _cachedDataServiceMock
+                .Setup(c => c.GetOrSetCacheAsync(
+                    $"characters:game:{gameName}",
+                    It.IsAny<Func<Task<IEnumerable<CharacterBaseDto>>>>()
+                ))
+                .Returns<string, Func<Task<IEnumerable<CharacterBaseDto>>>>(
+                    (_, func) => func().ContinueWith(t => t.Result.ToList())
+                );
+
+            // Act
+            var result = await _controller.GetCharactersByGameName(gameName);
+
+            // Assert
+            var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+            var dto = okResult.Value.Should().BeAssignableTo<IEnumerable<CharacterBaseDto>>().Subject.ToList();
+            dto.Should().NotBeNull();
+            dto.Should().ContainSingle();
+            dto[0].Name.Should().Be("TestCharacter");
+            _characterRepositoryMock.Verify(r => r.GetCharacterBaseDtosByGameNameAsync(gameName), Times.Once);
+        }
+
+        [Fact]
+        public async Task GetCharactersByGameId_ReturnOkAndCallRepository_IfNotCached()
+        {
+            // Arrange
+            int gameId = 1;
+            var characters = new List<CharacterBaseDto>
+            {
+                new CharacterBaseDto
+                {
+                    Id = 1,
+                    Name = "TestCharacter",
+                    GameId = gameId,
+                    GameName = "testGame",
+                    SplashArtPath = "/Images/test.jpg",
+                }
+            };
+
+            _characterRepositoryMock
+               .Setup(r => r.GetCharacterBaseDtosByGameIdAsync(gameId))
+               .ReturnsAsync(characters);
+
+            _cachedDataServiceMock
+                .Setup(c => c.GetOrSetCacheAsync(
+                    $"characters:gameId:{gameId}",
+                    It.IsAny<Func<Task<IEnumerable<CharacterBaseDto>>>>()
+                ))
+                .Returns<string, Func<Task<IEnumerable<CharacterBaseDto>>>>(
+                    (_, func) => func().ContinueWith(t => t.Result.ToList())
+                );
+
+            // Act
+            var result = await _controller.GetCharactersByGameId(gameId);
+
+            // Assert
+            var okResult = result.Should().BeOfType<OkObjectResult>().Subject;
+            var dto = okResult.Value.Should().BeAssignableTo<IEnumerable<CharacterBaseDto>>().Subject.ToList();
+            dto.Should().NotBeNull();
+            dto.Should().ContainSingle();
+            dto[0].Name.Should().Be("TestCharacter");
+            _characterRepositoryMock.Verify(r => r.GetCharacterBaseDtosByGameIdAsync(gameId), Times.Once);
         }
     }
 }
