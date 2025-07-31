@@ -9,6 +9,7 @@ using API.Services.Ocr;
 using API.StatProcessing;
 using API.StatProcessing.WhutheringWaves;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -74,6 +75,7 @@ builder.Services.AddAutoMapper(typeof(GameStatProfile));
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped<IGameStatRepository, GameStatRepository>();
 builder.Services.AddScoped<IGameArtifactNameRepository, GameArtifactNameRepository>();
+builder.Services.AddScoped<ICharacterRepository, CharacterRepository>();
 
 // Processors
 builder.Services.AddScoped<IOcrResultProcessor, OcrResultProcessor>();
@@ -147,6 +149,16 @@ if (app.Environment.IsDevelopment())
         await DbSeeder.SeedAsync(scope.ServiceProvider, env);
     }
 }
+
+// Static Files
+app.UseStaticFiles();
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(
+        Path.Combine(Directory.GetCurrentDirectory(), "Storage", "Images")),
+    RequestPath = "/images"
+});
 
 //app.UseHttpsRedirection();
 

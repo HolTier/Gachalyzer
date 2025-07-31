@@ -16,6 +16,8 @@ services:
         - API_CORS_ORIGIN=${API_CORS_ORIGIN}
         - OCR_CORS_ORIGIN=${OCR_CORS_ORIGIN}
         - ASPNETCORE_ENVIRONMENT=${ASPNETCORE_ENVIRONMENT}
+    volumes:
+        - ./Storage:/app/Storage
     depends_on:
         postgres:
             condition: service_healthy
