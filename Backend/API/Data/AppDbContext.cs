@@ -9,7 +9,6 @@ namespace API.Data
         {
         }
 
-        // DbSets for the entities
         public DbSet<WuwaMainStat> WuwaMainStats { get; set; }
         public DbSet<GameStat> WuwaSubStats { get; set; }
 

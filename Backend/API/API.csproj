@@ -44,6 +44,7 @@
 
   <ItemGroup>
     <Folder Include="Resources\Triggers\" />
+    <Folder Include="Storage\Images\" />
   </ItemGroup>
 
 </Project>
