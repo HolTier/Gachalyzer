@@ -1,11 +1,15 @@
-﻿using API.Models;
+﻿using API.Dtos;
+using API.Models;
 
 namespace API.Repositories
 {
-    public interface ICharacterRepository
+    public interface ICharacterRepository : IGenericRepository<Character>
     {
         Task<IEnumerable<Character>> GetCharactersByGameIdAsync(int gameId);
         Task<IEnumerable<Character>> GetCharactersByGameNameAsync(string gameName);
         Task<IEnumerable<Character>> GetCharactersByCharacterStatTypeAndGameIdAsync(string characterStatType, string gameName);
+        Task<IEnumerable<CharacterBaseDto>> GetCharacterBaseDtosByGameIdAsync(int gameId);
+        Task<IEnumerable<CharacterBaseDto>> GetCharacterBaseDtosByGameNameAsync(string gameName);
+        Task<IEnumerable<CharacterBaseDto>> GetAllCharacterBaseDtosAsync();
     }
 }

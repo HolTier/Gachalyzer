@@ -54,7 +54,7 @@ namespace API.Tests.Services.Files
                 )
                 .ReturnsAsync((HttpRequestMessage request, CancellationToken token) =>
                 {
-                    var mockOcrResponse = new { result = new List<string> { "CRIT RATE 7%", "HP 200" } };
+                    var mockOcrResponse = new { keywords = new List<string> { "CRIT RATE 7%", "HP 200" } };
                     var json = JsonSerializer.Serialize(mockOcrResponse);
 
                     return new HttpResponseMessage

@@ -1,4 +1,5 @@
 ﻿using API.Data;
+using API.Dtos;
 using API.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,6 +9,53 @@ namespace API.Repositories
     {
         public CharacterRepository(AppDbContext context) : base(context)
         {
+        }
+
+        public async Task<IEnumerable<CharacterBaseDto>> GetAllCharacterBaseDtosAsync()
+        {
+            return await _dbSet
+                .Include(c => c.Game)
+                .Select(c => new CharacterBaseDto
+                {
+                    Id = c.Id,
+                    Name = c.Name,
+                    GameId = c.GameId,
+                    GameName = c.Game.Name,
+                    SplashArtPath = c.SplashArtPath
+                })
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<CharacterBaseDto>> GetCharacterBaseDtosByGameIdAsync(int gameId)
+        {
+            return await _dbSet
+                .Include(c => c.Game)
+                .Where(c => c.GameId == gameId)
+                .Select(c => new CharacterBaseDto
+                {
+                    Id = c.Id,
+                    Name = c.Name,
+                    GameId = c.GameId,
+                    GameName = c.Game.Name,
+                    SplashArtPath = c.SplashArtPath
+                })
+                .ToListAsync();
+        }
+
+        public async Task<IEnumerable<CharacterBaseDto>> GetCharacterBaseDtosByGameNameAsync(string gameName)
+        {
+            return await _dbSet
+                .Include(c => c.Game)
+                .Where(c => c.Game.Name == gameName)
+                .Select(c => new CharacterBaseDto
+                {
+                    Id = c.Id,
+                    Name = c.Name,
+                    GameId = c.GameId,
+                    GameName = c.Game.Name,
+                    SplashArtPath = c.SplashArtPath
+                })
+                .ToListAsync();
         }
 
         public async Task<IEnumerable<Character>> GetCharactersByCharacterStatTypeAndGameIdAsync(string characterStatType, string gameName)
@@ -22,14 +70,20 @@ namespace API.Repositories
                 .ToListAsync();
         }
 
-        public Task<IEnumerable<Character>> GetCharactersByGameIdAsync(int gameId)
+        public async Task<IEnumerable<Character>> GetCharactersByGameIdAsync(int gameId)
         {
-            throw new NotImplementedException();
+            return await _dbSet
+                .Include(c => c.Game)
+                .Where(c => c.GameId == gameId)
+                .ToListAsync();
         }
 
-        public Task<IEnumerable<Character>> GetCharactersByGameNameAsync(string gameName)
+        public async Task<IEnumerable<Character>> GetCharactersByGameNameAsync(string gameName)
         {
-            throw new NotImplementedException();
+            return await _dbSet
+                .Include(c => c.Game)
+                .Where(c => c.Game.Name == gameName)
+                .ToListAsync();
         }
     }
 }

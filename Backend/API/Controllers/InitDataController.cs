@@ -15,14 +15,16 @@ namespace API.Controllers
     {
         private readonly IGameStatRepository _gameStatRepository;
         private readonly IGameArtifactNameRepository _gameArtifactNameRepository;
+        private readonly ICharacterRepository _characterRepository;
         private readonly ICachedDataService _cachedDataService;
 
-        public InitDataController(IGameStatRepository gameStatRepository, ICachedDataService cachedDataService, 
-            IGameArtifactNameRepository gameArtifactNameRepository)
+        public InitDataController(IGameStatRepository gameStatRepository, ICachedDataService cachedDataService,
+            IGameArtifactNameRepository gameArtifactNameRepository, ICharacterRepository characterRepository)
         {
             _gameStatRepository = gameStatRepository;
             _gameArtifactNameRepository = gameArtifactNameRepository;
             _cachedDataService = cachedDataService;
+            _characterRepository = characterRepository;
         }
 
         [HttpGet("init-game-stats")]
@@ -50,6 +52,57 @@ namespace API.Controllers
                 var data = await _cachedDataService.GetOrSetCacheAsync(
                         "artifact:all",
                         () => _gameArtifactNameRepository.GetAllAsync()
+                );
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Internal Server error: " + ex.Message);
+            }
+        }
+
+        [HttpGet("inti-characters")]
+        public async Task<IActionResult> GetCharacters()
+        {
+            try
+            {
+                var data = await _cachedDataService.GetOrSetCacheAsync(
+                        "characters:all",
+                        () => _characterRepository.GetAllCharacterBaseDtosAsync()
+                );
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Internal Server error: " + ex.Message);
+            }
+        }
+
+        [HttpGet("init-characters/name/{gameName}")]
+        public async Task<IActionResult> GetCharactersByGameName(string gameName)
+        {
+            try
+            {
+                var data = await _cachedDataService.GetOrSetCacheAsync(
+                        $"characters:game:{gameName}",
+                        () => _characterRepository.GetCharacterBaseDtosByGameNameAsync(gameName)
+                );
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Internal Server error: " + ex.Message);
+            }
+        }
+
+        [HttpGet("init-characters/{gameId}")]
+        public async Task<IActionResult> GetCharactersByGameId(int gameId)
+        {
+            try
+            {
+                var data = await _cachedDataService.GetOrSetCacheAsync(
+                        $"characters:gameId:{gameId}",
+                        () => _characterRepository.GetCharacterBaseDtosByGameIdAsync(gameId)
                 );
                 return Ok(data);
             }
