@@ -128,3 +128,7 @@ pgadmin_data
 .env*
 **/.env*
 !.env.example
+
+# Image storage
+/Storage/Images/*
+!/Storage/Images/.gitkeep
