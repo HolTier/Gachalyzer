@@ -21,6 +21,10 @@ namespace API.Data
         public DbSet<CharacterStatType> CharacterStatTypes {  get; set; }
         public DbSet<CharacterStatScaling> CharacterStatScalings {  get; set; }
 
+        public DbSet<Image> Images { get; set; }
+        public DbSet<ImageStatus> ImageStatuses { get; set; }
+        public DbSet<Tag> Tags { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<GameStat>().ToTable("GameStats");

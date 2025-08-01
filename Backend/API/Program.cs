@@ -5,6 +5,7 @@ using API.Models;
 using API.Repositories;
 using API.Services.Cache;
 using API.Services.Files;
+using API.Services.Images;
 using API.Services.Ocr;
 using API.StatProcessing;
 using API.StatProcessing.WhutheringWaves;
@@ -76,6 +77,7 @@ builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepositor
 builder.Services.AddScoped<IGameStatRepository, GameStatRepository>();
 builder.Services.AddScoped<IGameArtifactNameRepository, GameArtifactNameRepository>();
 builder.Services.AddScoped<ICharacterRepository, CharacterRepository>();
+builder.Services.AddScoped<IImageRepository, ImageRepository>();
 
 // Processors
 builder.Services.AddScoped<IOcrResultProcessor, OcrResultProcessor>();
@@ -87,6 +89,7 @@ builder.Services.AddScoped<WhutheringWavesStatResolver>();
 
 // Other services
 builder.Services.AddSingleton<ICachedDataService, CachedDataService>();
+builder.Services.AddScoped<IImageService, ImageService>();
 
 // Factory
 builder.Services.AddScoped<IGameStatResolverFactory, GameStatResolverFactory>();
