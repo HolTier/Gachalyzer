@@ -13,6 +13,19 @@ namespace API.Services.Images
         private readonly int _thumbnailWidth = 300;
         private readonly IImageRepository _imageRepository;
 
+        public enum ImageStatus
+        {
+            Available = 1,
+            Missing = 2,
+            PendingUpload = 3,
+            Corrupted = 4,
+            Archived = 5,
+            Deleted = 6,
+            Error = 7,
+            Processing = 8,
+            External = 9
+        }
+
         public ImageService(IWebHostEnvironment env, IImageRepository imageRepository)
         {
             _rootImageFolder = Path.Combine(env.ContentRootPath, "Storage", "Images");
@@ -60,8 +73,8 @@ namespace API.Services.Images
             }
 
             // Save to database
-            var splashArtUrl = $"/images/{safeFolderName}/{fileName}";
-            var thumbUrl = $"/images/{safeFolderName}/{thumbPath}";
+            var splashArtUrl = $"/images/{safeFolderName}/{fileFullName}";
+            var thumbUrl = $"/images/{safeFolderName}/{thumbFileName}";
 
             var imageModel = new API.Models.Image
             {
@@ -69,10 +82,18 @@ namespace API.Services.Images
                 ThumbnailPath = thumbUrl,
                 Hash = hash,
                 CreatedAt = DateTime.UtcNow,
-                LastModified = DateTime.UtcNow
+                LastModified = DateTime.UtcNow,
+                ImageStatusId = (int)ImageStatus.Available,
             };
 
-            return new();
+            await _imageRepository.AddAsync(imageModel);
+
+            return new ImageUploadDto
+            {
+                SplashArtPath = splashArtUrl,
+                ThumbnailPath = thumbUrl,
+                Tags = new List<string>()
+            };
         }
 
         private static string SanitizeFileName(string input)

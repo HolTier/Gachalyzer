@@ -12,6 +12,6 @@
         public List<Tag> Tags { get; set; } = new();
 
         public int ImageStatusId { get; set; }
-        public ImageStatus? ImageStatus { get; set; }
+        public ImageStatus ImageStatus { get; set; } = default!;
     }
 }

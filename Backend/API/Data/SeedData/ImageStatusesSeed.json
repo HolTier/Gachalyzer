@@ -1,0 +1,38 @@
+[
+    {
+        "id": 1,
+        "name": "Available"
+    },
+    {
+        "id": 2,
+        "name": "Missing"
+    },
+    {
+        "id": 3,
+        "name": "PendingUpload"
+    },
+    {
+        "id": 4,
+        "name": "Corrupted"
+    },
+    {
+        "id": 5,
+        "name": "Archived"
+    },
+    {
+        "id": 6,
+        "name": "Deleted"
+    },
+    {
+        "id": 7,
+        "name": "Error"
+    },
+    {
+        "id": 8,
+        "name": "Processing"
+    },
+    {
+        "id": 9,
+        "name": "External"
+    }
+]

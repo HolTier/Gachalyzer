@@ -13,6 +13,7 @@ namespace API.Data
         private const string GameSeed = "GameSeed.json";
         private const string StatTypesSeed = "StatTypes.json";
         private const string GameArtifactNamesSeed = "GameArtifactNamesSeed.json";
+        private const string ImageStatusesSeed = "ImageStatusesSeed.json";
 
         public static async Task SeedAsync(IServiceProvider serviceProvider, IWebHostEnvironment env)
         {
@@ -31,6 +32,7 @@ namespace API.Data
                 await SeedFromJsonAsync(db, Path.Combine(SeedDataFolder, StatTypesSeed), db.StatTypes, env);
                 await SeedFromJsonAsync(db, Path.Combine(SeedDataFolder, GameStatsSeed), db.GameStats, env);
                 await SeedFromJsonAsync(db, Path.Combine(SeedDataFolder, GameArtifactNamesSeed), db.GameArtifactNames, env);
+                await SeedFromJsonAsync(db, Path.Combine(SeedDataFolder, ImageStatusesSeed), db.ImageStatuses, env);
                 await transaction.CommitAsync();
             }
             catch (Exception ex)
@@ -55,7 +57,10 @@ namespace API.Data
             if (!File.Exists(fullPath)) return;
             var json = await File.ReadAllTextAsync(fullPath);
 
-            var records = JsonSerializer.Deserialize<List<T>>(json);
+            var records = JsonSerializer.Deserialize<List<T>>(json, new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
 
             if (records?.Count > 0)
             {
