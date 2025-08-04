@@ -40,10 +40,24 @@ namespace API.Services.Images
             var safeFolderName = SanitizeFileName(folderName);
             var safeFileName = SanitizeFileName(fileName);
 
-            // Hashing
-            var hash = ComputateHash(file);
+            string hash;
+            using (var stream = file.OpenReadStream())
+            {
+                hash = ComputateHash(stream);
+            }
 
-            // Name changing
+            var existingImage = await _imageRepository.GetByHashAsync(hash);
+
+            if (existingImage != null)
+            {
+                return new ImageUploadDto
+                {
+                    SplashArtPath = existingImage.SplashArtPath,
+                    ThumbnailPath = existingImage.ThumbnailPath,
+                    Tags = new List<string>()
+                };
+            }
+
             var extension = Path.GetExtension(file.FileName);
             var fileBaseName = $"{safeFileName}-{hash}";
             var fileFullName = $"{fileBaseName}{extension}";
@@ -52,17 +66,14 @@ namespace API.Services.Images
             var fileDir = Path.Combine(_rootImageFolder, safeFolderName);
             Directory.CreateDirectory(fileDir);
 
-            // Full path
             var fullPath = Path.Combine(fileDir, fileFullName);
             var thumbPath = Path.Combine(fileDir, thumbFileName);
 
-            // Save og
             using (var stream = new FileStream(fullPath, FileMode.Create))
             {
                 await file.CopyToAsync(stream);
             }
 
-            // Save thumb
             using (var image = await SixLabors.ImageSharp.Image.LoadAsync(fullPath))
             {
                 var ratio = (double)_thumbnailWidth / image.Width;
@@ -72,7 +83,6 @@ namespace API.Services.Images
                 await image.SaveAsync(thumbPath);
             }
 
-            // Save to database
             var splashArtUrl = $"/images/{safeFolderName}/{fileFullName}";
             var thumbUrl = $"/images/{safeFolderName}/{thumbFileName}";
 
@@ -96,6 +106,69 @@ namespace API.Services.Images
             };
         }
 
+        public async Task ScanAndCompareImagesAsync()
+        {
+            var imagesInDb = (await _imageRepository.GetAllAsync()).ToList();
+
+            var imagesInFileSystem = Directory.GetFiles(_rootImageFolder, "*.*", SearchOption.AllDirectories)
+                .Select(f => f.Replace(_rootImageFolder, "").Replace("\\", "/"))
+                .ToList();
+
+            foreach (var image in imagesInDb)
+            {
+                var splashArtPath = image.SplashArtPath.StartsWith("/images/")
+                    ? image.SplashArtPath.Substring("/images".Length)
+                    : image.SplashArtPath;
+
+                var idx = imagesInFileSystem.FindIndex(f => f.EndsWith(splashArtPath, StringComparison.OrdinalIgnoreCase));
+                if (idx == -1)
+                {
+                    if (image.ImageStatusId != (int)ImageStatus.Missing)
+                    {
+                        image.ImageStatusId = (int)ImageStatus.Missing;
+                        image.LastModified = DateTime.UtcNow;
+                        _imageRepository.Update(image);
+                    }
+                }
+                else
+                {
+                    imagesInFileSystem.RemoveAt(idx);
+                }
+            }
+
+            foreach (var filePath in imagesInFileSystem)
+            { 
+                var fullPath = Path.Combine(_rootImageFolder, filePath.TrimStart('/').Replace("/", Path.DirectorySeparatorChar.ToString()));
+
+                var relativePath = filePath.TrimStart('/');
+                var folderName = Path.GetDirectoryName(relativePath)?.Replace("\\", "/") ?? "";
+                var fileName = Path.GetFileNameWithoutExtension(relativePath);
+
+                using var stream = new FileStream(fullPath, FileMode.Open, FileAccess.Read);
+                var formFile = new FormFile(stream, 0, stream.Length, fileName, Path.GetFileName(fullPath));
+
+                try
+                {
+                    await SaveSplashArtAsync(formFile, folderName, fileName);
+                }
+                catch
+                {
+                    Console.WriteLine($"Error processing file: {fullPath}");
+                    var imageModel = new API.Models.Image
+                    {
+                        SplashArtPath = $"/images/{folderName}/{Path.GetFileName(fullPath)}",
+                        ThumbnailPath = null,
+                        Hash = ComputateHash(stream),
+                        CreatedAt = DateTime.UtcNow,
+                        LastModified = DateTime.UtcNow,
+                        ImageStatusId = (int)ImageStatus.Corrupted
+                    };
+
+                    await _imageRepository.AddAsync(imageModel);
+                }
+            }
+        }
+
         private static string SanitizeFileName(string input)
         {
             foreach (char c in Path.GetInvalidFileNameChars())
@@ -105,10 +178,9 @@ namespace API.Services.Images
             return input.Replace(" ", "");
         }
 
-        private static string ComputateHash(IFormFile file)
+        private static string ComputateHash(Stream stream)
         {
             using var sha256 = SHA256.Create();
-            using var stream = file.OpenReadStream();
             var hashBytes = sha256.ComputeHash(stream);
             return BitConverter.ToString(hashBytes).Replace("-", "").ToLowerInvariant();
         }
