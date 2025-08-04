@@ -2,6 +2,6 @@
 {
     public interface ICachedDataService
     {
-        public Task<List<T>> GetOrSetCacheAsync<T>(string cacheKey, Func<Task<IEnumerable<T>>> fetchData);
+        public Task<T?> GetOrSetCacheAsync<T>(string cacheKey, Func<Task<T>> fetchData);
     }
 }

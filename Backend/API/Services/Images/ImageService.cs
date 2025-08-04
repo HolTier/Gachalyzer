@@ -2,6 +2,7 @@
 using API.Dtos;
 using API.Models;
 using API.Repositories;
+using API.Services.Cache;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
 
@@ -12,6 +13,7 @@ namespace API.Services.Images
         private readonly string _rootImageFolder;
         private readonly int _thumbnailWidth = 300;
         private readonly IImageRepository _imageRepository;
+        private readonly ICachedDataService _cachedDataService;
 
         public enum ImageStatus
         {
@@ -37,16 +39,15 @@ namespace API.Services.Images
             if (file == null || file.Length == 0)
                 throw new ArgumentException("No file provided");
 
-            var safeFolderName = SanitizeFileName(folderName);
-            var safeFileName = SanitizeFileName(fileName);
-
             string hash;
             using (var stream = file.OpenReadStream())
             {
                 hash = ComputateHash(stream);
             }
 
-            var existingImage = await _imageRepository.GetByHashAsync(hash);
+            var existingImage = _cachedDataService
+                .GetOrSetCacheAsync($"image:{hash}", () => _imageRepository.GetByHashAsync(hash))
+                .Result;
 
             if (existingImage != null)
             {
@@ -57,6 +58,9 @@ namespace API.Services.Images
                     Tags = new List<string>()
                 };
             }
+
+            var safeFolderName = SanitizeFileName(folderName);
+            var safeFileName = SanitizeFileName(fileName);
 
             var extension = Path.GetExtension(file.FileName);
             var fileBaseName = $"{safeFileName}-{hash}";

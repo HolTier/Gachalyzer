@@ -1,4 +1,5 @@
 ﻿using API.Repositories;
+using API.Services.Cache;
 using API.Services.Images;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,6 +11,7 @@ namespace API.Controllers
     {
         private readonly IImageService _imageService;
         private readonly IImageRepository _imageRepository;
+        private readonly ICachedDataService _cachedDataService;
 
         public ImageController(IImageService imageService, IImageRepository imageRepository)
         {
@@ -38,8 +40,13 @@ namespace API.Controllers
         {
             try
             {
-                var images = await _imageRepository.GetAllAsync();
-                return Ok(images);
+                var data = await _cachedDataService.GetOrSetCacheAsync(
+                    "image:all",
+                    () => _imageRepository.GetAllAsync()
+                );
+                if (data == null || !data.Any())
+                    return NotFound("No images found");
+                return Ok(data);
             }
             catch (Exception ex)
             {
