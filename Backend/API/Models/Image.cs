@@ -13,5 +13,9 @@
 
         public int ImageStatusId { get; set; }
         public ImageStatus ImageStatus { get; set; } = default!;
+
+        public ICollection<Character> Characters { get; set; } = new List<Character>();
+        public ICollection<Weapon> Weapons { get; set; } = new List<Weapon>();
+        public ICollection<GameArtifactName> GameArtifactNames { get; set; } = new List<GameArtifactName>();
     }
 }

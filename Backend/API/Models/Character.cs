@@ -8,7 +8,8 @@
         public int GameId { get; set; }
         public Game Game { get; set; }
 
-        public string? SplashArtPath { get; set; }
+        public int? ImageId { get; set; }
+        public Image? Image { get; set; } = default!;
 
         public ICollection<CharacterStatScaling> StatScalings { get; set; } = new List<CharacterStatScaling>();
     }

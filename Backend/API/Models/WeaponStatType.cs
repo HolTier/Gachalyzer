@@ -1,14 +1,14 @@
 ﻿namespace API.Models
 {
-    public class GameArtifactName
+    public class WeaponStatType
     {
         public int Id { get; set; }
         public string Name { get; set; } = default!;
+        public string? Unit { get; set; }
 
         public int GameId { get; set; }
         public Game Game { get; set; } = default!;
 
-        public int? ImageId { get; set; }
-        public Image? Image { get; set; }
+        public ICollection<WeaponStatScaling> WeaponStatScalings { get; set; } = new List<WeaponStatScaling>();
     }
 }

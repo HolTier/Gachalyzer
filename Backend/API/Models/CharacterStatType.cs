@@ -9,5 +9,7 @@
 
         public string Name { get; set; } = default!;
         public string? Unit { get; set; }
+
+        public ICollection<CharacterStatScaling> CharacterStatScalings { get; set; } = new List<CharacterStatScaling>();
     }
 }
