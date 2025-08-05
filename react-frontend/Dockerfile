@@ -7,9 +7,6 @@ WORKDIR /app
 # Copy package.json and package-lock.json
 COPY package*.json ./
 
-# Install dependencies including react-scripts
-RUN npm install --include=dev
-
 # Install dependencies
 RUN npm install
 
