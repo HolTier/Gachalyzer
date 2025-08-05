@@ -21,7 +21,7 @@ namespace API.Repositories
                     Name = c.Name,
                     GameId = c.GameId,
                     GameName = c.Game.Name,
-                    SplashArtPath = c.SplashArtPath
+                    SplashArtPath = c.Image != null ? c.Image.SplashArtPath : null
                 })
                 .ToListAsync();
         }
@@ -37,7 +37,7 @@ namespace API.Repositories
                     Name = c.Name,
                     GameId = c.GameId,
                     GameName = c.Game.Name,
-                    SplashArtPath = c.SplashArtPath
+                    SplashArtPath = c.Image != null ? c.Image.SplashArtPath : null
                 })
                 .ToListAsync();
         }
@@ -46,6 +46,7 @@ namespace API.Repositories
         {
             return await _dbSet
                 .Include(c => c.Game)
+                .Include(c => c.Image)
                 .Where(c => c.Game.Name == gameName)
                 .Select(c => new CharacterBaseDto
                 {
@@ -53,7 +54,7 @@ namespace API.Repositories
                     Name = c.Name,
                     GameId = c.GameId,
                     GameName = c.Game.Name,
-                    SplashArtPath = c.SplashArtPath
+                    SplashArtPath = c.Image != null ? c.Image.SplashArtPath : null
                 })
                 .ToListAsync();
         }
