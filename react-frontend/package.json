@@ -8,6 +8,7 @@
     "@dnd-kit/utilities": "^3.2.2",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
+    "@hookform/resolvers": "^5.2.1",
     "@mui/icons-material": "^7.2.0",
     "@mui/material": "^7.2.0",
     "@testing-library/dom": "^10.4.0",
@@ -19,9 +20,12 @@
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-dropzone": "^14.3.8",
+    "react-hook-form": "^7.62.0",
     "react-router-dom": "^7.7.1",
-    "react-scripts": "5.0.1",
-    "web-vitals": "^2.1.4"
+    "react-scripts": "^5.0.1",
+    "web-vitals": "^2.1.4",
+    "webpack-dev-server": "^5.2.2",
+    "yup": "^1.7.0"
   },
   "scripts": {
     "start": "react-scripts start",
