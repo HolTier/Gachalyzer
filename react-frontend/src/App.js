@@ -3,10 +3,10 @@ import './App.css';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import ArtifactAddPage from './pages/ArtifactAddPage';
 import ModerationPage from './pages/ModerationPage';
-import CharacterEditor from './components/Moderation/CharacterEditor';
-import WeaponEditor from './components/Moderation/WeaponEditor';
-import ArtifactEditor from './components/Moderation/ArtifactEditor';
-import ImageUploader from './components/Moderation/ImageUploader';
+import CharacterEditor from './components/moderation/CharacterEditor';
+import WeaponEditor from './components/moderation/WeaponEditor';
+import ArtifactEditor from './components/moderation/ArtifactEditor';
+import ImageUploader from './components/moderation/ImageUploader';
 
 function App() {
   return (
