@@ -70,7 +70,7 @@ namespace API.Tests.Controllers
                     It.IsAny<Func<Task<IEnumerable<GameStatDto>>>>()
                 ))
                 .Returns<string, Func<Task<IEnumerable<GameStatDto>>>>(
-                    (_, func) => func().ContinueWith(t => t.Result.ToList())
+                    async (_, func) => await func().ContinueWith(t => t.Result.ToList())
                 );
 
 
@@ -140,7 +140,7 @@ namespace API.Tests.Controllers
                     It.IsAny<Func<Task<IEnumerable<GameStatDto>>>>()
                 ))
                 .Returns<string, Func<Task<IEnumerable<GameStatDto>>>>(
-                    (_, func) => func().ContinueWith(t => t.Result.ToList())
+                    async (_, func) => await func().ContinueWith(t => t.Result.ToList())
                 );
 
             // Act
@@ -168,7 +168,7 @@ namespace API.Tests.Controllers
                     It.IsAny<Func<Task<IEnumerable<GameStatDto>>>>()
                 ))
                 .Returns<string, Func<Task<IEnumerable<GameStatDto>>>>(
-                    (_, func) => func().ContinueWith(t => t.Result.ToList())
+                    async (_, func) => await func().ContinueWith(t => t.Result.ToList())
                 );
 
             // Act
@@ -204,7 +204,7 @@ namespace API.Tests.Controllers
                     It.IsAny<Func<Task<IEnumerable<GameArtifactName>>>>()
                 ))
                 .Returns<string, Func<Task<IEnumerable<GameArtifactName>>>>(
-                    (_, func) => func().ContinueWith(t => t.Result.ToList())
+                    async (_, func) => await func().ContinueWith(t => t.Result.ToList())
                 );
 
             // Act
@@ -245,7 +245,7 @@ namespace API.Tests.Controllers
                     It.IsAny<Func<Task<IEnumerable<CharacterBaseDto>>>>()
                 ))
                 .Returns<string, Func<Task<IEnumerable<CharacterBaseDto>>>>(
-                    (_, func) => func().ContinueWith(t => t.Result.ToList())
+                    async (_, func) => await func().ContinueWith(t => t.Result.ToList())
                 );
 
             // Act
@@ -287,7 +287,7 @@ namespace API.Tests.Controllers
                     It.IsAny<Func<Task<IEnumerable<CharacterBaseDto>>>>()
                 ))
                 .Returns<string, Func<Task<IEnumerable<CharacterBaseDto>>>>(
-                    (_, func) => func().ContinueWith(t => t.Result.ToList())
+                    async (_, func) => await func().ContinueWith(t => t.Result.ToList())
                 );
 
             // Act
@@ -329,7 +329,7 @@ namespace API.Tests.Controllers
                     It.IsAny<Func<Task<IEnumerable<CharacterBaseDto>>>>()
                 ))
                 .Returns<string, Func<Task<IEnumerable<CharacterBaseDto>>>>(
-                    (_, func) => func().ContinueWith(t => t.Result.ToList())
+                    async (_, func) => await func().ContinueWith(t => t.Result.ToList())
                 );
 
             // Act
