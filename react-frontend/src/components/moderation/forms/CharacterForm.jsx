@@ -7,6 +7,7 @@ import { createFileHandlers, formatFileSize } from "./fileUtils"
 import { useState, useEffect } from "react"
 import { Close, Image } from "@mui/icons-material"
 import { useApiGame } from "../../../hooks/useApiGame"
+import { formStyles, getFormControlProps, getErrorTextProps } from "../../../themes/formThemes"
 
 const supportedImageTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"]
 
@@ -58,25 +59,23 @@ function CharacterForm() {
     }
 
     return (
-        <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={{ maxWidth: 600, mx: "auto", p: 3 }}>
-            <Typography variant="h5" gutterBottom>
+        <Box component="form" onSubmit={handleSubmit(onSubmit)} sx={formStyles.formContainer}>
+            <Typography {...formStyles.formTitle}>
                 Add Character
             </Typography>
             
-            <FormControl fullWidth sx={{ mb: 2 }}>
+            <FormControl {...getFormControlProps()}>
                 <Input 
                     {...register("name")} 
                     placeholder="Character Name"
                     error={!!errors.name}
                 />
                 {errors.name && (
-                    <Typography variant="caption" color="error" sx={{ mt: 0.5 }}>
-                        {errors.name.message}
-                    </Typography>
+                    <Typography {...getErrorTextProps(errors.name)} />
                 )}
             </FormControl>
 
-            <FormControl fullWidth sx={{ mb: 3 }}>
+            <FormControl {...getFormControlProps(true)}>
                 <InputLabel id="game-select">Game</InputLabel>
                 <Select
                     {...register("game")}
@@ -92,17 +91,15 @@ function CharacterForm() {
                     ))}
                 </Select>
                 {errors.game && (
-                    <Typography variant="caption" color="error" sx={{ mt: 0.5 }}>
-                        {errors.game.message}
-                    </Typography>
+                    <Typography {...getErrorTextProps(errors.game)} />
                 )}
             </FormControl>
 
-            <Box sx={{ mb: 3 }}>
-                <Typography variant="subtitle1" sx={{ mb: 1, fontWeight: 600 }}>
+            <Box sx={formStyles.fileSection.sx}>
+                <Typography {...formStyles.sectionTitle}>
                     Character Image (Single File Only)
                 </Typography>
-                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                <Typography {...formStyles.helperText}>
                     Select one image file for the character. If multiple files are dropped, only the first will be used.
                 </Typography>
                 
@@ -112,102 +109,46 @@ function CharacterForm() {
                         onFilesSelected={handleFilesSelected} 
                     />
                 ) : (
-                    <Box sx={{ 
-                        display: 'flex', 
-                        flexDirection: 'column', 
-                        alignItems: 'center',
-                        width: 200,
-                        mx: 'auto'
-                    }}>
-                        <Paper
-                            elevation={1}
-                            sx={{
-                                position: 'relative',
-                                borderRadius: 2,
-                                overflow: 'hidden',
-                                border: '1px solid',
-                                borderColor: 'divider',
-                                width: 200,
-                                height: 240,
-                                mb: 2
-                            }}
-                        >
-                            <Box sx={{ position: 'relative', width: '100%', height: 200 }}>
+                    <Box sx={formStyles.filePreviewContainer.sx}>
+                        <Paper {...formStyles.filePreviewPaper}>
+                            <Box sx={formStyles.fileImageContainer.sx}>
                                 <Avatar 
-                                    variant="square"
+                                    {...formStyles.filePreviewImage}
                                     src={URL.createObjectURL(selectedImage)}
                                     alt={selectedImage.name}
-                                    sx={{ 
-                                        width: '100%', 
-                                        height: '100%',
-                                        borderRadius: 0,
-                                        objectFit: 'cover'
-                                    }}
                                 />
                                 
                                 <IconButton
-                                    size="small"
+                                    {...formStyles.removeFileButton}
                                     onClick={handleClearFile}
-                                    sx={{
-                                        position: 'absolute',
-                                        top: 8,
-                                        right: 8,
-                                        backgroundColor: 'error.main',
-                                        color: 'white',
-                                        width: 32,
-                                        height: 32,
-                                        '&:hover': { 
-                                            backgroundColor: 'error.dark',
-                                            transform: 'scale(1.1)',
-                                        },
-                                        boxShadow: 2,
-                                        transition: 'all 0.2s ease-in-out',
-                                    }}
                                 >
-                                    <Close sx={{ fontSize: 18 }} />
+                                    <Close sx={formStyles.closeIcon.sx} />
                                 </IconButton>
                             </Box>
                             
-                            <Box sx={{ p: 1.5, backgroundColor: 'background.paper', height: 40 }}>
+                            <Box sx={formStyles.fileInfoContainer.sx}>
                                 <Typography 
-                                    variant="caption" 
-                                    sx={{ 
-                                        display: 'block',
-                                        overflow: 'hidden',
-                                        textOverflow: 'ellipsis',
-                                        whiteSpace: 'nowrap',
-                                        fontWeight: 500,
-                                        color: 'text.primary',
-                                        fontSize: '0.75rem'
-                                    }}
+                                    {...formStyles.fileName}
                                     title={selectedImage.name}
                                 >
                                     {selectedImage.name}
                                 </Typography>
-                                <Typography 
-                                    variant="caption" 
-                                    sx={{ 
-                                        color: 'text.secondary',
-                                        fontSize: '0.7rem',
-                                    }}
-                                >
+                                <Typography {...formStyles.fileSize}>
                                     {formatFileSize(selectedImage.size)}
                                 </Typography>
                             </Box>
                         </Paper>
                         
-                        <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', justifyContent: 'center' }}>
+                        <Box sx={formStyles.fileActionsContainer.sx}>
                             <Button 
-                                variant="outlined" 
-                                size="small" 
+                                {...formStyles.fileActionButton}
                                 onClick={handleClearFile}
                                 color="error"
                             >
                                 Remove
                             </Button>
                             <Button 
-                                variant="outlined" 
-                                size="small" 
+                                {...formStyles.fileActionButton}
                                 onClick={handleReplaceFile}
                                 color="primary"
                             >
@@ -218,19 +159,11 @@ function CharacterForm() {
                 )}
                 
                 {errors.image && (
-                    <Typography variant="caption" color="error" sx={{ mt: 0.5 }}>
-                        {errors.image.message}
-                    </Typography>
+                    <Typography {...getErrorTextProps(errors.image)} />
                 )}
             </Box>
 
-            <Button 
-                type="submit" 
-                variant="contained" 
-                fullWidth 
-                size="large"
-                sx={{ mt: 2 }}
-            >
+            <Button {...formStyles.submitButton}>
                 Add Character
             </Button>
         </Box>

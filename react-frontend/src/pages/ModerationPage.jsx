@@ -2,6 +2,7 @@ import { Box, AppBar, Drawer, ListItem, ListItemButton, ListItemText, Toolbar, T
 import { Person, Security, Shield, CloudUpload } from '@mui/icons-material';
 import React, { useState } from 'react';
 import { Outlet, Link } from 'react-router-dom';
+import ThemeSwitch from '../components/common/ThemeSwitch';
 
 const selections = [
     { label: "Characters", path: "/moderation/characters", icon: <Person /> },
@@ -22,15 +23,14 @@ function ModerationPage() {
                 onMouseEnter={() => setIsDrawerExpanded(true)}
                 onMouseLeave={() => setIsDrawerExpanded(false)}
                 sx={{
-                    width: 72, // Always reserve space for collapsed width
+                    width: 72,
                     flexShrink: 0,
                     [`& .MuiDrawer-paper`]: { 
                         width: drawerWidth, 
                         boxSizing: 'border-box',
                         height: '100vh',
-                        backgroundColor: '#1a1a1a',
                         borderRight: '1px solid',
-                        borderColor: '#333',
+                        borderColor: 'divider',
                         transition: 'width 0.3s ease',
                         overflowX: 'hidden',
                         position: isDrawerExpanded ? 'fixed' : 'relative',
@@ -41,13 +41,14 @@ function ModerationPage() {
                 }}
             >
                 <Box sx={{ 
-                    backgroundColor: '#0d1117', 
-                    color: '#f0f6fc',
+                    backgroundColor: 'background.paper', 
+                    color: 'text.primary',
                     p: 2,
                     display: 'flex',
                     alignItems: 'center',
                     minHeight: 64,
-                    borderBottom: '1px solid #333',
+                    borderBottom: '1px solid',
+                    borderColor: 'divider',
                     justifyContent: 'center'
                 }}>
                     {isDrawerExpanded && (
@@ -70,13 +71,13 @@ function ModerationPage() {
                                     component={Link} 
                                     to={s.path}
                                     sx={{
-                                        color: '#c9d1d9',
+                                        color: 'text.primary',
                                         minHeight: 48,
                                         justifyContent: isDrawerExpanded ? 'initial' : 'center',
                                         px: 2.5,
                                         '&:hover': {
-                                            backgroundColor: '#21262d',
-                                            color: '#58a6ff'
+                                            backgroundColor: 'action.hover',
+                                            color: 'primary.main'
                                         }
                                     }}
                                 >
@@ -111,16 +112,17 @@ function ModerationPage() {
                 <AppBar 
                     position="static"
                     sx={{
-                        backgroundColor: '#2d333b',
+                        backgroundColor: 'background.paper',
                         borderBottom: '1px solid',
-                        borderColor: '#444c56',
+                        borderColor: 'divider',
                         boxShadow: 'none'
                     }}
                 >
                     <Toolbar>
-                        <Typography variant="h6" component="div" sx={{ color: '#f0f6fc' }}>
+                        <Typography variant="h6" component="div" sx={{ flexGrow: 1, color: 'text.primary' }}>
                             Moderation Dashboard
                         </Typography>
+                        <ThemeSwitch />
                     </Toolbar>
                 </AppBar>
                 
@@ -128,10 +130,10 @@ function ModerationPage() {
                     component="main"
                     sx={{ 
                         flexGrow: 1, 
-                        bgcolor: '#22272e', 
+                        bgcolor: 'background.default', 
                         p: 3,
                         overflow: 'auto',
-                        color: '#c9d1d9'
+                        color: 'text.primary'
                     }}
                 >
                     <Outlet />

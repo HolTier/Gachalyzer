@@ -7,20 +7,23 @@ import CharacterEditor from './components/moderation/CharacterEditor';
 import WeaponEditor from './components/moderation/WeaponEditor';
 import ArtifactEditor from './components/moderation/ArtifactEditor';
 import ImageUploader from './components/moderation/ImageUploader';
+import { ThemeContextProvider } from './themes/ThemeContext';
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<ArtifactAddPage />} />
-        <Route path="/moderation" element={<ModerationPage />} >
-          <Route path="characters" element={<CharacterEditor />} />
-          <Route path="weapons" element={<WeaponEditor />} />
-          <Route path="artifacts" element={<ArtifactEditor />} />
-          <Route path="image-upload" element={<ImageUploader />} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
+    <ThemeContextProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<ArtifactAddPage />} />
+          <Route path="/moderation" element={<ModerationPage />} >
+            <Route path="characters" element={<CharacterEditor />} />
+            <Route path="weapons" element={<WeaponEditor />} />
+            <Route path="artifacts" element={<ArtifactEditor />} />
+            <Route path="image-upload" element={<ImageUploader />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </ThemeContextProvider>
   );
 }
 
