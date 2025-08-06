@@ -1,11 +1,12 @@
 import { useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 import * as yup from "yup"
-import { FormControl, Input, Box, Typography, Button, IconButton, Paper, Avatar } from "@mui/material"
+import { FormControl, Input, Box, Typography, Button, IconButton, Paper, Avatar, InputLabel, Select, MenuItem } from "@mui/material"
 import SingleFileDropzone from "./SingleFileDropzone"
 import { createFileHandlers, formatFileSize } from "./fileUtils"
 import { useState, useEffect } from "react"
 import { Close, Image } from "@mui/icons-material"
+import { useApiGame } from "../../../hooks/useApiGame"
 
 const supportedImageTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"]
 
@@ -31,8 +32,6 @@ const schema = yup
     })
 
 function CharacterForm() {
-    console.log("CharacterForm rendering...");
-    
     const {
         register,
         handleSubmit,
@@ -42,11 +41,12 @@ function CharacterForm() {
     } = useForm({
         resolver: yupResolver(schema),
     })
+
+    const {data: games, error} = useApiGame("game")
     
     const selectedImage = watch("image")
     const [dropzoneKey, setDropzoneKey] = useState(0) 
     
-    // Create file handlers using the utility functions
     const { handleFilesSelected, handleClearFile, handleReplaceFile } = createFileHandlers(
         setValue, 
         'image', 
@@ -77,11 +77,20 @@ function CharacterForm() {
             </FormControl>
 
             <FormControl fullWidth sx={{ mb: 3 }}>
-                <Input 
-                    {...register("game")} 
-                    placeholder="Game"
+                <InputLabel id="game-select">Game</InputLabel>
+                <Select
+                    {...register("game")}
+                    labelId="game-select"
+                    label="Game"
                     error={!!errors.game}
-                />
+                    defaultValue=""
+                >
+                    {games?.map((game) => (
+                        <MenuItem key={game.id} value={game.id}>
+                            {game.name}
+                        </MenuItem>
+                    ))}
+                </Select>
                 {errors.game && (
                     <Typography variant="caption" color="error" sx={{ mt: 0.5 }}>
                         {errors.game.message}

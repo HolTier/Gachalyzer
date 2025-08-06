@@ -16,15 +16,17 @@ namespace API.Controllers
         private readonly IGameStatRepository _gameStatRepository;
         private readonly IGameArtifactNameRepository _gameArtifactNameRepository;
         private readonly ICharacterRepository _characterRepository;
+        private readonly IGameRepository _gameRepository;
         private readonly ICachedDataService _cachedDataService;
 
         public InitDataController(IGameStatRepository gameStatRepository, ICachedDataService cachedDataService,
-            IGameArtifactNameRepository gameArtifactNameRepository, ICharacterRepository characterRepository)
+            IGameArtifactNameRepository gameArtifactNameRepository, ICharacterRepository characterRepository, IGameRepository gameRepository)
         {
             _gameStatRepository = gameStatRepository;
             _gameArtifactNameRepository = gameArtifactNameRepository;
             _cachedDataService = cachedDataService;
             _characterRepository = characterRepository;
+            _gameRepository = gameRepository;
         }
 
         [HttpGet("init-game-stats")]
@@ -103,6 +105,23 @@ namespace API.Controllers
                 var data = await _cachedDataService.GetOrSetCacheAsync(
                         $"characters:gameId:{gameId}",
                         () => _characterRepository.GetCharacterBaseDtosByGameIdAsync(gameId)
+                );
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Internal Server error: " + ex.Message);
+            }
+        }
+
+        [HttpGet("init-game")]
+        public async Task<IActionResult> GetGameInitData()
+        {
+            try
+            {
+                var data = await _cachedDataService.GetOrSetCacheAsync(
+                        "game:all",
+                        () => _gameRepository.GetAllAsync()
                 );
                 return Ok(data);
             }

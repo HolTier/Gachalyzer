@@ -2,9 +2,7 @@ import { Box } from "@mui/material";
 import CharacterForm from "./forms/CharacterForm";
 
 
-function CharacterEditor() {
-    console.log("CharacterEditor rendering...");
-    
+function CharacterEditor() {    
     return (
         <Box sx={{ p: 2 }}>
             <CharacterForm />
