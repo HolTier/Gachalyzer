@@ -32,6 +32,18 @@ namespace API.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<GameStat>().ToTable("GameStats");
+
+            modelBuilder.Entity<Character>()
+                .HasOne(c => c.Image)
+                .WithMany(i => i.Characters)
+                .HasForeignKey(c => c.ImageId)
+                .OnDelete(DeleteBehavior.SetNull);
+
+            modelBuilder.Entity<Character>()
+                .HasOne(c => c.Icon)
+                .WithMany()
+                .HasForeignKey(c => c.IconId)
+                .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }

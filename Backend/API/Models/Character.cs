@@ -11,6 +11,9 @@
         public int? ImageId { get; set; }
         public Image? Image { get; set; } = default!;
 
+        public int? IconId { get; set; }
+        public Image? Icon { get; set; } = default!;
+
         public ICollection<CharacterStatScaling> StatScalings { get; set; } = new List<CharacterStatScaling>();
     }
 }

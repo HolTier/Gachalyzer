@@ -27,7 +27,7 @@ namespace API.Controllers
                 return BadRequest("No file provided");
             try
             {
-                var result = await _imageService.SaveSplashArtAsync(file, folderName, fileName);
+                var result = await _imageService.SaveImageAsync(file, folderName, fileName);
                 return Ok(result);
             }
             catch (Exception ex)

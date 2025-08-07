@@ -6,5 +6,6 @@
         public string Name { get; set; } = default!;
         public int GameId { get; set; }
         public int ImageId { get; set; }
+        public int IconId { get; set; }
     }
 }

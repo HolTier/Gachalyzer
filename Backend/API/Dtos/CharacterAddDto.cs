@@ -7,5 +7,6 @@ namespace API.Dtos
         public string Name { get; set; } = default!;
         public int GameId { get; set; }
         public IFormFile? Image { get; set; }
+        public IFormFile? Icon { get; set; }
     }
 }

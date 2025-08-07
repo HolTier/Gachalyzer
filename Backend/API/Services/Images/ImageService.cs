@@ -35,7 +35,7 @@ namespace API.Services.Images
             _cachedDataService = cachedDataService;
         }
 
-        public async Task<ImageDto> SaveSplashArtAsync(IFormFile file, string folderName, string fileName)
+        public async Task<ImageDto> SaveImageAsync(IFormFile file, string folderName, string fileName)
         {
             if (file == null || file.Length == 0)
                 throw new ArgumentException("No file provided");
@@ -156,7 +156,7 @@ namespace API.Services.Images
 
                 try
                 {
-                    await SaveSplashArtAsync(formFile, folderName, fileName);
+                    await SaveImageAsync(formFile, folderName, fileName);
                 }
                 catch
                 {

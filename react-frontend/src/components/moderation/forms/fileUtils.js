@@ -82,6 +82,17 @@ export const createFileHandlers = (setValue, fieldName = 'image', setKey = null)
 };
 
 /**
+ * Creates icon-specific file handlers with smaller size validation
+ * @param {Function} setValue - react-hook-form setValue function
+ * @param {string} fieldName - The form field name to update (default: 'icon')
+ * @param {Function} setKey - Optional function to update a key for component re-rendering
+ * @returns {Object} Object with file handling functions
+ */
+export const createIconHandlers = (setValue, fieldName = 'icon', setKey = null) => {
+    return createFileHandlers(setValue, fieldName, setKey);
+};
+
+/**
  * Validates if a file meets specific criteria
  * @param {File} file - The file to validate
  * @param {Object} options - Validation options

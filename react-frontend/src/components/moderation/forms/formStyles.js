@@ -1,8 +1,34 @@
 export const formStyles = {
   formContainer: {
-    maxWidth: 600,
+    maxWidth: 900,
     mx: "auto",
     p: 3
+  },
+
+  formLayout: {
+    sx: {
+      display: 'flex',
+      gap: 4,
+      alignItems: 'flex-start'
+    }
+  },
+
+  leftColumn: {
+    sx: {
+      flex: '0 0 300px',
+      display: 'flex',
+      flexDirection: 'column',
+      gap: 3
+    }
+  },
+
+  rightColumn: {
+    sx: {
+      flex: '1 1 auto',
+      display: 'flex',
+      flexDirection: 'column',
+      gap: 2
+    }
   },
 
   formTitle: {
@@ -49,12 +75,26 @@ export const formStyles = {
     sx: { mb: 3 }
   },
 
+  iconSection: {
+    sx: { mb: 3 }
+  },
+
   filePreviewContainer: {
     sx: {
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
       width: 200,
+      mx: 'auto'
+    }
+  },
+
+  iconPreviewContainer: {
+    sx: {
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      width: 120,
       mx: 'auto'
     }
   },
@@ -73,8 +113,26 @@ export const formStyles = {
     }
   },
 
+  iconPreviewPaper: {
+    elevation: 1,
+    sx: {
+      position: 'relative',
+      borderRadius: '50%',
+      overflow: 'hidden',
+      border: '1px solid',
+      borderColor: 'divider',
+      width: 120,
+      height: 120,
+      mb: 2
+    }
+  },
+
   fileImageContainer: {
     sx: { position: 'relative', width: '100%', height: 200 }
+  },
+
+  iconImageContainer: {
+    sx: { position: 'relative', width: '100%', height: '100%' }
   },
 
   filePreviewImage: {
@@ -83,6 +141,15 @@ export const formStyles = {
       width: '100%',
       height: '100%',
       borderRadius: 0,
+      objectFit: 'cover'
+    }
+  },
+
+  iconPreviewImage: {
+    variant: "circular",
+    sx: {
+      width: '100%',
+      height: '100%',
       objectFit: 'cover'
     }
   },
@@ -108,6 +175,18 @@ export const formStyles = {
 
   fileInfoContainer: {
     sx: { p: 1.5, backgroundColor: 'background.paper', height: 40 }
+  },
+
+  iconInfoContainer: {
+    sx: { 
+      p: 1, 
+      backgroundColor: 'background.paper', 
+      textAlign: 'center',
+      mt: 1,
+      borderRadius: 1,
+      border: '1px solid',
+      borderColor: 'divider'
+    }
   },
 
   fileName: {

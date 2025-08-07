@@ -42,20 +42,30 @@ namespace API.Controllers
                 int? imageId = null;
                 if (character.Image != null && character.Image.Length > 0)
                 {
-                    var image = await _imageService.SaveSplashArtAsync(character.Image, game.Name, character.Name);
+                    var image = await _imageService.SaveImageAsync(character.Image, game.Name, character.Name);
                     imageId = image.Id;
+                }
+
+                int? iconId = null;
+                if (character.Icon != null && character.Icon.Length > 0)
+                {
+                    var icon = await _imageService.SaveImageAsync(character.Icon, game.Name + "-icons", character.Name);
+                    iconId = icon.Id;
                 }
 
                 var newCharacter = new Character
                 {
                     Name = character.Name,
                     GameId = character.GameId,
-                    ImageId = imageId
+                    ImageId = imageId,
+                    IconId = iconId,
                 };
 
                 await _characterRepository.AddAsync(newCharacter);
 
-                _cache.Remove("character:all");
+                await _cachedDataService.ClearCacheAsync($"characters:gameId:{character.GameId}");
+                await _cachedDataService.ClearCacheAsync($"characters:game:{game.Name}");
+                await _cachedDataService.ClearCacheAsync("characters:all");
 
                 var characterResponse = _mapper.Map<CharacterDto>(newCharacter);
                 return Ok(characterResponse);
