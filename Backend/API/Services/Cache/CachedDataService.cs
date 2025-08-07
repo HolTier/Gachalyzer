@@ -22,7 +22,6 @@ namespace API.Services.Cache
                 if (deserialized is not null)
                     return deserialized;
 
-                // If deserialized is null, we need to handle the case where T is a collection type.
                 if (typeof(T).IsGenericType &&
                     (typeof(T).GetGenericTypeDefinition() == typeof(List<>) ||
                      typeof(T).GetGenericTypeDefinition() == typeof(IEnumerable<>)))
@@ -41,6 +40,13 @@ namespace API.Services.Cache
 
             await _cache.SetStringAsync(cacheKey, serialized, options);
             return data;
+        }
+
+        public async Task ClearCacheAsync(string cacheKey)
+        {
+            if (string.IsNullOrEmpty(cacheKey))
+                throw new ArgumentException("Cache key cannot be null or empty", nameof(cacheKey));
+            await _cache.RemoveAsync(cacheKey);
         }
     }
 }

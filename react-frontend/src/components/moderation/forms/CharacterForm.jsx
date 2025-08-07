@@ -8,13 +8,14 @@ import { useState, useEffect } from "react"
 import { Close, Image } from "@mui/icons-material"
 import { useApiGame } from "../../../hooks/useApiGame"
 import { formStyles, getFormControlProps, getErrorTextProps } from "../../../themes/formThemes"
+import { API_CONFIG } from "../../../config/api"
 
 const supportedImageTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"]
 
 const schema = yup
     .object({
         name: yup.string().required("Name is required"),
-        game: yup.string().required("Game is required"),
+        game: yup.number().typeError("Game is required").required("Game is required"),
         image: yup
             .mixed()
             .nullable()
@@ -41,12 +42,12 @@ function CharacterForm() {
         formState: { errors },
     } = useForm({
         resolver: yupResolver(schema),
-    })
+    });
 
-    const {data: games, error} = useApiGame("game")
+    const {data: games, error} = useApiGame("game");
     
-    const selectedImage = watch("image")
-    const [dropzoneKey, setDropzoneKey] = useState(0) 
+    const selectedImage = watch("image");
+    const [dropzoneKey, setDropzoneKey] = useState(0) ;
     
     const { handleFilesSelected, handleClearFile, handleReplaceFile } = createFileHandlers(
         setValue, 
@@ -55,7 +56,28 @@ function CharacterForm() {
     );
     
     const onSubmit = (data) => {
-        console.log(data)
+        const formData = new FormData();
+        formData.append("name", data.name);
+        formData.append("gameId", data.game);
+        if (data.image) {
+            formData.append("image", data.image);
+        }
+
+        fetch(`${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.ADD_CHARACTER}`, {
+            method: "POST",
+            body: formData
+        }).then(response => {
+            if (!response.ok) {
+                return response.text().then(text => { throw new Error(text); });
+            }
+            return response.json();
+        })
+        .then(result => {
+            console.log("Character created:", result);
+        })
+        .catch(error => {
+            console.error("Error creating character:", error.message);
+        });
     }
 
     return (
@@ -78,7 +100,7 @@ function CharacterForm() {
             <FormControl {...getFormControlProps(true)}>
                 <InputLabel id="game-select">Game</InputLabel>
                 <Select
-                    {...register("game")}
+                    {...register("game", { valueAsNumber: true })}
                     labelId="game-select"
                     label="Game"
                     error={!!errors.game}

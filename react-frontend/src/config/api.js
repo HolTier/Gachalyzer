@@ -5,6 +5,8 @@ export const API_CONFIG = {
         INIT_GAME: "/InitData/init-game",
         INIT_GAME_STATS: "/InitData/init-game-stats",
         INIT_GAME_ARTIFACT_NAMES: "/InitData/init-game-artifact-name",
-        INIT_WUWA: "/InitData/initWuwa"
+        INIT_WUWA: "/InitData/initWuwa",
+
+        ADD_CHARACTER: "/Character/add-character"
     }
 };

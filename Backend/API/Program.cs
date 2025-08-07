@@ -70,6 +70,7 @@ builder.Services.AddCors(options =>
 
 // Automapper
 builder.Services.AddAutoMapper(typeof(GameStatProfile));
+builder.Services.AddAutoMapper(typeof(CharacterProfile));
 
 // Add custom services
 // Repositories

@@ -28,13 +28,14 @@ namespace API.Services.Images
             External = 9
         }
 
-        public ImageService(IWebHostEnvironment env, IImageRepository imageRepository)
+        public ImageService(IWebHostEnvironment env, IImageRepository imageRepository, ICachedDataService cachedDataService)
         {
             _rootImageFolder = Path.Combine(env.ContentRootPath, "Storage", "Images");
             _imageRepository = imageRepository;
+            _cachedDataService = cachedDataService;
         }
 
-        public async Task<ImageUploadDto> SaveSplashArtAsync(IFormFile file, string folderName, string fileName)
+        public async Task<ImageDto> SaveSplashArtAsync(IFormFile file, string folderName, string fileName)
         {
             if (file == null || file.Length == 0)
                 throw new ArgumentException("No file provided");
@@ -51,11 +52,11 @@ namespace API.Services.Images
 
             if (existingImage != null)
             {
-                return new ImageUploadDto
+                return new ImageDto
                 {
+                    Id = existingImage.Id,
                     SplashArtPath = existingImage.SplashArtPath,
                     ThumbnailPath = existingImage.ThumbnailPath,
-                    Tags = new List<string>()
                 };
             }
 
@@ -102,11 +103,13 @@ namespace API.Services.Images
 
             await _imageRepository.AddAsync(imageModel);
 
-            return new ImageUploadDto
+            await _cachedDataService.ClearCacheAsync($"image:all");
+
+            return new ImageDto
             {
+                Id = imageModel.Id,
                 SplashArtPath = splashArtUrl,
                 ThumbnailPath = thumbUrl,
-                Tags = new List<string>()
             };
         }
 

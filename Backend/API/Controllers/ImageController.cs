@@ -13,10 +13,11 @@ namespace API.Controllers
         private readonly IImageRepository _imageRepository;
         private readonly ICachedDataService _cachedDataService;
 
-        public ImageController(IImageService imageService, IImageRepository imageRepository)
+        public ImageController(IImageService imageService, IImageRepository imageRepository, ICachedDataService cachedDataService)
         {
             _imageService = imageService;
             _imageRepository = imageRepository;
+            _cachedDataService = cachedDataService;
         }
 
         [HttpPost("upload")]
