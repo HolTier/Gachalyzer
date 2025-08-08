@@ -8,6 +8,12 @@
         public int GameId { get; set; }
         public Game Game { get; set; }
 
+        public int? CharacterGameTypeId { get; set; }
+        public CharacterGameType? CharacterGameType { get; set; }
+
+        public int? CharacterElementId { get; set; }
+        public CharacterElement? CharacterElement { get; set; }
+
         public int? ImageId { get; set; }
         public Image? Image { get; set; } = default!;
 

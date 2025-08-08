@@ -20,6 +20,8 @@ namespace API.Data
         public DbSet<Character> Characters { get; set; }
         public DbSet<CharacterStatType> CharacterStatTypes {  get; set; }
         public DbSet<CharacterStatScaling> CharacterStatScalings {  get; set; }
+        public DbSet<CharacterGameType> CharacterGameTypes { get; set; }
+        public DbSet<CharacterElement> CharacterElements { get; set; }
 
         public DbSet<Image> Images { get; set; }
         public DbSet<ImageStatus> ImageStatuses { get; set; }
