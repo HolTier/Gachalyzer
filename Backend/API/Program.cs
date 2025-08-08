@@ -80,6 +80,8 @@ builder.Services.AddScoped<IGameArtifactNameRepository, GameArtifactNameReposito
 builder.Services.AddScoped<ICharacterRepository, CharacterRepository>();
 builder.Services.AddScoped<IImageRepository, ImageRepository>();
 builder.Services.AddScoped<IGameRepository, GameRepository>();
+builder.Services.AddScoped<ICharacterGameTypeRepository, CharacterGameTypeRepository>();
+builder.Services.AddScoped<ICharacterElementRepository, CharacterElementRepository>();
 
 // Processors
 builder.Services.AddScoped<IOcrResultProcessor, OcrResultProcessor>();
