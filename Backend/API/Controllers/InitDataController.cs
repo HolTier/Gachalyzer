@@ -21,11 +21,17 @@ namespace API.Controllers
         private readonly ICharacterElementRepository _characterElementRepository;
         private readonly ICharacterWeaponTypeRepository _characterWeaponTypeRepository;
         private readonly ICachedDataService _cachedDataService;
+        private readonly ICharacterStatTypeRepository _characterStatTypeRepository;
 
-        public InitDataController(IGameStatRepository gameStatRepository, ICachedDataService cachedDataService,
-            IGameArtifactNameRepository gameArtifactNameRepository, ICharacterRepository characterRepository,
-            IGameRepository gameRepository, ICharacterElementRepository characterElementRepository,
-            ICharacterWeaponTypeRepository characterWeaponTypeRepository)
+        public InitDataController(IGameStatRepository gameStatRepository, 
+            ICachedDataService cachedDataService,
+            IGameArtifactNameRepository gameArtifactNameRepository, 
+            ICharacterRepository characterRepository,
+            IGameRepository gameRepository, 
+            ICharacterElementRepository characterElementRepository,
+            ICharacterWeaponTypeRepository characterWeaponTypeRepository,
+            ICharacterStatTypeRepository characterStatTypeRepository
+        )
         {
             _gameStatRepository = gameStatRepository;
             _gameArtifactNameRepository = gameArtifactNameRepository;
@@ -34,6 +40,7 @@ namespace API.Controllers
             _gameRepository = gameRepository;
             _characterElementRepository = characterElementRepository;
             _characterWeaponTypeRepository = characterWeaponTypeRepository;
+            _characterStatTypeRepository = characterStatTypeRepository;
         }
 
         [HttpGet("init-game-stats")]
@@ -163,6 +170,23 @@ namespace API.Controllers
                 var data = await _cachedDataService.GetOrSetCacheAsync(
                         "character:weaponTypes",
                         () => _characterWeaponTypeRepository.GetAllAsync()
+                );
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Internal Server error: " + ex.Message);
+            }
+        }
+
+        [HttpGet("init-character-stat-types")]
+        public async Task<IActionResult> GetCharacterStatTypes()
+        {
+            try
+            {
+                var data = await _cachedDataService.GetOrSetCacheAsync(
+                        "character:statTypes",
+                        () => _characterStatTypeRepository.GetAllAsync()
                 );
                 return Ok(data);
             }

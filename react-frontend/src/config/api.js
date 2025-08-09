@@ -8,6 +8,7 @@ export const API_CONFIG = {
         INIT_WUWA: "/InitData/initWuwa",
         INIT_CHARACTER_ELEMENTS: "/InitData/init-character-elements",
         INIT_CHARACTER_WEAPON_TYPES: "/InitData/init-character-weapon-types",
+        INIT_CHARACTER_STAT_TYPES: "/InitData/init-character-stat-types",
 
         ADD_CHARACTER: "/Character/add-character"
     }

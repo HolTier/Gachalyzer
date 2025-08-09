@@ -12,5 +12,6 @@
 
         public int Level { get; set; }
         public decimal Value { get; set; }
+        public bool IsBreakpoint { get; set; } = false;
     }
 }

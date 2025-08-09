@@ -37,6 +37,11 @@ export function useApiGame(dataType = "stats") {
                 cacheKey = "api-weapons-data";
                 timestampKey = "api-weapons-data-timestamp";
                 break;
+            case "statTypes":
+                endpoint = API_CONFIG.ENDPOINTS.INIT_CHARACTER_STAT_TYPES;
+                cacheKey = "api-stat-types-data";
+                timestampKey = "api-stat-types-data-timestamp";
+                break;
             case "wuwa":
                 endpoint = API_CONFIG.ENDPOINTS.INIT_WUWA;
                 cacheKey = "api-wuwa-data";

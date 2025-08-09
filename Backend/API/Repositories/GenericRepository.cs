@@ -37,5 +37,11 @@ namespace API.Repositories
             _dbSet.Remove(entity);
             _context.SaveChanges();
         }
+
+        public async Task AddRangeAsync(IEnumerable<T> entities)
+        {
+            await _dbSet.AddRangeAsync(entities);
+            await _context.SaveChangesAsync();
+        }
     }
 }

@@ -221,6 +221,75 @@ export const formStyles = {
 
   closeIcon: {
     sx: { fontSize: 18 }
+  },
+
+  statScalingSection: {
+    sx: {
+      p: 2,
+      border: '1px solid',
+      borderColor: 'divider',
+      borderRadius: 2,
+      backgroundColor: 'background.paper',
+      display: 'flex',
+      flexDirection: 'column',
+      gap: 2,
+      mt: 2
+    }
+  },
+  statScalingHeader: {
+    variant: 'subtitle1',
+    sx: { fontWeight: 600 }
+  },
+  statScalingSubheader: {
+    variant: 'body2',
+    color: 'text.secondary'
+  },
+  statScalingSliderBox: {
+    sx: { px: 1 }
+  },
+  statScalingInputsContainer: {
+    sx: {
+      display: 'grid',
+      gridTemplateColumns: 'repeat(auto-fill,minmax(220px,1fr))',
+      gap: 2
+    }
+  },
+  statScalingConfigRow: {
+    sx: {
+      display: 'flex',
+      gap: 2,
+      flexWrap: 'wrap',
+      alignItems: 'flex-end'
+    }
+  },
+  statScalingInput: {
+    fullWidth: true,
+    size: 'small'
+  },
+  statScalingAutoRow: {
+    sx: {
+      display: 'flex',
+      flexWrap: 'wrap',
+      gap: 1.5,
+      alignItems: 'flex-end'
+    }
+  },
+  statScalingAutoNumberField: {
+    size: 'small',
+    sx: { width: 90 }
+  },
+  statScalingButton: {
+    variant: 'outlined',
+    size: 'small',
+    sx: { alignSelf: 'flex-end', height: 40 }
+  },
+  statScalingStatLabel: {
+    variant: 'caption',
+    sx: { display: 'block', mb: 0.5, fontWeight: 500 }
+  },
+  statScalingLevelBadge: {
+    variant: 'overline',
+    sx: { fontSize: '0.65rem', color: 'text.secondary' }
   }
 };
 

@@ -67,7 +67,6 @@ builder.Services.AddCors(options =>
                 ocrCorsOrigins ?? "http://localhost:8000")
                 .AllowAnyHeader()
                 .AllowAnyMethod();
-
         });
 });
 
