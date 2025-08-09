@@ -1,9 +1,9 @@
 ﻿using API.Data;
 using API.Dtos;
-using API.Models;
+using API.Models.CharacterModels;
 using Microsoft.EntityFrameworkCore;
 
-namespace API.Repositories
+namespace API.Repositories.CharacterRepositories
 {
     public class CharacterRepository : GenericRepository<Character>, ICharacterRepository
     {

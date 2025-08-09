@@ -1,4 +1,8 @@
-﻿namespace API.Models
+﻿using API.Models.CharacterModels;
+using API.Models.GameModels;
+using API.Models.WeaponModels;
+
+namespace API.Models
 {
     public class Image
     {

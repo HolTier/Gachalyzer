@@ -1,7 +1,7 @@
 ﻿using API.Dtos;
-using API.Models;
+using API.Models.GameModels;
 
-namespace API.Repositories
+namespace API.Repositories.GameRepositories
 {
     public interface IGameStatRepository : IGenericRepository<GameStat>
     {

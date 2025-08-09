@@ -1,6 +1,7 @@
 ﻿using API.Dtos;
-using API.Models;
-using API.Repositories;
+using API.Models.CharacterModels;
+using API.Repositories.CharacterRepositories;
+using API.Repositories.GameRepositories;
 using API.Services.Cache;
 using API.Services.Images;
 using AutoMapper;

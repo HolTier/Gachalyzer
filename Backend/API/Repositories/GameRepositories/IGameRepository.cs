@@ -1,6 +1,6 @@
-﻿using API.Models;
+﻿using API.Models.GameModels;
 
-namespace API.Repositories
+namespace API.Repositories.GameRepositories
 {
     public interface IGameRepository : IGenericRepository<Game>
     {

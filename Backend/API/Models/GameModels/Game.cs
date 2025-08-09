@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
+using API.Models.CharacterModels;
+using API.Models.WeaponModels;
 
-namespace API.Models
+namespace API.Models.GameModels
 {
     public class Game
     {

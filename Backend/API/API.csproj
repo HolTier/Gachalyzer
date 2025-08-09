@@ -50,6 +50,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Repositories\WeaponRepositories\" />
     <Folder Include="Resources\Triggers\" />
   </ItemGroup>
 

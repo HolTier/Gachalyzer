@@ -1,4 +1,6 @@
-﻿namespace API.Models
+﻿using API.Models.GameModels;
+
+namespace API.Models
 {
     public class StatType
     {

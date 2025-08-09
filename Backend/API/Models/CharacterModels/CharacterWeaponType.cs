@@ -1,6 +1,8 @@
-﻿namespace API.Models
+﻿using API.Models.GameModels;
+
+namespace API.Models.CharacterModels
 {
-    public class CharacterElement
+    public class CharacterWeaponType
     {
         public int Id { get; set; }
         public string Name { get; set; } = default!;

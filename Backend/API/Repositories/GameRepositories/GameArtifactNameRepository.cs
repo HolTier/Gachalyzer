@@ -1,8 +1,8 @@
 ﻿using API.Data;
-using API.Models;
+using API.Models.GameModels;
 using Microsoft.EntityFrameworkCore;
 
-namespace API.Repositories
+namespace API.Repositories.GameRepositories
 {
     public class GameArtifactNameRepository : GenericRepository<GameArtifactName>, IGameArtifactNameRepository
     {

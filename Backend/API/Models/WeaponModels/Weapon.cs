@@ -1,4 +1,6 @@
-﻿namespace API.Models
+﻿using API.Models.GameModels;
+
+namespace API.Models.WeaponModels
 {
     public class Weapon
     {

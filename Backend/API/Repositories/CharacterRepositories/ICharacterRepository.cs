@@ -1,7 +1,7 @@
 ﻿using API.Dtos;
-using API.Models;
+using API.Models.CharacterModels;
 
-namespace API.Repositories
+namespace API.Repositories.CharacterRepositories
 {
     public interface ICharacterRepository : IGenericRepository<Character>
     {

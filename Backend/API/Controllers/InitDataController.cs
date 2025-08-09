@@ -1,7 +1,8 @@
 ﻿using System.Text.Json;
 using API.Data;
 using API.Dtos;
-using API.Repositories;
+using API.Repositories.CharacterRepositories;
+using API.Repositories.GameRepositories;
 using API.Services.Cache;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;

@@ -1,5 +1,5 @@
 ﻿using API.Dtos;
-using API.Models;
+using API.Models.GameModels;
 using AutoMapper;
 
 namespace API.Mappings

@@ -1,11 +1,11 @@
 ﻿using API.Data;
 using API.Dtos;
-using API.Models;
+using API.Models.GameModels;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 
-namespace API.Repositories
+namespace API.Repositories.GameRepositories
 {
     public class GameStatRepository : GenericRepository<GameStat>, IGameStatRepository
     {

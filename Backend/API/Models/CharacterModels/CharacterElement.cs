@@ -1,15 +1,15 @@
-﻿namespace API.Models
+﻿using API.Models.GameModels;
+
+namespace API.Models.CharacterModels
 {
-    public class GameStat
+    public class CharacterElement
     {
         public int Id { get; set; }
         public string Name { get; set; } = default!;
 
-        public int StatTypeId { get; set; }
-        public StatType StatType { get; set; } = default!;
-
         public int GameId { get; set; }
         public Game Game { get; set; } = default!;
 
+        public ICollection<Character> Characters { get; set; } = new List<Character>();
     }
 }

@@ -3,6 +3,8 @@ using API.Data;
 using API.Mappings;
 using API.Models;
 using API.Repositories;
+using API.Repositories.CharacterRepositories;
+using API.Repositories.GameRepositories;
 using API.Services.Cache;
 using API.Services.Characters;
 using API.Services.Files;

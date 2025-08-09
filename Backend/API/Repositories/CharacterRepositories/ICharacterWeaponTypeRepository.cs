@@ -1,6 +1,6 @@
-﻿using API.Models;
+﻿using API.Models.CharacterModels;
 
-namespace API.Repositories
+namespace API.Repositories.CharacterRepositories
 {
     public interface ICharacterWeaponTypeRepository : IGenericRepository<CharacterWeaponType>
     {

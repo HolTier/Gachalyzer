@@ -1,5 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using API.Models;
+using API.Models.CharacterModels;
+using API.Models.GameModels;
+using API.Models.WeaponModels;
 
 namespace API.Data
 {

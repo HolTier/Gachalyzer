@@ -10,11 +10,12 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.EntityFrameworkCore.InMemory;
 using Moq;
-using API.Models;
 using FluentAssertions;
 using API.Dtos;
-using API.Repositories;
 using API.Services.Cache;
+using API.Models.GameModels;
+using API.Repositories.CharacterRepositories;
+using API.Repositories.GameRepositories;
 
 namespace API.Tests.Controllers
 {
