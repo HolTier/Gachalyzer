@@ -17,16 +17,22 @@ namespace API.Controllers
         private readonly IGameArtifactNameRepository _gameArtifactNameRepository;
         private readonly ICharacterRepository _characterRepository;
         private readonly IGameRepository _gameRepository;
+        private readonly ICharacterElementRepository _characterElementRepository;
+        private readonly ICharacterWeaponTypeRepository _characterWeaponTypeRepository;
         private readonly ICachedDataService _cachedDataService;
 
         public InitDataController(IGameStatRepository gameStatRepository, ICachedDataService cachedDataService,
-            IGameArtifactNameRepository gameArtifactNameRepository, ICharacterRepository characterRepository, IGameRepository gameRepository)
+            IGameArtifactNameRepository gameArtifactNameRepository, ICharacterRepository characterRepository,
+            IGameRepository gameRepository, ICharacterElementRepository characterElementRepository,
+            ICharacterWeaponTypeRepository characterWeaponTypeRepository)
         {
             _gameStatRepository = gameStatRepository;
             _gameArtifactNameRepository = gameArtifactNameRepository;
             _cachedDataService = cachedDataService;
             _characterRepository = characterRepository;
             _gameRepository = gameRepository;
+            _characterElementRepository = characterElementRepository;
+            _characterWeaponTypeRepository = characterWeaponTypeRepository;
         }
 
         [HttpGet("init-game-stats")]
@@ -122,6 +128,40 @@ namespace API.Controllers
                 var data = await _cachedDataService.GetOrSetCacheAsync(
                         "game:all",
                         () => _gameRepository.GetAllAsync()
+                );
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Internal Server error: " + ex.Message);
+            }
+        }
+
+        [HttpGet("init-character-elements")]
+        public async Task<IActionResult> GetCharacterElements()
+        {
+            try
+            {
+                var data = await _cachedDataService.GetOrSetCacheAsync(
+                        "character:elements",
+                        () => _characterElementRepository.GetAllAsync()
+                );
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Internal Server error: " + ex.Message);
+            }
+        }
+
+        [HttpGet("init-character-weapon-types")]
+        public async Task<IActionResult> GetCharacterWeaponTypes()
+        {
+            try
+            {
+                var data = await _cachedDataService.GetOrSetCacheAsync(
+                        "character:weaponTypes",
+                        () => _characterWeaponTypeRepository.GetAllAsync()
                 );
                 return Ok(data);
             }

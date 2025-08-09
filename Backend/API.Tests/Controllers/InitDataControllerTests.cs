@@ -25,6 +25,8 @@ namespace API.Tests.Controllers
         private readonly Mock<ICachedDataService> _cachedDataServiceMock;
         private readonly Mock<ICharacterRepository> _characterRepositoryMock;
         private readonly Mock<IGameRepository> _gameRepositoryMock;
+        private readonly Mock<ICharacterWeaponTypeRepository> _characterWeaponTypeRepositoryMock;
+        private readonly Mock<ICharacterElementRepository> _characterElementRepositoryMock;
         private readonly InitDataController _controller;
 
         public InitDataControllerTests()
@@ -34,13 +36,17 @@ namespace API.Tests.Controllers
             _cachedDataServiceMock = new Mock<ICachedDataService>();
             _characterRepositoryMock = new Mock<ICharacterRepository>();
             _gameRepositoryMock = new Mock<IGameRepository>();
+            _characterWeaponTypeRepositoryMock = new Mock<ICharacterWeaponTypeRepository>();
+            _characterElementRepositoryMock = new Mock<ICharacterElementRepository>();
 
             _controller = new InitDataController(
                 _gameStatRepositoryMock.Object,
                 _cachedDataServiceMock.Object,
                 _artifactRepoMock.Object,
                 _characterRepositoryMock.Object,
-                _gameRepositoryMock.Object
+                _gameRepositoryMock.Object,
+                _characterElementRepositoryMock.Object,
+                _characterWeaponTypeRepositoryMock.Object
             );
         }
 

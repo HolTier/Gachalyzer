@@ -8,8 +8,8 @@
         public int GameId { get; set; }
         public Game Game { get; set; }
 
-        public int? CharacterGameTypeId { get; set; }
-        public CharacterGameType? CharacterGameType { get; set; }
+        public int? CharacterWeaponTypeId { get; set; }
+        public CharacterWeaponType? CharacterWeaponType { get; set; }
 
         public int? CharacterElementId { get; set; }
         public CharacterElement? CharacterElement { get; set; }

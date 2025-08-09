@@ -1,6 +1,6 @@
 ﻿namespace API.Models
 {
-    public class CharacterGameType
+    public class CharacterWeaponType
     {
         public int Id { get; set; }
         public string Name { get; set; } = default!;

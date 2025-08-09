@@ -12,41 +12,40 @@ import { API_CONFIG } from "../../../config/api"
 
 const supportedImageTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"]
 
-const schema = yup
-    .object({
-        name: yup.string().required("Name is required"),
-        game: yup.number().typeError("Game is required").required("Game is required"),
-        image: yup
-            .mixed()
-            .nullable()
-            .test(
-                "fileSize",
-                "File size is too large (max 5MB)",
-                (value) => !value || (value instanceof File && value.size <= 5 * 1024 * 1024)
-            )
-            .test(
-                "fileType",
-                "Unsupported file type",
-                (value) => 
-                    !value ||
-                    (value instanceof File && supportedImageTypes.includes(value.type))
-            ),
-        icon: yup
-            .mixed()
-            .nullable()
-            .test(
-                "fileSize",
-                "File size is too large (max 5MB)",
-                (value) => !value || (value instanceof File && value.size <= 5 * 1024 * 1024)
-            )
-            .test(
-                "fileType",
-                "Unsupported file type",
-                (value) => 
-                    !value ||
-                    (value instanceof File && supportedImageTypes.includes(value.type))
-            )
-    })
+const schema = yup.object({
+    name: yup.string().required("Name is required"),
+    game: yup.number().typeError("Game is required").required("Game is required"),
+    element: yup.number().typeError("Element is required").required("Element is required"),
+    weapon: yup.number().typeError("Weapon is required").required("Weapon is required"),
+    image: yup
+        .mixed()
+        .nullable()
+        .test(
+            "fileSize",
+            "File size is too large (max 5MB)",
+            (value) => !value || (value instanceof File && value.size <= 5 * 1024 * 1024)
+        )
+        .test(
+            "fileType",
+            "Unsupported file type",
+            (value) =>
+                !value || (value instanceof File && supportedImageTypes.includes(value.type))
+        ),
+    icon: yup
+        .mixed()
+        .nullable()
+        .test(
+            "fileSize",
+            "File size is too large (max 5MB)",
+            (value) => !value || (value instanceof File && value.size <= 5 * 1024 * 1024)
+        )
+        .test(
+            "fileType",
+            "Unsupported file type",
+            (value) =>
+                !value || (value instanceof File && supportedImageTypes.includes(value.type))
+        ),
+});
 
 function CharacterForm() {
     const {
@@ -59,8 +58,10 @@ function CharacterForm() {
         resolver: yupResolver(schema),
     });
 
-    const {data: games, error} = useApiGame("game");
-    
+    const {data: games, error: gamesError} = useApiGame("game");
+    const {data: weapons, error: weaponsError} = useApiGame("weapons");
+    const {data: elements, error: elementsError} = useApiGame("elements");
+
     const selectedImage = watch("image");
     const selectedIcon = watch("icon");
     const [dropzoneKey, setDropzoneKey] = useState(0);
@@ -82,6 +83,9 @@ function CharacterForm() {
         const formData = new FormData();
         formData.append("name", data.name);
         formData.append("gameId", data.game);
+        formData.append("characterElementId", data.element);
+        formData.append("characterWeaponTypeId", data.weapon);
+        
         if (data.image) {
             formData.append("image", data.image);
         }
@@ -299,6 +303,50 @@ function CharacterForm() {
                         </Select>
                         {errors.game && (
                             <Typography {...getErrorTextProps(errors.game)} />
+                        )}
+                    </FormControl>
+
+                    <FormControl {...getFormControlProps(true)}>
+                        <InputLabel id="element-select">Element</InputLabel>
+                        <Select
+                            {...register("element", { valueAsNumber: true })}
+                            labelId="element-select"
+                            label="Element"
+                            variant="outlined"
+                            error={!!errors.element}
+                            defaultValue=""
+                            autoComplete="off"
+                        >
+                            {elements?.map((element) => (
+                                <MenuItem key={element.id} value={element.id}>
+                                    {element.name}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                        {errors.element && (
+                            <Typography {...getErrorTextProps(errors.element)} />
+                        )}
+                    </FormControl>
+
+                    <FormControl {...getFormControlProps(true)}>
+                        <InputLabel id="weapon-select">Weapon</InputLabel>
+                        <Select
+                            {...register("weapon", { valueAsNumber: true })}
+                            labelId="weapon-select"
+                            label="Weapon"
+                            variant="outlined"
+                            error={!!errors.weapon}
+                            defaultValue=""
+                            autoComplete="off"
+                        >
+                            {weapons?.map((weapon) => (
+                                <MenuItem key={weapon.id} value={weapon.id}>
+                                    {weapon.name}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                        {errors.weapon && (
+                            <Typography {...getErrorTextProps(errors.weapon)} />
                         )}
                     </FormControl>
 

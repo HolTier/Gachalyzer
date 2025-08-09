@@ -15,18 +15,23 @@ namespace API.Controllers
     {
         private readonly ICharacterRepository _characterRepository;
         private readonly IGameRepository _gameRepository;
+        private readonly ICharacterElementRepository _characterElementRepository;
+        private readonly ICharacterWeaponTypeRepository _characterWeaponTypeRepository;
         private readonly ICachedDataService _cachedDataService;
         private readonly IDistributedCache _cache;
         private readonly IImageService _imageService;
         private readonly IMapper _mapper;
 
         public CharacterController(ICharacterRepository characterRepository, ICachedDataService cachedDataService,
-            IImageService imageService, IGameRepository gameRepository, IMapper mapper, IDistributedCache cache)
+            IImageService imageService, IGameRepository gameRepository, IMapper mapper, IDistributedCache cache,
+            ICharacterElementRepository characterElementRepository, ICharacterWeaponTypeRepository characterWeaponTypeRepository)
         {
             _characterRepository = characterRepository;
             _cachedDataService = cachedDataService;
             _imageService = imageService;
             _gameRepository = gameRepository;
+            _characterElementRepository = characterElementRepository;
+            _characterWeaponTypeRepository = characterWeaponTypeRepository;
             _mapper = mapper;
             _cache = cache;
         }
@@ -38,6 +43,18 @@ namespace API.Controllers
             {
                 var game = await _gameRepository.GetByIdAsync(character.GameId);
                 if (game == null) return BadRequest("Invalid game Id");
+
+                var characterElement = _cachedDataService.GetOrSetCacheAsync(
+                    $"characterElement:{character.CharacterElementId}",
+                    () => _characterElementRepository.GetByIdAsync(character.CharacterElementId)
+                ).Result;
+                if (characterElement == null) return BadRequest("Invalid character element Id");
+
+                var characterWeaponType = _cachedDataService.GetOrSetCacheAsync(
+                    $"characterWeaponType:{character.CharacterWeaponTypeId}",
+                    () => _characterWeaponTypeRepository.GetByIdAsync(character.CharacterWeaponTypeId)
+                ).Result;
+                if (characterWeaponType == null) return BadRequest("Invalid character weapon type Id");
 
                 int? imageId = null;
                 if (character.Image != null && character.Image.Length > 0)
@@ -57,6 +74,8 @@ namespace API.Controllers
                 {
                     Name = character.Name,
                     GameId = character.GameId,
+                    CharacterElementId = character.CharacterElementId,
+                    CharacterWeaponTypeId = character.CharacterWeaponTypeId,
                     ImageId = imageId,
                     IconId = iconId,
                 };

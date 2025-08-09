@@ -9,7 +9,6 @@ export function useApiGame(dataType = "stats") {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        // Determine endpoint and cache key based on dataType
         let endpoint, cacheKey, timestampKey;
         
         switch (dataType) {
@@ -27,6 +26,16 @@ export function useApiGame(dataType = "stats") {
                 endpoint = API_CONFIG.ENDPOINTS.INIT_GAME;
                 cacheKey = "api-init-game-data";
                 timestampKey = "api-init-game-data-timestamp";
+                break;
+            case "elements":
+                endpoint = API_CONFIG.ENDPOINTS.INIT_CHARACTER_ELEMENTS;
+                cacheKey = "api-elements-data";
+                timestampKey = "api-elements-data-timestamp";
+                break;
+            case "weapons":
+                endpoint = API_CONFIG.ENDPOINTS.INIT_CHARACTER_WEAPON_TYPES;
+                cacheKey = "api-weapons-data";
+                timestampKey = "api-weapons-data-timestamp";
                 break;
             case "wuwa":
                 endpoint = API_CONFIG.ENDPOINTS.INIT_WUWA;

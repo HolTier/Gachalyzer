@@ -1,0 +1,32 @@
+[
+    {
+        "Id": 1,
+        "Name": "Aero",
+        "GameId": 1
+    },
+    {
+        "Id": 2,
+        "Name": "Electro",
+        "GameId": 1
+    },
+    {
+        "Id": 3,
+        "Name": "Fusion",
+        "GameId": 1
+    },
+    {
+        "Id": 4,
+        "Name": "Glacio",
+        "GameId": 1
+    },
+    {
+        "Id": 5,
+        "Name": "Havoc",
+        "GameId": 1
+    },
+    {
+        "Id": 6,
+        "Name": "Spectro",
+        "GameId": 1
+    }
+]

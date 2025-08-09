@@ -14,6 +14,8 @@ namespace API.Data
         private const string StatTypesSeed = "StatTypes.json";
         private const string GameArtifactNamesSeed = "GameArtifactNamesSeed.json";
         private const string ImageStatusesSeed = "ImageStatusesSeed.json";
+        private const string CharacterWeaponTypesSeed = "CharacterWeaponTypesSeed.json";
+        private const string CharacterElementsSeed = "CharacterElementsSeed.json";
 
         public static async Task SeedAsync(IServiceProvider serviceProvider, IWebHostEnvironment env)
         {
@@ -33,6 +35,8 @@ namespace API.Data
                 await SeedFromJsonAsync(db, Path.Combine(SeedDataFolder, GameStatsSeed), db.GameStats, env);
                 await SeedFromJsonAsync(db, Path.Combine(SeedDataFolder, GameArtifactNamesSeed), db.GameArtifactNames, env);
                 await SeedFromJsonAsync(db, Path.Combine(SeedDataFolder, ImageStatusesSeed), db.ImageStatuses, env);
+                await SeedFromJsonAsync(db, Path.Combine(SeedDataFolder, CharacterWeaponTypesSeed), db.CharacterWeaponTypes, env);
+                await SeedFromJsonAsync(db, Path.Combine(SeedDataFolder, CharacterElementsSeed), db.CharacterElements, env);
                 await transaction.CommitAsync();
             }
             catch (Exception ex)

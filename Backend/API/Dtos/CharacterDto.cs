@@ -5,6 +5,8 @@
         public int Id { get; set; }
         public string Name { get; set; } = default!;
         public int GameId { get; set; }
+        public int CharacterElementId { get; set; }
+        public int CharacterWeaponTypeId { get; set; }
         public int ImageId { get; set; }
         public int IconId { get; set; }
     }

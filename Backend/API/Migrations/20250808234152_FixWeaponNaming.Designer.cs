@@ -3,6 +3,7 @@ using System;
 using API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250808234152_FixWeaponNaming")]
+    partial class FixWeaponNaming
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -33,7 +36,7 @@ namespace API.Migrations
                     b.Property<int?>("CharacterElementId")
                         .HasColumnType("integer");
 
-                    b.Property<int?>("CharacterWeaponTypeId")
+                    b.Property<int?>("CharacterGameTypeId")
                         .HasColumnType("integer");
 
                     b.Property<int>("GameId")
@@ -53,7 +56,7 @@ namespace API.Migrations
 
                     b.HasIndex("CharacterElementId");
 
-                    b.HasIndex("CharacterWeaponTypeId");
+                    b.HasIndex("CharacterGameTypeId");
 
                     b.HasIndex("GameId");
 
@@ -159,7 +162,7 @@ namespace API.Migrations
 
                     b.HasIndex("GameId");
 
-                    b.ToTable("CharacterWeaponTypes");
+                    b.ToTable("CharacterGameTypes");
                 });
 
             modelBuilder.Entity("API.Models.Game", b =>
@@ -448,9 +451,9 @@ namespace API.Migrations
                         .WithMany("Characters")
                         .HasForeignKey("CharacterElementId");
 
-                    b.HasOne("API.Models.CharacterWeaponType", "CharacterWeaponType")
+                    b.HasOne("API.Models.CharacterWeaponType", "CharacterGameType")
                         .WithMany("Characters")
-                        .HasForeignKey("CharacterWeaponTypeId");
+                        .HasForeignKey("CharacterGameTypeId");
 
                     b.HasOne("API.Models.Game", "Game")
                         .WithMany("Characters")
@@ -470,7 +473,7 @@ namespace API.Migrations
 
                     b.Navigation("CharacterElement");
 
-                    b.Navigation("CharacterWeaponType");
+                    b.Navigation("CharacterGameType");
 
                     b.Navigation("Game");
 

@@ -1,0 +1,27 @@
+[
+    {
+        "Id": 1,
+        "Name": "Swords",
+        "GameId": 1
+    },
+    {
+        "Id": 2,
+        "Name": "Broadblades",
+        "GameId": 1
+    },
+    {
+        "Id": 3,
+        "Name": "Gauntlets",
+        "GameId": 1
+    },
+    {
+        "Id": 4,
+        "Name": "Pistols",
+        "GameId": 1
+    },
+    {
+        "Id": 5,
+        "Name": "Rectifiers",
+        "GameId": 1
+    }
+]
