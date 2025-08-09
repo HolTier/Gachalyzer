@@ -85,6 +85,8 @@ builder.Services.AddScoped<IImageRepository, ImageRepository>();
 builder.Services.AddScoped<IGameRepository, GameRepository>();
 builder.Services.AddScoped<ICharacterWeaponTypeRepository, CharacterWeaponTypeRepository>();
 builder.Services.AddScoped<ICharacterElementRepository, CharacterElementRepository>();
+builder.Services.AddScoped<ICharacterStatTypeRepository, CharacterStatTypeRepository>();
+builder.Services.AddScoped<ICharacterStatScalingRepository, CharacterStatScalingRepository>();
 
 // Processors
 builder.Services.AddScoped<IOcrResultProcessor, OcrResultProcessor>();

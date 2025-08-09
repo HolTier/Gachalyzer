@@ -1,0 +1,20 @@
+﻿[
+    {
+        "Id": 1,
+        "Name": "HP",
+        "Unit": "Numeric",
+        "GameId": 1
+    },
+    {
+        "Id": 2,
+        "Name": "ATK",
+        "Unit": "Numeric",
+        "GameId": 1
+    },
+    {
+        "Id": 3,
+        "Name": "DEF",
+        "Unit": "Numeric",
+        "GameId": 1
+    }
+]

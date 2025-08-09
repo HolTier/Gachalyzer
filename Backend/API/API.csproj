@@ -31,8 +31,13 @@
 
 	<ItemGroup>
 	  <Content Remove="Data\SeedData\CharacterElementsSeed.json" />
+	  <Content Remove="Data\SeedData\CharacterStatTypesSeed.json" />
 	  <Content Remove="Data\SeedData\CharacterWeaponTypesSeed.json" />
 	  <Content Remove="data\seeddata\ImageStatusesSeed.json" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Compile Include="Data\SeedData\CharacterStatTypesSeed.json" />
 	</ItemGroup>
 
   <ItemGroup>
