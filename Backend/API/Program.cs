@@ -4,6 +4,7 @@ using API.Mappings;
 using API.Models;
 using API.Repositories;
 using API.Services.Cache;
+using API.Services.Characters;
 using API.Services.Files;
 using API.Services.Images;
 using API.Services.Ocr;
@@ -94,6 +95,7 @@ builder.Services.AddScoped<WhutheringWavesStatResolver>();
 // Other services
 builder.Services.AddSingleton<ICachedDataService, CachedDataService>();
 builder.Services.AddScoped<IImageService, ImageService>();
+builder.Services.AddScoped<ICharacterService, CharacterService>();
 
 // Factory
 builder.Services.AddScoped<IGameStatResolverFactory, GameStatResolverFactory>();
