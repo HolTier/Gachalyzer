@@ -1,4 +1,4 @@
-import { useForm, FormProvider } from "react-hook-form"
+import { useForm, FormProvider, set } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { Box, Typography, Button } from "@mui/material"
 import { createFileHandlers, createIconHandlers } from "../fileUtils"
@@ -10,6 +10,7 @@ import { characterFormSchema } from "./characterFormSchema"
 import CharacterInfoSection from "./CharacterInfoSection"
 import CharacterImageSection from "./CharacterImageSection"
 import StatScalingSection from "./StatScalingSection"
+import SnackbarConfirmation from "../../../common/SnackbarConfirmation"
 
 function CharacterForm() {
     const methods = useForm({
@@ -26,6 +27,12 @@ function CharacterForm() {
         getValues,
         formState: { errors, isValid, isSubmitting },
     } = methods;
+
+    const [snackbar, setSnackbar] = useState({
+        open: false,
+        severity: 'success',
+        message: ''
+    });
 
     const {data: games, error: gamesError} = useApiGame("game");
     const {data: weapons, error: weaponsError} = useApiGame("weapons");
@@ -94,9 +101,19 @@ function CharacterForm() {
         })
         .then(result => {
             console.log("Character created:", result);
+            setSnackbar({
+                open: true, 
+                severity: 'success', 
+                message: 'Character created successfully!'
+            })
         })
         .catch(error => {
             console.error("Error creating character:", error.message);
+            setSnackbar({
+                open: true,
+                severity: 'error',
+                message: error.message
+            });
         });
     }
 
@@ -117,7 +134,6 @@ function CharacterForm() {
             CharacterStatScaling: []
         };
         
-        // Get stat values from the ref and transform them
         statValuesRef.current.forEach((values, statTypeId) => {
             Object.entries(values || {}).forEach(([breakpointKey, value]) => {
                 if (value !== '' && !isNaN(Number(value))) {
@@ -195,6 +211,12 @@ function CharacterForm() {
                     </Box>
                 </Box>
             </Box>
+            <SnackbarConfirmation
+                open={snackbar.open}
+                severity={snackbar.severity}
+                message={snackbar.message}
+                onClose={() => setSnackbar(prev => ({ ...prev, open: false }))}
+            />
         </FormProvider>
     );
 }
