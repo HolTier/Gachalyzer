@@ -7,7 +7,16 @@ function CharacterInfoSection({
     elements,
     weapons 
 }) {
-    const { register, formState: { errors } } = useFormContext();
+    const { register, formState: { errors }, watch } = useFormContext();
+    const selectedGameId = watch("game");
+    
+    const filteredElements = selectedGameId 
+        ? elements?.filter(element => element.gameId === selectedGameId) 
+        : [];
+    
+    const filteredWeapons = selectedGameId 
+        ? weapons?.filter(weapon => weapon.gameId === selectedGameId) 
+        : [];
     return (
         <Box>
             <FormControl {...getFormControlProps()}>
@@ -44,7 +53,7 @@ function CharacterInfoSection({
                 )}
             </FormControl>
 
-            <FormControl {...getFormControlProps(true)}>
+            <FormControl {...getFormControlProps(true, !selectedGameId)}>
                 <InputLabel id="element-select">Element</InputLabel>
                 <Select
                     {...register("element", { valueAsNumber: true })}
@@ -54,8 +63,9 @@ function CharacterInfoSection({
                     error={!!errors.element}
                     defaultValue=""
                     autoComplete="off"
+                    disabled={!selectedGameId}
                 >
-                    {elements?.map((element) => (
+                    {filteredElements?.map((element) => (
                         <MenuItem key={element.id} value={element.id}>
                             {element.name}
                         </MenuItem>
@@ -66,7 +76,7 @@ function CharacterInfoSection({
                 )}
             </FormControl>
 
-            <FormControl {...getFormControlProps(true)}>
+            <FormControl {...getFormControlProps(true, !selectedGameId)}>
                 <InputLabel id="weapon-select">Weapon</InputLabel>
                 <Select
                     {...register("weapon", { valueAsNumber: true })}
@@ -76,8 +86,9 @@ function CharacterInfoSection({
                     error={!!errors.weapon}
                     defaultValue=""
                     autoComplete="off"
+                    disabled={!selectedGameId}
                 >
-                    {weapons?.map((weapon) => (
+                    {filteredWeapons?.map((weapon) => (
                         <MenuItem key={weapon.id} value={weapon.id}>
                             {weapon.name}
                         </MenuItem>

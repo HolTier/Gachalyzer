@@ -46,6 +46,58 @@ export const formStyles = {
     sx: { mb: 3 }
   },
 
+  formControlDisabled: {
+    fullWidth: true,
+    sx: { 
+      mb: 2,
+      '& .MuiInputLabel-root': {
+        color: 'text.disabled'
+      },
+      '& .MuiOutlinedInput-root': {
+        backgroundColor: 'action.disabledBackground',
+        '& fieldset': {
+          borderColor: 'action.disabled'
+        },
+        '&:hover fieldset': {
+          borderColor: 'action.disabled'
+        },
+        '&.Mui-focused fieldset': {
+          borderColor: 'action.disabled'
+        }
+      },
+      '& .MuiSelect-root': {
+        backgroundColor: 'action.disabledBackground',
+        color: 'text.disabled'
+      }
+    }
+  },
+
+  formControlSpacedDisabled: {
+    fullWidth: true,
+    sx: { 
+      mb: 3,
+      '& .MuiInputLabel-root': {
+        color: 'text.disabled'
+      },
+      '& .MuiOutlinedInput-root': {
+        backgroundColor: 'action.disabledBackground',
+        '& fieldset': {
+          borderColor: 'action.disabled'
+        },
+        '&:hover fieldset': {
+          borderColor: 'action.disabled'
+        },
+        '&.Mui-focused fieldset': {
+          borderColor: 'action.disabled'
+        }
+      },
+      '& .MuiSelect-root': {
+        backgroundColor: 'action.disabledBackground',
+        color: 'text.disabled'
+      }
+    }
+  },
+
   errorText: {
     variant: "caption",
     color: "error",
@@ -296,9 +348,13 @@ export const formStyles = {
 /**
  * Helper function to get form control props with consistent spacing
  * @param {boolean} spaced - Whether to use extra spacing (for selects, etc.)
+ * @param {boolean} disabled - Whether the field is disabled/blocked
  */
-export const getFormControlProps = (spaced = false) => {
-  return spaced ? formStyles.formControlSpaced : formStyles.formControl;
+export const getFormControlProps = (spaced = false, disabled = false) => {
+  if (disabled && spaced) return formStyles.formControlSpacedDisabled;
+  if (disabled) return formStyles.formControlDisabled;
+  if (spaced) return formStyles.formControlSpaced;
+  return formStyles.formControl;
 };
 
 /**
