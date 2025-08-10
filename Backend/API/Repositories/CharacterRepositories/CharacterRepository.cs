@@ -26,6 +26,31 @@ namespace API.Repositories.CharacterRepositories
                 .ToListAsync();
         }
 
+        public async Task<IEnumerable<CharacterShowDto>> GetAllCharacterShowDtosAsync()
+        {
+            return await _dbSet
+            .Select(c => new CharacterShowDto
+            {
+                Id = c.Id,
+                Name = c.Name,
+                GameId = c.GameId,
+                GameName = c.Game.Name,
+                ImageUrl = c.Image != null ? c.Image.SplashArtPath : null,
+                IconUrl = c.Icon != null ? c.Icon.SplashArtPath : null,
+                CharacterWeaponTypeName = c.CharacterWeaponType != null ? c.CharacterWeaponType.Name : null,
+                CharacterElementName = c.CharacterElement != null ? c.CharacterElement.Name : null,
+                CharacterStatScalingShowDtos = c.StatScalings.Select(s => new CharacterStatScalingShowDto
+                {
+                    Id = s.Id,
+                    Value = s.Value,
+                    Level = s.Level,
+                    IsBreakpoint = s.IsBreakpoint,
+                    StatTypeName = s.CharacterStatType.Name
+                }).ToList(),
+            })
+            .ToListAsync();
+        }
+
         public async Task<IEnumerable<CharacterBaseDto>> GetCharacterBaseDtosByGameIdAsync(int gameId)
         {
             return await _dbSet

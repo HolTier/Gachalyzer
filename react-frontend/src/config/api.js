@@ -1,5 +1,8 @@
 export const API_CONFIG = {
-    BASE_URL: process.env.REACT_APP_API_URL || "http://127.0.0.1:8080/api",
+    SHORT_URL: process.env.REACT_APP_API_URL || "http://localhost:8080",
+    BASE_URL: (process.env.REACT_APP_API_URL && process.env.REACT_APP_API_ENTRYPOINT) 
+        ? (process.env.REACT_APP_API_URL + process.env.REACT_APP_API_ENTRYPOINT)
+        : (process.env.REACT_APP_API_URL || "http://localhost:8080") + "/api",
     ENDPOINTS: {
         OCR_UPLOAD_MULTIPLE: "/Ocr/upload-multiple",
         INIT_GAME: "/InitData/init-game",
@@ -10,6 +13,7 @@ export const API_CONFIG = {
         INIT_CHARACTER_WEAPON_TYPES: "/InitData/init-character-weapon-types",
         INIT_CHARACTER_STAT_TYPES: "/InitData/init-character-stat-types",
 
-        ADD_CHARACTER: "/Character/add-character"
+        ADD_CHARACTER: "/Character/add-character",
+        GET_CHARACTER_SHOW: "/Character/get-characters",
     }
 };

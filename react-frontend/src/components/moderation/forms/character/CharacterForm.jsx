@@ -1,6 +1,6 @@
 import { useForm, FormProvider, set } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
-import { Box, Typography, Button } from "@mui/material"
+import { Box, Typography, Button, Dialog, DialogContent } from "@mui/material"
 import { createFileHandlers, createIconHandlers } from "../fileUtils"
 import { useState, useRef } from "react"
 import { useApiGame } from "../../../../hooks/useApiGame"
@@ -11,6 +11,7 @@ import CharacterInfoSection from "./CharacterInfoSection"
 import CharacterImageSection from "./CharacterImageSection"
 import StatScalingSection from "./StatScalingSection"
 import SnackbarConfirmation from "../../../common/SnackbarConfirmation"
+import EntrySearcher from "../EntrySearcher"
 
 function CharacterForm() {
     const methods = useForm({
@@ -19,6 +20,12 @@ function CharacterForm() {
             statScalings: []
         }
     });
+
+    const myData = [
+        {name: 'test', email: 'name@a.com'},
+        {name: 'test1', email: 'name2@a.com'},
+        {name: 'test2', email: 'name3@a.com'},
+    ]
 
     const {
         handleSubmit,
@@ -170,7 +177,7 @@ function CharacterForm() {
                 sx={formStyles.formContainer}
             >
                 <Typography {...formStyles.formTitle}>
-                    Add Character
+                    Character Management
                 </Typography>
                 
                 <Box sx={formStyles.formLayout.sx}>

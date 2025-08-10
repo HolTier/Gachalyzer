@@ -51,6 +51,7 @@ services:
         - WATCHPACK_POLLING=${WATCHPACK_POLLING}
         - WDS_SOCKET_PORT=${WDS_SOCKET_PORT}
         - REACT_APP_API_URL=${REACT_APP_API_URL}
+        - REACT_APP_API_ENTRYPOINT=${REACT_APP_API_ENTRYPOINT}
     depends_on:
         - api
     networks:

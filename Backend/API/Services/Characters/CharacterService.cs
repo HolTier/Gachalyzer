@@ -141,5 +141,20 @@ namespace API.Services.Characters
             return true;
         }
 
+        public async Task<List<CharacterShowDto>> GetAllCharactersAsync()
+        {
+            try
+            {
+                var data = await _cachedDataService.GetOrSetCacheAsync(
+                    "characters:all",
+                    () => _characterRepository.GetAllCharacterShowDtosAsync()
+                );
+                return data?.ToList() ?? new List<CharacterShowDto>();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error retrieving characters: {ex.Message}", ex);
+            }
+        }
     }
 }

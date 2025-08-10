@@ -213,7 +213,7 @@ export const formStyles = {
       top: 8,
       right: 8,
       backgroundColor: 'error.main',
-      color: 'white',
+      color: 'error.contrastText',
       width: 32,
       height: 32,
       '&:hover': {
@@ -342,6 +342,165 @@ export const formStyles = {
   statScalingLevelBadge: {
     variant: 'overline',
     sx: { fontSize: '0.65rem', color: 'text.secondary' }
+  },
+
+  searchContainer: {
+    sx: {
+      display: 'flex',
+      gap: 2,
+      mb: 3,
+      flexWrap: 'wrap',
+      alignItems: 'flex-end'
+    }
+  },
+
+  searchField: {
+    sx: { flex: 1, minWidth: 200 }
+  },
+
+  filterField: {
+    sx: { minWidth: 150 }
+  },
+
+  resultsHeader: {
+    sx: {
+      mb: 2,
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center'
+    }
+  },
+
+  resultsCounter: {
+    variant: "body2",
+    color: "text.secondary"
+  },
+
+  activeFilters: {
+    sx: {
+      display: 'flex',
+      gap: 1
+    }
+  },
+
+  tableContainer: {
+    elevation: 1
+  },
+
+  tableContainerFixed: {
+    elevation: 1,
+    sx: {
+      maxHeight: 400,
+      overflow: 'auto'
+    }
+  },
+
+  tableHeader: {
+    sx: {
+      fontWeight: 600,
+      backgroundColor: 'action.hover'
+    }
+  },
+
+  tableHeaderFixed: {
+    sx: {
+      fontWeight: 600,
+      backgroundColor: 'primary.dark',
+      color: 'primary.contrastText',
+      borderBottom: '2px solid',
+      borderBottomColor: 'divider',
+      position: 'sticky',
+      top: 0,
+      zIndex: 10,
+      boxShadow: '0 2px 4px rgba(0,0,0,0.3)'
+    }
+  },
+
+  tableActionsHeader: {
+    sx: {
+      fontWeight: 600,
+      backgroundColor: 'action.hover',
+      width: 120,
+      textAlign: 'center'
+    }
+  },
+
+  tableActionsCell: {
+    sx: { textAlign: 'center' }
+  },
+
+  tableActions: {
+    sx: {
+      display: 'flex',
+      gap: 0.5,
+      justifyContent: 'center'
+    }
+  },
+
+  emptyTableCell: {
+    sx: {
+      textAlign: 'center',
+      py: 4
+    }
+  },
+
+  emptyTableText: {
+    color: "text.secondary"
+  },
+
+  paginationContainer: {
+    sx: { mt: 2 }
+  },
+
+  dialog: {
+    maxWidth: 'lg',
+    fullWidth: true
+  },
+
+  dialogTitle: {
+    sx: {
+      fontWeight: 600,
+      borderBottom: '1px solid',
+      borderColor: 'divider'
+    }
+  },
+
+  dialogContent: {
+    sx: {
+      p: 3,
+      height: 600,
+      overflow: 'hidden',
+      display: 'flex',
+      flexDirection: 'column'
+    }
+  },
+
+  dialogCloseButton: {
+    sx: {
+      position: "absolute",
+      right: 8,
+      top: 8,
+      color: 'text.secondary'
+    }
+  },
+
+  scrollableTableContainer: {
+    elevation: 1,
+    sx: {
+      flex: 1,
+      overflow: 'auto',
+      minHeight: 300
+    }
+  },
+
+  dialogEntrySearcherContainer: {
+    sx: {
+      display: 'flex',
+      flexDirection: 'column',
+      height: '100%',
+      flex: 1,
+      overflow: 'hidden'
+    }
   }
 };
 

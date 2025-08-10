@@ -11,5 +11,6 @@ namespace API.Repositories.CharacterRepositories
         Task<IEnumerable<CharacterBaseDto>> GetCharacterBaseDtosByGameIdAsync(int gameId);
         Task<IEnumerable<CharacterBaseDto>> GetCharacterBaseDtosByGameNameAsync(string gameName);
         Task<IEnumerable<CharacterBaseDto>> GetAllCharacterBaseDtosAsync();
+        Task<IEnumerable<CharacterShowDto>> GetAllCharacterShowDtosAsync();
     }
 }

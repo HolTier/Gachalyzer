@@ -1,6 +1,7 @@
 import { Box, FormControl, TextField, Typography, InputLabel, Select, MenuItem } from "@mui/material";
 import { useFormContext } from "react-hook-form";
 import { formStyles, getFormControlProps, getErrorTextProps } from "../formStyles";
+import CharacterSearchDialog from "./CharacterSearchDialog";
 
 function CharacterInfoSection({ 
     games,
@@ -30,6 +31,13 @@ function CharacterInfoSection({
                     fullWidth
                 />
             </FormControl>
+
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+                <Typography variant="body2" color="text.secondary">
+                    Or manage existing characters:
+                </Typography>
+                <CharacterSearchDialog />
+            </Box>
 
             <FormControl {...getFormControlProps(true)}>
                 <InputLabel id="game-select">Game</InputLabel>

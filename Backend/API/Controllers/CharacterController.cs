@@ -38,5 +38,19 @@ namespace API.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+
+        [HttpGet("get-characters")]
+        public async Task<IActionResult> GetCharactersAsync()
+        {
+            try
+            {
+                var characters = await _characterService.GetAllCharactersAsync();
+                return Ok(characters);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
     }
 }
