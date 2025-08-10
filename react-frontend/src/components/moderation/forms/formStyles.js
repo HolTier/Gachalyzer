@@ -276,7 +276,7 @@ export const formStyles = {
   },
   statScalingAutoNumberField: {
     size: 'small',
-    sx: { width: 90 }
+    sx: { width: 80 }
   },
   statScalingButton: {
     variant: 'outlined',

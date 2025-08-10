@@ -1,5 +1,5 @@
 import { Box } from "@mui/material";
-import CharacterForm from "./forms/CharacterForm";
+import CharacterForm from "./forms/character/CharacterForm";
 
 
 function CharacterEditor() {    
