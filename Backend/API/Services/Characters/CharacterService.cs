@@ -236,6 +236,10 @@ namespace API.Services.Characters
 
                 await _characterRepository.SaveChangesAsync();
 
+                await _cachedDataService.ClearCacheAsync($"characters:gameId:{existingCharacter.GameId}");
+                await _cachedDataService.ClearCacheAsync($"characters:game:{existingCharacter.Game.Name}");
+                await _cachedDataService.ClearCacheAsync("characters:all");
+
                 return _mapper.Map<CharacterDto>(existingCharacter);
             }
             catch (ArgumentException)
@@ -250,7 +254,25 @@ namespace API.Services.Characters
 
         public Task<bool> DeleteCharacterAsync(int id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var character = _characterRepository.GetByIdAsync(id).Result;
+                if (character == null)
+                    throw new ArgumentException($"Character with Id {id} does not exist.");
+                _characterRepository.Delete(character);
+                _cachedDataService.ClearCacheAsync($"characters:gameId:{character.GameId}");
+                _cachedDataService.ClearCacheAsync($"characters:game:{character.Game.Name}");
+                _cachedDataService.ClearCacheAsync("characters:all");
+                return Task.FromResult(true);
+            }
+            catch (ArgumentException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error deleting character: {ex.Message}", ex);
+            }
         }
     }
 }
