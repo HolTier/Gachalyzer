@@ -52,5 +52,46 @@ namespace API.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+
+        [HttpPut("update-character/{id}")]
+        public async Task<IActionResult> UpdateCharacterAsync(int id, [FromBody] CharacterUpdateDto characterDto)
+        {
+            try
+            {
+                if (id != characterDto.Id)
+                {
+                    return BadRequest("Character ID mismatch.");
+                }
+
+                var updatedCharacter = await _characterService.UpdateCharacterAsync(id, characterDto);
+                return Ok(updatedCharacter);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+        [HttpDelete("delete-character/{id}")]
+        public async Task<IActionResult> DeleteCharacterAsync(int id)
+        {
+            try
+            {
+                await _characterService.DeleteCharacterAsync(id);
+                return NoContent();
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
     }
 }

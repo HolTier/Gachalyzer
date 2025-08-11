@@ -84,6 +84,15 @@ namespace API.Repositories.CharacterRepositories
                 .ToListAsync();
         }
 
+        public async Task<Character?> GetCharacterByIdWithStatScalingsAsync(int characterId)
+        {
+            return await _dbSet
+                .Include(c => c.StatScalings)
+                    .ThenInclude(cs => cs.CharacterStatType)
+                .Include(c => c.Game)
+                .FirstOrDefaultAsync(c => c.Id == characterId);
+        }
+
         public async Task<IEnumerable<Character>> GetCharactersByCharacterStatTypeAndGameIdAsync(string characterStatType, string gameName)
         {
             return await _dbSet

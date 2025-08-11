@@ -156,5 +156,101 @@ namespace API.Services.Characters
                 throw new Exception($"Error retrieving characters: {ex.Message}", ex);
             }
         }
+
+        public async Task<CharacterDto> UpdateCharacterAsync(int id, CharacterUpdateDto characterDto)
+        {
+            try
+            {
+                if (characterDto == null) throw new ArgumentException(nameof(characterDto));
+
+                if ((characterDto.Icon != null && characterDto.IconId != null)
+                    || (characterDto.Image != null && characterDto.ImageId != null))
+                    throw new ArgumentException("Cannot provide both file and Id for image/icon.");
+
+                var existingCharacter = _characterRepository.GetCharacterByIdWithStatScalingsAsync(id).Result;
+
+                if (existingCharacter == null)
+                    throw new ArgumentException($"Character with Id {id} does not exist.");
+
+                if (SaveImageIfPresent(characterDto.Image, 
+                    existingCharacter.Game.Name, existingCharacter.Name).Result is int imageId)
+                {
+                    existingCharacter.ImageId = imageId;
+                }
+                else if (characterDto.ImageId != null)
+                {
+                    existingCharacter.ImageId = characterDto.ImageId;
+                }
+
+                if (SaveImageIfPresent(characterDto.Icon, 
+                    $"{existingCharacter.Game.Name}-icons", existingCharacter.Name).Result is int iconId)
+                {
+                    existingCharacter.IconId = iconId;
+                }
+                else if (characterDto.IconId != null)
+                {
+                    existingCharacter.IconId = characterDto.IconId;
+                }
+
+                existingCharacter.Name = characterDto.Name ?? existingCharacter.Name;
+                existingCharacter.GameId = characterDto.GameId ?? existingCharacter.GameId;
+                existingCharacter.CharacterElementId = characterDto.CharacterElementId
+                    ?? existingCharacter.CharacterElementId;
+                existingCharacter.CharacterWeaponTypeId = characterDto.CharacterWeaponTypeId
+                    ?? existingCharacter.CharacterWeaponTypeId;
+
+                // Update character stat scalings
+                var dtoScalings = characterDto.CharacterStatScaling ?? new List<CharacterStatScalingUpdateDto>();
+                
+                existingCharacter.StatScalings.ToList()
+                    .RemoveAll(s => !dtoScalings.Any(d => d.Id == s.Id));
+
+                foreach (var dtoScaling in dtoScalings)
+                {
+                    var existingScaling = existingCharacter.StatScalings
+                        .FirstOrDefault(s => s.Id == dtoScaling.Id);
+                    if (existingScaling != null)
+                    {
+                        existingCharacter.StatScalings.Add(new CharacterStatScaling
+                        {
+                            Id = existingScaling.Id,
+                            CharacterId = existingCharacter.Id,
+                            CharacterStatTypeId = dtoScaling.StatTypeId,
+                            Level = dtoScaling.Level,
+                            Value = dtoScaling.Value,
+                            IsBreakpoint = dtoScaling.IsBreakpoint
+                        });
+                    }
+                    else
+                    {
+                        existingScaling = new CharacterStatScaling
+                        {
+                            CharacterId = existingCharacter.Id,
+                            CharacterStatTypeId = dtoScaling.StatTypeId,
+                            Level = dtoScaling.Level,
+                            Value = dtoScaling.Value,
+                            IsBreakpoint = dtoScaling.IsBreakpoint
+                        };
+                    }
+                }
+
+                await _characterRepository.SaveChangesAsync();
+
+                return _mapper.Map<CharacterDto>(existingCharacter);
+            }
+            catch (ArgumentException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error updating character: {ex.Message}", ex);
+            }
+        }
+
+        public Task<bool> DeleteCharacterAsync(int id)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

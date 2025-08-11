@@ -6,5 +6,7 @@ namespace API.Services.Characters
     {
         Task<CharacterDto> AddCharacterAsync(CharacterAddDto characterAddDto);
         Task<List<CharacterShowDto>> GetAllCharactersAsync();
+        Task<CharacterDto> UpdateCharacterAsync(int id, CharacterUpdateDto characterDto);
+        Task<bool> DeleteCharacterAsync(int id);
     }
 }
