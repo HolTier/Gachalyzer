@@ -35,9 +35,13 @@ namespace API.Repositories.CharacterRepositories
                 Name = c.Name,
                 GameId = c.GameId,
                 GameName = c.Game.Name,
+                ImageId = c.ImageId,
                 ImageUrl = c.Image != null ? c.Image.SplashArtPath : null,
+                IconId = c.IconId,
                 IconUrl = c.Icon != null ? c.Icon.SplashArtPath : null,
+                CharacterWeaponTypeId = c.CharacterWeaponTypeId,
                 CharacterWeaponTypeName = c.CharacterWeaponType != null ? c.CharacterWeaponType.Name : null,
+                CharacterElementId = c.CharacterElementId,
                 CharacterElementName = c.CharacterElement != null ? c.CharacterElement.Name : null,
                 CharacterStatScalingShowDtos = c.StatScalings.Select(s => new CharacterStatScalingShowDto
                 {

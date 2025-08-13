@@ -82,11 +82,21 @@ function CharacterForm() {
             });
         }
 
+        // TODO: Look on api and change. STOP DOING PLACEHOLDERS EVERYWHERE!!!
         if (data.image) {
-            formData.append("image", data.image);
+            if (data.image.isServerImage) {
+                formData.append("imageServerId", data.image.serverId.toString());
+            } else {
+                formData.append("image", data.image);
+            }
         }
+        // TODO: SAME HERE, YOU SHOULD DO API FIRST (past you)
         if (data.icon) {
-            formData.append("icon", data.icon);
+            if (data.icon.isServerImage) {
+                formData.append("iconServerId", data.icon.serverId.toString());
+            } else {
+                formData.append("icon", data.icon);
+            }
         }
 
         console.log("Sending request to:", `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.ADD_CHARACTER}`);
