@@ -20,13 +20,36 @@ export const characterFormSchema = yup.object({
         .test(
             "fileSize",
             "File size is too large (max 5MB)",
-            (value) => !value || (value instanceof File && value.size <= 5 * 1024 * 1024)
+            (value) => {
+                // Skip validation for server images
+                if (value && value.isServerImage) {
+                    console.log("Skipping image file size validation for server image:", value);
+                    return true;
+                }
+                // Validate only actual File objects
+                const isValid = !value || (value instanceof File && value.size <= 5 * 1024 * 1024);
+                if (!isValid) {
+                    console.log("Image file size validation failed for:", value);
+                }
+                return isValid;
+            }
         )
         .test(
             "fileType",
             "Unsupported file type",
-            (value) =>
-                !value || (value instanceof File && supportedImageTypes.includes(value.type))
+            (value) => {
+                // Skip validation for server images
+                if (value && value.isServerImage) {
+                    console.log("Skipping image file type validation for server image:", value);
+                    return true;
+                }
+                // Validate only actual File objects
+                const isValid = !value || (value instanceof File && supportedImageTypes.includes(value.type));
+                if (!isValid) {
+                    console.log("Image file type validation failed for:", value);
+                }
+                return isValid;
+            }
         ),
     icon: yup
         .mixed()
@@ -34,12 +57,35 @@ export const characterFormSchema = yup.object({
         .test(
             "fileSize",
             "File size is too large (max 5MB)",
-            (value) => !value || (value instanceof File && value.size <= 5 * 1024 * 1024)
+            (value) => {
+                // Skip validation for server images
+                if (value && value.isServerImage) {
+                    console.log("Skipping icon file size validation for server image:", value);
+                    return true;
+                }
+                // Validate only actual File objects
+                const isValid = !value || (value instanceof File && value.size <= 5 * 1024 * 1024);
+                if (!isValid) {
+                    console.log("Icon file size validation failed for:", value);
+                }
+                return isValid;
+            }
         )
         .test(
             "fileType",
             "Unsupported file type",
-            (value) =>
-                !value || (value instanceof File && supportedImageTypes.includes(value.type))
+            (value) => {
+                // Skip validation for server images
+                if (value && value.isServerImage) {
+                    console.log("Skipping icon file type validation for server image:", value);
+                    return true;
+                }
+                // Validate only actual File objects
+                const isValid = !value || (value instanceof File && supportedImageTypes.includes(value.type));
+                if (!isValid) {
+                    console.log("Icon file type validation failed for:", value);
+                }
+                return isValid;
+            }
         ),
 });

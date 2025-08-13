@@ -7,13 +7,16 @@ import IndependentStatInput from "./IndependentStatInput";
 
 function StatScalingSection({ 
     statTypes,
-    statValuesRef
+    statValuesRef,
+    initialBreakpoints,
+    onBreakpointsChange
 }) {
     const { setValue, getValues, formState: { errors } } = useFormContext();
     const defaultBreakpoints = useMemo(() => Array.from({length:10}, (_,i)=> i===0 ? 1 : i*10), []);
     const defaultMajorLevels = useMemo(()=> [10,20,30,40,50,60,70,80,90], []);
+    
     const [breakpoints, setBreakpoints] = useState(
-        defaultBreakpoints.map(l => ({ level: l, major: defaultMajorLevels.includes(l) }))
+        initialBreakpoints || defaultBreakpoints.map(l => ({ level: l, major: defaultMajorLevels.includes(l) }))
     );
     const [currentIndex, setCurrentIndex] = useState(0);
     const currentBreakpoint = breakpoints[currentIndex] || { level: 1, major: false };
@@ -41,6 +44,16 @@ function StatScalingSection({
     const [autoAnchor, setAutoAnchor] = useState('');
     const [duplicateMajors, setDuplicateMajors] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
+
+    // Update breakpoints when initialBreakpoints changes (for character editing)
+    useEffect(() => {
+        if (initialBreakpoints && Array.isArray(initialBreakpoints)) {
+            setBreakpoints(initialBreakpoints);
+            const serialized = initialBreakpoints.map(b => b.major ? `${b.level}+` : `${b.level}`).join(',');
+            setBreakpointInput(serialized);
+            setCurrentIndex(0);
+        }
+    }, [initialBreakpoints]);
 
     useEffect(() => {
         if (statTypes && statTypes.length > 0) {
@@ -93,6 +106,9 @@ function StatScalingSection({
         const parsed = parseBreakpoints(breakpointInput);
         if (parsed.length === 0) return;
         setBreakpoints(parsed);
+        if (onBreakpointsChange) {
+            onBreakpointsChange(parsed);
+        }
         setBreakpointInput(parsed.map(b => b.major ? `${b.level}+` : `${b.level}`).join(','));
         setCurrentIndex(idx => Math.min(idx, parsed.length -1));
     };
@@ -156,6 +172,9 @@ function StatScalingSection({
         );
 
         setBreakpoints(arr);
+        if (onBreakpointsChange) {
+            onBreakpointsChange(arr);
+        }
         const serialized = arr.map(b => {
             const duplicates = arr.filter(x => x.level === b.level);
             if (duplicates.length > 1) {

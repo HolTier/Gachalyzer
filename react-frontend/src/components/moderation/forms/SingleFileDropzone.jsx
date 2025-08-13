@@ -2,18 +2,6 @@ import { useState, useRef } from "react";
 import { Box, Typography, Paper, Avatar, IconButton } from "@mui/material";
 import { CloudUpload, Close, Image } from "@mui/icons-material";
 
-/**
- * A single-file dropzone component that can be configured for different use cases
- * (regular images or smaller round icons).
- * 
- * @param {Object} props
- * @param {Function} props.onFilesSelected - Callback when files are selected (receives array with max 1 file)
- * @param {number} props.width - Width of the dropzone (default: 200)
- * @param {number} props.height - Height of the dropzone (default: 280)
- * @param {boolean} props.isIcon - Whether this is for an icon (smaller, round styling) (default: false)
- * @param {string} props.label - Custom label for the dropzone
- * @param {string} props.description - Custom description text
- */
 function SingleFileDropzone({ 
     onFilesSelected, 
     width = 200, 
@@ -26,7 +14,6 @@ function SingleFileDropzone({
     const [isDragOver, setIsDragOver] = useState(false);
     const fileInputRef = useRef(null);
     
-    // Adjust dimensions for icon mode
     const dropzoneWidth = isIcon ? 120 : width;
     const dropzoneHeight = isIcon ? 120 : height;
     const iconSize = isIcon ? 32 : 48;

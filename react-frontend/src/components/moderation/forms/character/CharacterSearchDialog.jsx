@@ -4,6 +4,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { useState, useMemo } from "react";
 import EntrySearcher from "../EntrySearcher";
 import { useApiCharacter } from "../../../../hooks/useApiCharacter";
+import { API_CONFIG } from "../../../../config/api";
 
 const headers = [
     { key: 'iconUrl', label: 'Icon', type: 'image', width: 60 },
@@ -121,7 +122,7 @@ const buildCharacterFilterOptions = (characters) => {
     return filterOptions;
 };
 
-function CharacterSearchDialog() {
+function CharacterSearchDialog({setCharacter, setUpdate}) {
     const [open, setOpen] = useState(false)
     const {data: characters, loading: loading, error: error} = useApiCharacter("character_show");
 
@@ -137,8 +138,13 @@ function CharacterSearchDialog() {
         setOpen(false)
     }
 
-    const handleEdit = () => {
-        console.log("edit")
+    const handleEdit = (character) => {
+        console.log("CharacterSearchDialog handleEdit called with:", character);
+        console.log("setCharacter function:", setCharacter);
+        console.log("setUpdate function:", setUpdate);
+        setCharacter(character)
+        setUpdate(true)
+        setOpen(false)
     }
 
     const handleRemove = () => {
