@@ -1,4 +1,5 @@
 ﻿using API.Data;
+using API.Dtos;
 using API.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -69,6 +70,33 @@ namespace API.Repositories
                 .Include(i => i.Tags)
                 .Include(i => i.ImageStatus)
                 .FirstOrDefaultAsync(i => i.Tags.Any(t => t.Name == tagName));
+        }
+
+        public async Task<ImagePageResult?> GetByPageAsync(int pageNumber, int pageSize)
+        {
+            var totalCount = await _dbSet.CountAsync();
+            if (totalCount == 0) return null;
+            var images = await _dbSet
+                .Include(i => i.Tags)
+                .Include(i => i.ImageStatus)
+                .OrderBy(i => i.Id)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .Select(i => new ImageDto
+                {
+                    Id = i.Id,
+                    SplashArtPath = i.SplashArtPath,
+                    ThumbnailPath = i.ThumbnailPath,
+                })
+                .ToListAsync();
+
+            return new ImagePageResult
+            {
+                TotalCount = totalCount,
+                PageNumber = pageNumber,
+                PageSize = pageSize,
+                Images = images
+            };
         }
     }
 }

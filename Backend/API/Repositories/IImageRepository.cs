@@ -1,4 +1,5 @@
-﻿using API.Models;
+﻿using API.Dtos;
+using API.Models;
 
 namespace API.Repositories
 {
@@ -12,5 +13,6 @@ namespace API.Repositories
         Task<IEnumerable<Image>> GetBySplashArtAsync(string fileName);
         Task<bool> ExistsAsync(string hash);
         Task<int> CountByStatusAsync(int statusId);
+        Task<ImagePageResult?> GetByPageAsync(int pageNumber, int pageSize);
     }
 }

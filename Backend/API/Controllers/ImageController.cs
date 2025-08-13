@@ -54,5 +54,26 @@ namespace API.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
+
+        [HttpGet("image-by-page")]
+        public async Task<IActionResult> GetImagesByPage(int pageNumber, int pageSize)
+        {
+            if (pageNumber < 1 || pageSize < 1)
+                return BadRequest("Invalid page number or size");
+            try
+            {
+                var data = await _cachedDataService.GetOrSetCacheAsync(
+                    $"image:page:{pageNumber}:{pageSize}",
+                    () => _imageRepository.GetByPageAsync(pageNumber, pageSize)
+                );
+                if (data == null || !data.Images.Any())
+                    return NotFound("No images found for the specified page");
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
     }
 }
