@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
     Dialog,
     DialogTitle,
@@ -16,6 +16,7 @@ import {
     Image as ImageIcon
 } from '@mui/icons-material';
 import { formStyles } from './formStyles';
+import { API_CONFIG } from '../../../config/api';
 import { SearchControls, ImageGrid, ImageSearchChips, useImagePicker } from './imagePicker/index';
 
 function ImagePicker({ 
@@ -24,8 +25,7 @@ function ImagePicker({
     onSelect, 
     title = "Select Image",
     searchPlaceholder = "Search images...",
-    apiEndpoint = "/api/images",
-    imageHeight = 150,
+    apiEndpoint = API_CONFIG.ENDPOINTS.IMAGE_PAGES,
     imagesPerPage = 12 
 }) {
     const [selectedImage, setSelectedImage] = useState(null);
@@ -41,9 +41,11 @@ function ImagePicker({
         loading,
         page,
         setPage,
+        handlePageSizeChange,
         availableTags,
         totalPages,
         paginatedImages,
+        totalCount,
         clearSearch,
         fetchImages,
         searchImages
@@ -56,22 +58,41 @@ function ImagePicker({
     }, [open, fetchImages]);
 
     useEffect(() => {
-        searchImages(searchTerm, selectedTags);
-        setPage(0);
-    }, [searchTerm, selectedTags, images, searchImages, setPage]);
+        const timeoutId = setTimeout(() => {
+            searchImages(searchTerm, selectedTags);
+            setPage(0);
+        }, 300);
 
-    const handleImageSelect = (image) => {
-        setSelectedImage(image);
+        return () => clearTimeout(timeoutId);
+    }, [searchTerm, selectedTags, searchImages, setPage]);
+
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
     };
 
-    const handleConfirm = () => {
+    const handleChangeRowsPerPage = (event) => {
+        const newRowsPerPage = parseInt(event.target.value, 10);
+        setRowsPerPage(newRowsPerPage);
+        handlePageSizeChange(newRowsPerPage);
+    };
+
+    const handleImageSelect = useCallback((image) => {
+        setSelectedImage(image);
+    }, []);
+
+    const handleConfirm = useCallback(() => {
         if (selectedImage && onSelect) {
-            onSelect(selectedImage);
+            const imageData = {
+                ...selectedImage,
+                isServerImage: true,
+                serverId: selectedImage.id
+            };
+            onSelect(imageData);
         }
         handleClose();
-    };
+    }, [selectedImage, onSelect]);
 
-    const handleClose = () => {
+    const handleClose = useCallback(() => {
         setSearchTerm('');
         setSelectedTags([]);
         setSelectedImage(null);
@@ -79,7 +100,7 @@ function ImagePicker({
         if (onClose) {
             onClose();
         }
-    };
+    }, [onClose, setSearchTerm, setSelectedTags, setPage]);
 
     const handleRemoveTag = (tagToRemove) => {
         setSelectedTags(prev => prev.filter(tag => tag !== tagToRemove));
@@ -88,15 +109,6 @@ function ImagePicker({
     const handleClearAllFilters = () => {
         setSearchTerm('');
         setSelectedTags([]);
-    };
-
-    const handleChangePage = (event, newPage) => {
-        setPage(newPage);
-    };
-
-    const handleChangeRowsPerPage = (event) => {
-        setRowsPerPage(parseInt(event.target.value, 10));
-        setPage(0);
     };
 
     return (
@@ -144,7 +156,7 @@ function ImagePicker({
                     onRemoveTag={handleRemoveTag}
                 />
 
-                <Box sx={{ flex: 1, overflow: 'auto' }}>
+                <Box sx={{ flex: 1, overflow: 'auto', maxHeight: 'calc(90vh - 300px)' }}>
                     {loading ? (
                         <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 200 }}>
                             <CircularProgress />
@@ -160,10 +172,10 @@ function ImagePicker({
                     )}
                 </Box>
 
-                {filteredImages.length > 0 && (
+                {!loading && (
                     <TablePagination
                         component="div"
-                        count={filteredImages.length}
+                        count={totalCount}
                         page={page}
                         onPageChange={handleChangePage}
                         rowsPerPage={rowsPerPage}

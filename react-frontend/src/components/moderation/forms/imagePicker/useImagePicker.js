@@ -1,4 +1,5 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo, useRef, useEffect } from 'react';
+import { API_CONFIG } from '../../../../config/api';
 
 export function useImagePicker({ apiEndpoint, imagesPerPage }) {
     const [searchTerm, setSearchTerm] = useState('');
@@ -8,118 +9,184 @@ export function useImagePicker({ apiEndpoint, imagesPerPage }) {
     const [loading, setLoading] = useState(false);
     const [page, setPage] = useState(0);
     const [availableTags, setAvailableTags] = useState([]);
+    const [totalCount, setTotalCount] = useState(0);
+    const [totalPages, setTotalPages] = useState(0);
+    
+    const currentPageSize = useRef(imagesPerPage);
+    currentPageSize.current = imagesPerPage;
 
-
-    const mockImages = [
-        {
-            id: 1,
-            url: 'https://via.placeholder.com/300x200/FF6B6B/FFFFFF?text=Image+1',
-            name: 'Character Portrait 1',
-            tags: ['character', 'portrait', 'red'],
-            description: 'A character portrait with red theme'
-        },
-        {
-            id: 2,
-            url: 'https://via.placeholder.com/300x200/4ECDC4/FFFFFF?text=Image+2',
-            name: 'Artifact Icon 1',
-            tags: ['artifact', 'icon', 'blue'],
-            description: 'An artifact icon with blue theme'
-        },
-        {
-            id: 3,
-            url: 'https://via.placeholder.com/300x200/45B7D1/FFFFFF?text=Image+3',
-            name: 'Weapon Image 1',
-            tags: ['weapon', 'sword', 'blue'],
-            description: 'A sword weapon image'
-        },
-        {
-            id: 4,
-            url: 'https://via.placeholder.com/300x200/F9CA24/FFFFFF?text=Image+4',
-            name: 'Background 1',
-            tags: ['background', 'landscape', 'yellow'],
-            description: 'A landscape background'
-        },
-        {
-            id: 5,
-            url: 'https://via.placeholder.com/300x200/6C5CE7/FFFFFF?text=Image+5',
-            name: 'Character Portrait 2',
-            tags: ['character', 'portrait', 'purple'],
-            description: 'A character portrait with purple theme'
-        },
-        {
-            id: 6,
-            url: 'https://via.placeholder.com/300x200/A8E6CF/FFFFFF?text=Image+6',
-            name: 'Artifact Icon 2',
-            tags: ['artifact', 'icon', 'green'],
-            description: 'An artifact icon with green theme'
+    const getImageDisplayUrl = (imageDto) => {
+        const imagePath = imageDto.thumbnailPath || imageDto.splashArtPath;
+        
+        if (imagePath && (imagePath.startsWith('http') || imagePath.startsWith('//'))) {
+            return imagePath;
         }
-    ];
+        
+        return imagePath ? `${API_CONFIG.SHORT_URL}${imagePath}` : null;
+    };
 
-    const mockTags = [
-        'character', 'portrait', 'artifact', 'icon', 'weapon', 
-        'sword', 'background', 'landscape', 'red', 'blue', 
-        'yellow', 'purple', 'green'
-    ];
+    const transformImageDto = useCallback((imageDto) => {
+        const displayUrl = getImageDisplayUrl(imageDto);
+        const hasValidUrl = displayUrl && displayUrl !== 'null' && displayUrl !== 'undefined';
+        
+        return {
+            id: imageDto.id,
+            url: hasValidUrl ? displayUrl : 'https://via.placeholder.com/300x200/f0f0f0/999999?text=No+Image',
+            name: `Image ${imageDto.id}`,
+            tags: [
+                'image',
+                imageDto.thumbnailPath ? 'thumbnail' : null,
+                imageDto.splashArtPath ? 'splash' : null
+            ].filter(Boolean),
+            description: `Image ID: ${imageDto.id}${imageDto.thumbnailPath ? ' (Has thumbnail)' : ''}${imageDto.splashArtPath ? ' (Has splash art)' : ''}`,
+            serverId: imageDto.id,
+            isServerImage: true,
+            thumbnailPath: imageDto.thumbnailPath,
+            splashArtPath: imageDto.splashArtPath
+        };
+    }, []);
 
-    const fetchImages = useCallback(async () => {
+    const fetchImages = useCallback(async (pageNumber = 1) => {
         setLoading(true);
         try {
-            // TODO: Replace with actual API call
-            // const response = await fetch(apiEndpoint);
-            // const data = await response.json();
+            const response = await fetch(
+                `${API_CONFIG.BASE_URL}${API_CONFIG.ENDPOINTS.IMAGE_PAGES}?pageNumber=${pageNumber}&pageSize=${currentPageSize.current}`
+            );
             
-            await new Promise(resolve => setTimeout(resolve, 500));
+            if (!response.ok) {
+                if (response.status === 404) {
+                    setImages([]);
+                    setFilteredImages([]);
+                    setTotalCount(0);
+                    setTotalPages(0);
+                    return;
+                }
+                throw new Error(`HTTP error! status: ${response.status} - ${response.statusText}`);
+            }
             
-            setImages(mockImages);
-            setAvailableTags(mockTags);
+            const data = await response.json();
+            
+            if (!data || !Array.isArray(data.images)) {
+                throw new Error('Invalid response format: expected images array');
+            }
+            
+            const transformedImages = data.images.map(transformImageDto);
+            
+            setImages(transformedImages);
+            setFilteredImages(transformedImages);
+            setTotalCount(data.totalCount || 0);
+            setTotalPages(data.totalPages || 0);
+            
+            const allTags = new Set();
+            transformedImages.forEach(img => {
+                img.tags.forEach(tag => allTags.add(tag));
+            });
+            setAvailableTags(Array.from(allTags));
+            
         } catch (error) {
             console.error('Error fetching images:', error);
+            setImages([]);
+            setFilteredImages([]);
+            setTotalCount(0);
+            setTotalPages(0);
+            setAvailableTags([]);
         } finally {
             setLoading(false);
         }
-    }, [apiEndpoint]);
+    }, [transformImageDto]); 
 
-    const searchImages = useCallback(async (term, tags) => {
-        setLoading(true);
-        try {
-            // TODO: Replace with actual search API call
-            // const response = await fetch(`${apiEndpoint}/search?q=${term}&tags=${tags.join(',')}`);
-            // const data = await response.json();
-            
-            await new Promise(resolve => setTimeout(resolve, 300));
-            
-            let filtered = mockImages;
-            
-            if (term) {
-                filtered = filtered.filter(img => 
-                    img.name.toLowerCase().includes(term.toLowerCase()) ||
-                    img.description.toLowerCase().includes(term.toLowerCase())
-                );
-            }
-            
-            if (tags.length > 0) {
-                filtered = filtered.filter(img => 
-                    tags.every(tag => img.tags.includes(tag))
-                );
-            }
-            
-            setFilteredImages(filtered);
-        } catch (error) {
-            console.error('Error searching images:', error);
-        } finally {
-            setLoading(false);
+    const filteredImagesMemo = useMemo(() => {
+        let filtered = images;
+        
+        if (searchTerm) {
+            filtered = filtered.filter(img => 
+                img.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                img.description.toLowerCase().includes(searchTerm.toLowerCase())
+            );
         }
-    }, [apiEndpoint]);
+        
+        if (selectedTags.length > 0) {
+            filtered = filtered.filter(img => 
+                selectedTags.every(tag => img.tags.includes(tag))
+            );
+        }
+        
+        return filtered;
+    }, [images, searchTerm, selectedTags]);
+
+    useEffect(() => {
+        setFilteredImages(filteredImagesMemo);
+        
+        const hasFilters = searchTerm || selectedTags.length > 0;
+        if (hasFilters) {
+            const maxPages = Math.ceil(filteredImagesMemo.length / currentPageSize.current);
+            if (page >= maxPages && maxPages > 0) {
+                setPage(Math.max(0, maxPages - 1));
+            }
+        }
+    }, [filteredImagesMemo, page, searchTerm, selectedTags]);
+
+    const searchImages = useCallback((term, tags) => {
+    }, []);
 
     const clearSearch = useCallback(() => {
         setSearchTerm('');
         setSelectedTags([]);
-    }, []);
+        setPage(0); 
+        fetchImages(1);
+    }, [fetchImages]);
 
-    const startIndex = page * imagesPerPage;
-    const endIndex = startIndex + imagesPerPage;
-    const paginatedImages = filteredImages.slice(startIndex, endIndex);
-    const totalPages = Math.ceil(filteredImages.length / imagesPerPage);
+    const handlePageChange = useCallback(async (newPage) => {
+        const hasFilters = searchTerm || selectedTags.length > 0;
+        
+        if (hasFilters) {
+            setPage(newPage);
+        } else {
+            setPage(newPage);
+            await fetchImages(newPage + 1);
+        }
+    }, [searchTerm, selectedTags, fetchImages]);
+
+    const paginatedImages = useMemo(() => {
+        const hasFilters = searchTerm || selectedTags.length > 0;
+        
+        if (hasFilters) {
+            const startIndex = page * currentPageSize.current;
+            const endIndex = startIndex + currentPageSize.current;
+            return filteredImagesMemo.slice(startIndex, endIndex);
+        } else {
+            return images;
+        }
+    }, [page, searchTerm, selectedTags, filteredImagesMemo, images]);
+
+    const handlePageSizeChange = useCallback(async (newPageSize) => {
+        currentPageSize.current = newPageSize;
+        setPage(0);
+        
+        const hasFilters = searchTerm || selectedTags.length > 0;
+        if (!hasFilters) {
+            await fetchImages(1);
+        }
+    }, [searchTerm, selectedTags, fetchImages]);
+    const effectiveTotalPages = useMemo(() => {
+        const hasFilters = searchTerm || selectedTags.length > 0;
+        
+        if (hasFilters) {
+            return Math.ceil(filteredImagesMemo.length / currentPageSize.current);
+        } else {
+            return totalPages;
+        }
+    }, [searchTerm, selectedTags, filteredImagesMemo.length, totalPages]);
+
+    const effectiveTotalCount = useMemo(() => {
+        const hasFilters = searchTerm || selectedTags.length > 0;
+        
+        if (hasFilters) {
+            return filteredImagesMemo.length;
+        } else {
+            return totalCount || 0;
+        }
+    }, [searchTerm, selectedTags, filteredImagesMemo.length, totalCount]);
 
     return {
         searchTerm,
@@ -130,10 +197,12 @@ export function useImagePicker({ apiEndpoint, imagesPerPage }) {
         filteredImages,
         loading,
         page,
-        setPage,
+        setPage: handlePageChange,
+        handlePageSizeChange,
         availableTags,
-        totalPages,
+        totalPages: effectiveTotalPages,
         paginatedImages,
+        totalCount: effectiveTotalCount,
         clearSearch,
         fetchImages,
         searchImages

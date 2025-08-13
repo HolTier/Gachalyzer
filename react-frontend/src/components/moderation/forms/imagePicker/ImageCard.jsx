@@ -8,7 +8,7 @@ import {
     Chip
 } from '@mui/material';
 
-export function ImageCard({ image, isSelected, onSelect, imageHeight }) {
+const ImageCard = React.memo(({ image, isSelected, onSelect, imageHeight }) => {
     const handleClick = () => {
         onSelect(image);
     };
@@ -66,4 +66,8 @@ export function ImageCard({ image, isSelected, onSelect, imageHeight }) {
             </CardContent>
         </Card>
     );
-}
+});
+
+ImageCard.displayName = 'ImageCard';
+
+export { ImageCard };

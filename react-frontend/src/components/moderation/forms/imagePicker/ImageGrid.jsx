@@ -10,13 +10,13 @@ import {
 } from '@mui/icons-material';
 import { ImageCard } from './ImageCard';
 
-export function ImageGrid({
+const ImageGrid = React.memo(({
     images,
     filteredImages,
     selectedImage,
     onImageSelect,
     imageHeight
-}) {
+}) => {
     if (filteredImages.length === 0) {
         return (
             <Box sx={{ 
@@ -41,7 +41,7 @@ export function ImageGrid({
     return (
         <Grid container spacing={2}>
             {images.map((image) => (
-                <Grid item xs={12} sm={6} md={4} key={image.id}>
+                <Grid item xs={12} sm={6} md={4} key={`image-${image.id}`}>
                     <ImageCard
                         image={image}
                         isSelected={selectedImage?.id === image.id}
@@ -52,4 +52,8 @@ export function ImageGrid({
             ))}
         </Grid>
     );
-}
+});
+
+ImageGrid.displayName = 'ImageGrid';
+
+export { ImageGrid };

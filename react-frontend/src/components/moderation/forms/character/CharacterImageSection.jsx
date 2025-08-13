@@ -139,7 +139,6 @@ function CharacterImageSection({
                 onSelect={iconHandlersHook.handleImageFromServer}
                 title="Select Character Icon"
                 searchPlaceholder="Search character icons..."
-                apiEndpoint="/api/images/icons"
                 imageHeight={120}
             />
 
@@ -149,7 +148,6 @@ function CharacterImageSection({
                 onSelect={imageHandlersHook.handleImageFromServer}
                 title="Select Character Image"
                 searchPlaceholder="Search character images..."
-                apiEndpoint="/api/images/characters"
                 imageHeight={150}
             />
         </Box>
