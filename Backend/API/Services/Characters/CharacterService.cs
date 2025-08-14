@@ -187,8 +187,20 @@ namespace API.Services.Characters
                 if (existingCharacter == null)
                     throw new ArgumentException($"Character with Id {id} does not exist.");
 
+                var game = await _cachedDataService.GetOrSetCacheAsync(
+                        $"game:id:{existingCharacter.GameId}",
+                        () => _gameRepository.GetByIdAsync(existingCharacter.GameId)
+                );
+                var tagList = new List<string>();
+
+                if (game != null)
+                    tagList.Add(game.Name.ToLower());
+
+                tagList.Add((characterDto.Name ?? existingCharacter.Name).ToLower());
+
+                var imageTags = new List<string>(tagList) { "image" };
                 if (SaveImageIfPresent(characterDto.Image, 
-                    existingCharacter.Game.Name, existingCharacter.Name).Result is int imageId)
+                    existingCharacter.Game.Name, existingCharacter.Name, imageTags).Result is int imageId)
                 {
                     existingCharacter.ImageId = imageId;
                 }
@@ -197,8 +209,9 @@ namespace API.Services.Characters
                     existingCharacter.ImageId = characterDto.ImageId;
                 }
 
+                var iconTags = new List<string>(tagList) { "icon" };
                 if (SaveImageIfPresent(characterDto.Icon, 
-                    $"{existingCharacter.Game.Name}-icons", existingCharacter.Name).Result is int iconId)
+                    $"{existingCharacter.Game.Name}-icons", existingCharacter.Name, iconTags).Result is int iconId)
                 {
                     existingCharacter.IconId = iconId;
                 }
