@@ -55,21 +55,12 @@ namespace API.Repositories
                 .ToListAsync();
         }
 
-        public async Task<IEnumerable<Image>> GetByTagAsync(int tagId)
-        {
-            return await _dbSet
-                .Include(i => i.Tags)
-                .Include(i => i.ImageStatus)
-                .Where(i => i.Tags.Any(t => t.Id == tagId))
-                .ToListAsync();
-        }
-
         public async Task<Image?> GetByTagNameAsync(string tagName)
         {
             return await _dbSet
                 .Include(i => i.Tags)
                 .Include(i => i.ImageStatus)
-                .FirstOrDefaultAsync(i => i.Tags.Any(t => t.Name == tagName));
+                .FirstOrDefaultAsync(i => i.Tags.Any(t => t.Contains(tagName)));
         }
 
         public async Task<ImagePageResult?> GetByPageAsync(int pageNumber, int pageSize)
@@ -77,7 +68,6 @@ namespace API.Repositories
             var totalCount = await _dbSet.CountAsync();
             if (totalCount == 0) return null;
             var images = await _dbSet
-                .Include(i => i.Tags)
                 .Include(i => i.ImageStatus)
                 .OrderBy(i => i.Id)
                 .Skip((pageNumber - 1) * pageSize)
@@ -87,6 +77,7 @@ namespace API.Repositories
                     Id = i.Id,
                     SplashArtPath = i.SplashArtPath,
                     ThumbnailPath = i.ThumbnailPath,
+                    Tags = i.Tags,
                 })
                 .ToListAsync();
 

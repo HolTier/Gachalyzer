@@ -49,6 +49,10 @@ namespace API.Data
                 .WithMany()
                 .HasForeignKey(c => c.IconId)
                 .OnDelete(DeleteBehavior.SetNull);
+
+            modelBuilder.Entity<Image>()
+                .HasIndex(i => i.Tags)
+                .HasMethod("gin");
         }
     }
 }

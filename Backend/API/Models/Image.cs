@@ -1,4 +1,5 @@
-﻿using API.Models.CharacterModels;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using API.Models.CharacterModels;
 using API.Models.GameModels;
 using API.Models.WeaponModels;
 
@@ -13,7 +14,8 @@ namespace API.Models
         public DateTime? CreatedAt { get; set; }
         public DateTime? LastModified { get; set; }
 
-        public List<Tag> Tags { get; set; } = new();
+        [Column(TypeName = "text[]")]
+        public List<string> Tags { get; set; } = new();
 
         public int ImageStatusId { get; set; }
         public ImageStatus ImageStatus { get; set; } = default!;
