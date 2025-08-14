@@ -35,7 +35,7 @@ namespace API.Services.Images
             _cachedDataService = cachedDataService;
         }
 
-        public async Task<ImageDto> SaveImageAsync(IFormFile file, string folderName, string fileName)
+        public async Task<ImageDto> SaveImageAsync(IFormFile file, string folderName, string fileName, List<string> fileTags)
         {
             if (file == null || file.Length == 0)
                 throw new ArgumentException("No file provided");
@@ -154,9 +154,10 @@ namespace API.Services.Images
                 using var stream = new FileStream(fullPath, FileMode.Open, FileAccess.Read);
                 var formFile = new FormFile(stream, 0, stream.Length, fileName, Path.GetFileName(fullPath));
 
+
                 try
                 {
-                    await SaveImageAsync(formFile, folderName, fileName);
+                    await SaveImageAsync(formFile, folderName, fileName, new List<string>() { "image", "scaned" });
                 }
                 catch
                 {

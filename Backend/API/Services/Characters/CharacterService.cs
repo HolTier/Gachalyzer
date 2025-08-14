@@ -54,8 +54,23 @@ namespace API.Services.Characters
                 }
             }
 
-            int? imageId = await SaveImageIfPresent(character.Image, characterValidated.GameName, character.Name);
-            int? iconId = await SaveImageIfPresent(character.Icon, $"{characterValidated.GameName}-icons", character.Name);
+            var game = await _cachedDataService.GetOrSetCacheAsync(
+                        $"game:id:{character.GameId}",
+                        () => _gameRepository.GetByIdAsync(character.GameId)
+                );
+
+            var tagList = new List<string>();
+            if (game != null)
+            {
+                tagList.Add(game.Name.ToLower());
+            }
+            tagList.Add(character.Name.ToLower());
+
+            var imageTags = new List<string>(tagList) {"image"};
+            int? imageId = await SaveImageIfPresent(character.Image, characterValidated.GameName, character.Name, imageTags);
+
+            var iconTags = new List<string>(tagList) { "icon" };
+            int? iconId = await SaveImageIfPresent(character.Icon, $"{characterValidated.GameName}-icons", character.Name, iconTags);
 
             var newCharacter = new Character
             {
@@ -111,11 +126,11 @@ namespace API.Services.Characters
             };
         }
 
-        private async Task<int?> SaveImageIfPresent(IFormFile? file, string folder, string name)
+        private async Task<int?> SaveImageIfPresent(IFormFile? file, string folder, string name, List<string> tags)
         {
             if (file != null && file.Length > 0)
             {
-                var image = await _imageService.SaveImageAsync(file, folder, name);
+                var image = await _imageService.SaveImageAsync(file, folder, name, tags);
                 return image.Id;
             }
             return null;

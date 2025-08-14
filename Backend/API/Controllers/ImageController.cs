@@ -21,13 +21,13 @@ namespace API.Controllers
         }
 
         [HttpPost("upload")]
-        public async Task<IActionResult> UploadImage(IFormFile file, string folderName, string fileName)
+        public async Task<IActionResult> UploadImage(IFormFile file, string folderName, string fileName, List<string> fileTags)
         {
             if (file == null || file.Length == 0)
                 return BadRequest("No file provided");
             try
             {
-                var result = await _imageService.SaveImageAsync(file, folderName, fileName);
+                var result = await _imageService.SaveImageAsync(file, folderName, fileName, fileTags);
                 return Ok(result);
             }
             catch (Exception ex)
