@@ -16,18 +16,18 @@ import {
     Image as ImageIcon
 } from '@mui/icons-material';
 import { formStyles } from './formStyles';
-import { API_CONFIG } from '../../../config/api';
-import { SearchControls, ImageGrid, ImageSearchChips, useImagePicker } from './imagePicker/index';
+import { useImagePicker } from '../../../hooks/useImagePicker';
+import { SearchControls, ImageGrid, ImageSearchChips } from './imagePicker/index';
 
-function ImagePicker({ 
+const ImagePicker = React.memo(({ 
     open, 
     onClose, 
     onSelect, 
     title = "Select Image",
     searchPlaceholder = "Search images...",
-    apiEndpoint = API_CONFIG.ENDPOINTS.IMAGE_PAGES,
+    imageHeight = 150,
     imagesPerPage = 12 
-}) {
+}) => {
     const [selectedImage, setSelectedImage] = useState(null);
     const [rowsPerPage, setRowsPerPage] = useState(imagesPerPage);
 
@@ -47,34 +47,24 @@ function ImagePicker({
         paginatedImages,
         totalCount,
         clearSearch,
-        fetchImages,
-        searchImages
-    } = useImagePicker({ apiEndpoint, imagesPerPage: rowsPerPage });
+        fetchImages
+    } = useImagePicker({ imagesPerPage: rowsPerPage });
 
     useEffect(() => {
         if (open) {
-            fetchImages();
-        }
-    }, [open, fetchImages]);
-
-    useEffect(() => {
-        const timeoutId = setTimeout(() => {
-            searchImages(searchTerm, selectedTags);
             setPage(0);
-        }, 300);
+        }
+    }, [open, setPage]);
 
-        return () => clearTimeout(timeoutId);
-    }, [searchTerm, selectedTags, searchImages, setPage]);
-
-    const handleChangePage = (event, newPage) => {
+    const handleChangePage = useCallback((event, newPage) => {
         setPage(newPage);
-    };
+    }, [setPage]);
 
-    const handleChangeRowsPerPage = (event) => {
+    const handleChangeRowsPerPage = useCallback((event) => {
         const newRowsPerPage = parseInt(event.target.value, 10);
         setRowsPerPage(newRowsPerPage);
         handlePageSizeChange(newRowsPerPage);
-    };
+    }, [handlePageSizeChange]);
 
     const handleImageSelect = useCallback((image) => {
         setSelectedImage(image);
@@ -102,14 +92,14 @@ function ImagePicker({
         }
     }, [onClose, setSearchTerm, setSelectedTags, setPage]);
 
-    const handleRemoveTag = (tagToRemove) => {
+    const handleRemoveTag = useCallback((tagToRemove) => {
         setSelectedTags(prev => prev.filter(tag => tag !== tagToRemove));
-    };
+    }, [setSelectedTags]);
 
-    const handleClearAllFilters = () => {
+    const handleClearAllFilters = useCallback(() => {
         setSearchTerm('');
         setSelectedTags([]);
-    };
+    }, [setSearchTerm, setSelectedTags]);
 
     return (
         <Dialog 
@@ -127,13 +117,15 @@ function ImagePicker({
         >
             <DialogTitle {...formStyles.dialogTitle}>
                 {title}
-                <IconButton
-                    aria-label="close"
-                    onClick={handleClose}
-                    {...formStyles.dialogCloseButton}
-                >
-                    <CloseIcon />
-                </IconButton>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <IconButton
+                        aria-label="close"
+                        onClick={handleClose}
+                        {...formStyles.dialogCloseButton}
+                    >
+                        <CloseIcon />
+                    </IconButton>
+                </Box>
             </DialogTitle>
 
             <DialogContent {...formStyles.dialogContent}>
@@ -201,6 +193,8 @@ function ImagePicker({
             </DialogActions>
         </Dialog>
     );
-}
+});
+
+ImagePicker.displayName = 'ImagePicker';
 
 export default ImagePicker;

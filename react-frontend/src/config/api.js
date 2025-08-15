@@ -18,6 +18,7 @@ export const API_CONFIG = {
         UPDATE_CHARACTER: "/Character/update-character/",
         DELETE_CHARACTER: "/Character/delete-character/",
 
-        IMAGE_PAGES: "/Image/image-by-page"
+        IMAGE_PAGES: "/Image/image-by-page",
+        ALL_TAGS: "/Image/all-tags"
     }
 };

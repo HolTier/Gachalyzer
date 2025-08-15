@@ -52,6 +52,14 @@ const ImageGrid = React.memo(({
             ))}
         </Grid>
     );
+}, (prevProps, nextProps) => {
+    // Custom comparison to prevent unnecessary re-renders
+    return (
+        prevProps.images.length === nextProps.images.length &&
+        prevProps.images.every((img, index) => img.id === nextProps.images[index]?.id) &&
+        prevProps.selectedImage?.id === nextProps.selectedImage?.id &&
+        prevProps.imageHeight === nextProps.imageHeight
+    );
 });
 
 ImageGrid.displayName = 'ImageGrid';

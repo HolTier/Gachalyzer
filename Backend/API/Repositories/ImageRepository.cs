@@ -24,7 +24,6 @@ namespace API.Repositories
         public async Task<Image?> GetByHashAsync(string hash)
         {
             return await _dbSet
-                .Include(i => i.Tags)
                 .Include(i => i.ImageStatus)
                 .FirstOrDefaultAsync(i => i.Hash == hash);
         }
@@ -32,7 +31,6 @@ namespace API.Repositories
         public async Task<Image?> GetBySplashArtAndHashAsync(string splashArtPath, string hash)
         {
             return await _dbSet
-                .Include(i => i.Tags)
                 .Include(i => i.ImageStatus)
                 .FirstOrDefaultAsync(i => i.SplashArtPath == splashArtPath && i.Hash == hash);
         }
@@ -40,7 +38,6 @@ namespace API.Repositories
         public async Task<IEnumerable<Image>> GetBySplashArtAsync(string fileName)
         {
             return await _dbSet
-                .Include(i => i.Tags)
                 .Include(i => i.ImageStatus)
                 .Where(i => i.SplashArtPath == fileName)
                 .ToListAsync();
@@ -49,7 +46,6 @@ namespace API.Repositories
         public async Task<IEnumerable<Image>> GetByStatusAsync(int statusId)
         {
             return await _dbSet
-                .Include(i => i.Tags)
                 .Include(i => i.ImageStatus)
                 .Where(i => i.ImageStatusId == statusId)
                 .ToListAsync();
@@ -58,18 +54,18 @@ namespace API.Repositories
         public async Task<Image?> GetByTagNameAsync(string tagName)
         {
             return await _dbSet
-                .Include(i => i.Tags)
                 .Include(i => i.ImageStatus)
                 .FirstOrDefaultAsync(i => i.Tags.Any(t => t.Contains(tagName)));
         }
 
-        public async Task<ImagePageResult?> GetByPageAsync(int pageNumber, int pageSize)
+        public async Task<ImagePageResult?> GetByPageAsync(int pageNumber, int pageSize, string[]? tags)
         {
             var totalCount = await _dbSet.CountAsync();
             if (totalCount == 0) return null;
             var images = await _dbSet
                 .Include(i => i.ImageStatus)
-                .OrderBy(i => i.Id)
+                .Where(i => tags == null || !tags.Any() || i.Tags.All(t => tags.Contains(t)))
+                .OrderByDescending(i => i.CreatedAt)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .Select(i => new ImageDto
@@ -77,7 +73,7 @@ namespace API.Repositories
                     Id = i.Id,
                     SplashArtPath = i.SplashArtPath,
                     ThumbnailPath = i.ThumbnailPath,
-                    Tags = i.Tags,
+                    Tags = i.Tags
                 })
                 .ToListAsync();
 
@@ -88,6 +84,14 @@ namespace API.Repositories
                 PageSize = pageSize,
                 Images = images
             };
+        }
+
+        public async Task<IEnumerable<string>> GetAllTagsAsync()
+        {
+            return await _dbSet
+                .SelectMany(i => i.Tags)
+                .Distinct()
+                .ToListAsync();
         }
     }
 }

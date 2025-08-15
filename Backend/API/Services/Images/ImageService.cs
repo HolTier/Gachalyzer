@@ -99,11 +99,13 @@ namespace API.Services.Images
                 CreatedAt = DateTime.UtcNow,
                 LastModified = DateTime.UtcNow,
                 ImageStatusId = (int)ImageStatus.Available,
+                Tags = fileTags
             };
 
             await _imageRepository.AddAsync(imageModel);
 
             await _cachedDataService.ClearCacheAsync($"image:all");
+            await _cachedDataService.ClearCacheAsync($"image:all-tags");
 
             return new ImageDto
             {

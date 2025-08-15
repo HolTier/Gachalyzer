@@ -12,6 +12,7 @@ namespace API.Repositories
         Task<IEnumerable<Image>> GetBySplashArtAsync(string fileName);
         Task<bool> ExistsAsync(string hash);
         Task<int> CountByStatusAsync(int statusId);
-        Task<ImagePageResult?> GetByPageAsync(int pageNumber, int pageSize);
+        Task<ImagePageResult?> GetByPageAsync(int pageNumber, int pageSize, string[]? tags);
+        Task<IEnumerable<string>> GetAllTagsAsync();
     }
 }

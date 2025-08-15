@@ -1,7 +1,9 @@
-﻿using API.Repositories;
+﻿using API.Dtos;
+using API.Repositories;
 using API.Services.Cache;
 using API.Services.Images;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Update.Internal;
 
 namespace API.Controllers
 {
@@ -21,13 +23,15 @@ namespace API.Controllers
         }
 
         [HttpPost("upload")]
-        public async Task<IActionResult> UploadImage(IFormFile file, string folderName, string fileName, List<string> fileTags)
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> UploadImage([FromForm] UploadImageRequest request)
         {
-            if (file == null || file.Length == 0)
+            if (request.File == null || request.File.Length == 0)
                 return BadRequest("No file provided");
             try
             {
-                var result = await _imageService.SaveImageAsync(file, folderName, fileName, fileTags);
+                var result = await _imageService.SaveImageAsync(request.File, request.FolderName, 
+                    request.FileName, request.FileTags);
                 return Ok(result);
             }
             catch (Exception ex)
@@ -56,16 +60,16 @@ namespace API.Controllers
         }
 
         [HttpGet("image-by-page")]
-        public async Task<IActionResult> GetImagesByPage(int pageNumber, int pageSize)
+        public async Task<IActionResult> GetImagesByPage(
+            [FromQuery] int pageNumber,
+            [FromQuery] int pageSize,
+            [FromQuery] string[]? tags)
         {
             if (pageNumber < 1 || pageSize < 1)
                 return BadRequest("Invalid page number or size");
             try
             {
-                var data = await _cachedDataService.GetOrSetCacheAsync(
-                    $"image:page:{pageNumber}:{pageSize}",
-                    () => _imageRepository.GetByPageAsync(pageNumber, pageSize)
-                );
+                var data = await _imageRepository.GetByPageAsync(pageNumber, pageSize, tags);
                 if (data == null || !data.Images.Any())
                     return NotFound("No images found for the specified page");
                 return Ok(data);
@@ -75,5 +79,24 @@ namespace API.Controllers
                 return StatusCode(500, $"Internal server error: {ex.Message}");
             }
         }
-    }
+
+        [HttpGet("all-tags")]
+        public async Task<IActionResult> GetAllTags()
+        {
+            try
+            {
+                var tags = await _cachedDataService.GetOrSetCacheAsync(
+                    "image:all-tags",
+                    () => _imageRepository.GetAllTagsAsync()
+                );
+                if (tags == null || !tags.Any())
+                    return NotFound("No tags found");
+                return Ok(tags);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+     }
 }

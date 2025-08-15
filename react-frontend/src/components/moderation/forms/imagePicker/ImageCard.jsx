@@ -66,6 +66,14 @@ const ImageCard = React.memo(({ image, isSelected, onSelect, imageHeight }) => {
             </CardContent>
         </Card>
     );
+}, (prevProps, nextProps) => {
+    // Custom comparison to prevent unnecessary re-renders
+    return (
+        prevProps.image.id === nextProps.image.id &&
+        prevProps.image.url === nextProps.image.url &&
+        prevProps.isSelected === nextProps.isSelected &&
+        prevProps.imageHeight === nextProps.imageHeight
+    );
 });
 
 ImageCard.displayName = 'ImageCard';
