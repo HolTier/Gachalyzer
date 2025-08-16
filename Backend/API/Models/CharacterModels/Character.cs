@@ -8,7 +8,7 @@ namespace API.Models.CharacterModels
         public string Name { get; set; } = default!;
 
         public int GameId { get; set; }
-        public Game Game { get; set; }
+        public Game Game { get; set; } = default!;
 
         public int? CharacterWeaponTypeId { get; set; }
         public CharacterWeaponType? CharacterWeaponType { get; set; }
